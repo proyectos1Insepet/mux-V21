@@ -396,7 +396,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             RF_Connection_PutChar(buffer_A[x]);
                         }
                         bufferAready = 0;
-                        side.a.rfState = RF_CREDITSALEAUTH;
+                        //side.a.rfState = RF_CREDITSALEAUTH;
                         return;
                     }
                     // Authorization Request Terpel
