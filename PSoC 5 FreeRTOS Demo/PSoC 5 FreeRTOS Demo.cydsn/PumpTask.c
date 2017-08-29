@@ -30,6 +30,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <code_pirata.h>
 #include "os_resource.h"
 
 char mensaje[] = {"OPERACION"};
@@ -306,14 +307,22 @@ void PollingDisplay1(void){
                 {     
                     if(NumPositions == 2){
                         flowDisplay1 = 2;                         //Pantalla forma de pago                      
-                        SetPicture(1, DISPLAY_FORMA_PAGO_DESEADA);                                                
+                        if(logoPrint[1]!= 11){
+                            SetPicture(1, DISPLAY_FORMA_PAGO_DESEADA);                                                
+                        }else{
+                            SetPicture(1,DISPLAY_FORMA_PAGO_DESEADA_TERPEL);
+                        }                                                
                     }else{
                         switch(Display1_rxBuffer[3]){
 				        case 0x56:						         //POS A                                                                                                                       
                                 if(bufferDisplay1.flagActiveSale){
                                     flowDisplay1 = flowPos;      //Si está vendiendo en esta posición regresa a su flujo
                                 }else{
-                                    SetPicture(1, DISPLAY_FORMA_PAGO_DESEADA); //Pantalla forma de pago
+                                    if(logoPrint[1]!= 11){
+                                        SetPicture(1, DISPLAY_FORMA_PAGO_DESEADA);                                                
+                                    }else{
+                                        SetPicture(1,DISPLAY_FORMA_PAGO_DESEADA_TERPEL);
+                                    }
                                     selectPos     = 1;
                                     flowDisplay1  = 2;
                                 }
@@ -337,7 +346,11 @@ void PollingDisplay1(void){
                                 if (bufferDisplay3.flagActiveSale){                                    
                                     flowDisplay3 = flowPosC;     //Si la venta está activa en POS B regresa a su flujo
                                 }else{
-                                    SetPicture(1, DISPLAY_FORMA_PAGO_DESEADA); //Pantalla forma de pago
+                                    if(logoPrint[1]!= 11){
+                                        SetPicture(1, DISPLAY_FORMA_PAGO_DESEADA);                                                
+                                    }else{
+                                        SetPicture(1,DISPLAY_FORMA_PAGO_DESEADA_TERPEL);
+                                    }
 							        selectPos     = 2;
                                     flowDisplay3  = 2;                            
                                 }                           
@@ -379,8 +392,12 @@ void PollingDisplay1(void){
                             if(lockTurn == 1)
                             {
                                 flowDisplay1 = 10;
-                                bufferDisplay1.saleType = 2;                                
-                                SetPicture(1, DISPLAY_ID_DIGITAL);
+                                bufferDisplay1.saleType = 2;
+                                if(logoPrint[1]!= 11){
+                                    SetPicture(1, DISPLAY_ID_DIGITAL);
+                                }else{
+                                    SetPicture(1, DISPLAY_ID_TERPEL);
+                                }
                                 AuthType = 1;
                                 Display1_ClearRxBuffer();
                             }else
@@ -949,16 +966,23 @@ void PollingDisplay1(void){
                             SetPicture(1, DISPLAY_ESPERANDO_ID);                            
                         break; 
                         case 0xB7:  //ID Number
-                            flowDisplay1 = 24;
-                            numberKeys1 = 0;                            
-                            bufferDisplay1.flagPrint =  1;
-                            Tag_ClearRxBuffer();
-                            Tag_ClearTxBuffer();
-                            Tag_PutChar('O');
-                            Tag_PutChar('K');
-                            Tag_PutChar(0x01);
-                            vTaskDelay( 100 / portTICK_PERIOD_MS );
-                            SetPicture(1, DISPLAY_ESPERANDO_ID);                           
+                            if(logoPrint[1]!= 11){
+                            	flowDisplay1 = 24;
+                            	numberKeys1 = 0;                            
+                            	bufferDisplay1.flagPrint =  1;
+                            	Tag_ClearRxBuffer();
+                            	Tag_ClearTxBuffer();
+                            	Tag_PutChar('O');
+                            	Tag_PutChar('K');
+                            	Tag_PutChar(0x01);
+                            	vTaskDelay( 100 / portTICK_PERIOD_MS );
+                            	SetPicture(1, DISPLAY_ESPERANDO_ID);                           
+                            }else{
+                            	flowDisplay1 = 25;
+                                numberKeys1 = 0;
+                            	vTaskDelay( 100 / portTICK_PERIOD_MS );
+                            	SetPicture(1, DISPLAY_ESPERANDO_ID_TERPEL);
+                            }                           
                         break;
                         case 0x94:  //Pantalla Inicial
                             bufferDisplay1.flagPrint =  0;
@@ -1141,6 +1165,68 @@ void PollingDisplay1(void){
                 Display1_ClearRxBuffer();
             } 
         break;
+            
+         case 25:
+            for(x = 0; x < 30; x++)
+            {
+                temporal[x] = 0x00;
+            }
+            for(x = 0; x < 25; x++)
+            {
+                bufferDisplay1.idSerial[x] = 0x00;
+            }
+            if(code_pirata('A','5') == 1)
+            {	
+                for (x = 2; x < 24; x++ ){
+                    if(temporal[x] == 0x3F)
+                        break;
+				    bufferDisplay1.idSerial[x-1] = temporal[x];                    
+                }
+                bufferDisplay1.idSerial[0] = x-2;
+                // Authorization request
+                SetPicture(1,DISPLAY_ID_RECONOCIDO);                                                                 
+                vTaskDelay( 500 / portTICK_PERIOD_MS );                       
+                iButtonFlag = 1;
+                flowDisplay1 = 14;
+                bufferDisplay1.flagKeyboard = 4;
+                numberKeys1 = 0;
+                hiddenKeys = 5;
+                controlChar ='*';
+                SetPicture(1,DISPLAY_INGRESE_PASSWORD);  
+                Display1_ClearRxBuffer();                                                                        
+									                                       
+			}                     
+            //Touch for return to init display
+            if(Display1_GetRxBufferSize() == 8)
+            {
+                if((Display1_rxBuffer[0] == 0xAA) && (Display1_rxBuffer[6] == 0xC3) && (Display1_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display1_rxBuffer[3])
+                    {                        
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay1 = 0;
+                            bufferDisplay1.flagPrint =  0;
+                            PresetFlag = 0;
+                            iButtonFlag = 0;
+                            AuthType = 0;
+                            Display1_ClearRxBuffer();
+                        break;
+                        
+                        case 0x94:  //Cancel Button                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay1 = 0;
+                            bufferDisplay1.flagPrint =  0;
+                            PresetFlag = 0;
+                            iButtonFlag = 0;
+                            AuthType = 0;
+                            Display1_ClearRxBuffer();
+                        break;
+                    }                    
+                }                
+                Display1_ClearRxBuffer();
+            } 
+        break;
     ///////////////FIN CASOS PARA CRÉDITO  /////////////////////  
     
     //////////// CASOS PARA CONFIGURACIONES  ///////////////////
@@ -1274,6 +1360,14 @@ void PollingDisplay1(void){
                             ShiftState = 0;
                             SetPicture(1,DISPLAY_INICIO0);
                         break;
+                        
+                        break;
+                        case 4://Pass turno
+                            for(x = 0; x < hiddenKeys; x++)
+                            {
+                                bufferDisplay1.passCard[x] = 0;
+                            }
+                            flowDisplay1 = 0;
                         case 5://Pass
                             for(x = 0; x < hiddenKeys; x++)
                             {
@@ -1348,6 +1442,16 @@ void PollingDisplay1(void){
                             SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
                             side.a.RFstateReport = 1;
                             ShiftState = 1;
+                        break;
+                        case 4://Pass Card
+                            for(x = 0; x < hiddenKeys; x++)
+                            {
+                                bufferDisplay1.passCard[x] = bufferDisplay1.valueKeys[x];
+                            }
+                            vTaskDelay( 500 / portTICK_PERIOD_MS );                       
+                            iButtonFlag = 2;
+                            SetPicture(1, DISPLAY_FORMA_PROGRAMACION);
+                            flowDisplay1 = 3;
                         break;
                         case 5://Pass
                             for(x = 0; x < hiddenKeys; x++)
@@ -6344,6 +6448,13 @@ void PresetAuthorize(uint8 Position)
             iButtonFlag = 0;
             side.a.rfState = RF_IDLE;
             
+        }
+        if(iButtonFlag == 2 && side.a.activeHose == side.a.hose) 
+        {
+            CreditAuth = RF_CREDITSALEAUTH;
+            side.a.RFstateReport = 2;
+            iButtonFlag = 0;
+            //side.a.rfState = RF_IDLE;            
         }
         
         //iButton Autorizado

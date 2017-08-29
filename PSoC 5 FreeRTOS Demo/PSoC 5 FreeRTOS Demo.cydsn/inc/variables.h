@@ -226,6 +226,8 @@
     uint8 pollTotalsC;
     uint8 pollTotalsD;
     uint32 PositionGAP;
+    uint8 buffer_RX[500];
+    uint8 buffer_TX[25];
     
     
 /*
@@ -280,6 +282,7 @@ struct buffer{
     uint8 PresetTemp[10];
     uint8 PrintCopy;
     uint8 EndSaleReport;
+    uint8 passCard[8];
 
 };
 
@@ -354,6 +357,7 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_INICIO2,
 
     DISPLAY_FORMA_PAGO_DESEADA              = 0x04,
+    DISPLAY_FORMA_PAGO_DESEADA_TERPEL       = 0x8D,
     DISPLAY_FORMA_PROGRAMACION              = 0x05,
     DISPLAY_INTRODUZCA_VALOR                = 0x06,
     DISPLAY_INTRODUZCA_VALOR2               = 0x0F,
@@ -375,6 +379,8 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_GRACIAS_VUELVA_PRONTO           = 0x0C,
 
     DISPLAY_ID_DIGITAL                      = 0x85,
+    DISPLAY_ID_TERPEL                       = 0x8B,
+    DISPLAY_ESPERANDO_ID_TERPEL             = 0x8E,
     DISPLAY_ID_NO_RECONOCIDO                = 0x1C,//0x11,
     DISPLAY_ESPERANDO_ID                    = 0x12,
     DISPLAY_ID_RECONOCIDO                   = 0x13,

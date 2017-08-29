@@ -172,6 +172,7 @@ void loadConfiguration(){
 	for(x=1;x<=30;x++){
 		Pie3[x]=EEPROM_1_ReadByte(130+x);
 	}
+    logoPrint[1] = 11; //Fijo para pruebas
     //LeerEeprom(700,31);
     MoneyDec   = EEPROM_1_ReadByte(2);  //Punto decimal dinero
     VolDec     = EEPROM_1_ReadByte(3);  //Punto decimal volumen
