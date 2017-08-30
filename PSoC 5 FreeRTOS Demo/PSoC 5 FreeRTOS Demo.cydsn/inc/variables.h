@@ -381,6 +381,7 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_ID_DIGITAL                      = 0x85,
     DISPLAY_ID_TERPEL                       = 0x8B,
     DISPLAY_ESPERANDO_ID_TERPEL             = 0x8E,
+    DISPLAY_SELECCIONE_OP_TERPEL            = 0x8F,
     DISPLAY_ID_NO_RECONOCIDO                = 0x1C,//0x11,
     DISPLAY_ESPERANDO_ID                    = 0x12,
     DISPLAY_ID_RECONOCIDO                   = 0x13,
@@ -394,7 +395,7 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_IMPRIMIENDO_RECIBO              = 0x35,
 
     DISPLAY_SELECCIONE_POSICION             = 0x2E,
-    DISPLAY_OPERACION_CANCELADA             = 0x8C,
+    DISPLAY_RECIBO_SALDO                    = 0x8C,
     DISPLAY_ESPERANDO_AUTORIZACION          = 0x96,
     DISPLAY_POR_FAVOR_ESPERE                = 0x39,
     DISPLAY_AUTORIZACION_ACEPTADA           = 0x97,
@@ -445,9 +446,10 @@ enum _RF_STATES_
     RF_DELIVERING       = 0x01,
     RF_CASHSALEREPORT   = 0x02,
     RF_CREDITSALEAUTH   = 0x03,
+    RF_ERROR            = 0x04,
     RF_WORKSHIFTREQ     = 0x05,
     RF_CREDITSALEREPORT = 0x06,
-    RF_ERROR            = 0x04,
+    RF_ASK_BALANCE      = 0x07,
     RF_COPY_RECEIPT     = 0x0B,
     RF_ZERO_SALE        = 0x0C
 };

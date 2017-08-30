@@ -409,6 +409,16 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         bufferAready = 0;
                         AckFlag = 0;
                     }
+                    // Balance Request Terpel
+                    if(bufferAready == 5)
+                    {                                                             
+                        for (x = 0; x < 19 + bufferDisplay1.idSerial[0]; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_A[x]);
+                        }
+                        bufferAready = 0;
+                        AckFlag = 0;                        
+                    }
                  
                     // Total
                     if(bufferAready == 0 && FlagTotal == 1)
@@ -2103,6 +2113,40 @@ void pollingRFA_Tx(){
         CreditAuth = 0;
         AckFlag = 0;       
         side.a.rfState = RF_CREDITSALEAUTH; 
+    }
+    
+    if(side.a.pumpState == PUMP_IDLE && side.a.RFstateReport == 2)
+    {
+        buffer_A[0]  = 0xBC;
+        buffer_A[1]  = 0xCB;
+        buffer_A[2]  = 0xC8;
+        buffer_A[3]  = IDCast[0];
+        buffer_A[4]  = IDCast[1];
+        buffer_A[5]  = side.a.RF;
+        buffer_A[6]  = 0xB2;
+        buffer_A[7]  = RF_ASK_BALANCE;
+        buffer_A[8]  = bufferDisplay1.idType;
+                
+        for(y = 0; y < 8; y++)
+        {
+            buffer_A[9 + y] = 0x00;
+        }
+        for(y = 0; y < bufferDisplay1.passCard[0]; y++)
+        {
+            buffer_A[9 + y] = bufferDisplay1.passCard[bufferDisplay1.passCard[0]-y];
+        }
+        buffer_A[17] = bufferDisplay1.idSerial[0];        
+        for(y = 1; y <= bufferDisplay1.idSerial[0]; y++)
+        {
+            buffer_A[17 + y] = bufferDisplay1.idSerial[bufferDisplay1.idSerial[0]-(y-1)];
+        }
+        buffer_A[18+bufferDisplay1.idSerial[0]] = verificar_check(buffer_A,19+bufferDisplay1.idSerial[0]);
+        side.a.RFstateReport = 0;
+        bufferAready = 5;
+        FlagTotal = 0;        
+        CreditAuth = 0;
+        AckFlag = 0;       
+        side.a.rfState = RF_ASK_BALANCE; 
     }
     
     /////////////// TICKET COPY //////////////////
