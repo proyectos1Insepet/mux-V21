@@ -1977,8 +1977,10 @@ void pollingRFA_Tx(){
         bufferAready = 1;
         if(PrinterType[1] == 1)
         {
-            printLogoP(printPortA,11);    
-        }       
+            printLogoP(printPortA,logoPrint[1]);    
+        }else{
+            printLogoK(printPortA,logoPrint[1]);
+        }
         write_psoc1(printPortA,10);
         
         side.a.rfStateCopy = 0;
@@ -2358,7 +2360,9 @@ void pollingRFB_Tx(){
         bufferAreadyB = 1;
         if(PrinterType[1] == 1)
         {
-            printLogoP(printPortB,11);    
+            printLogoP(printPortB,logoPrint[1]);    
+        }else{
+            printLogoK(printPortB,logoPrint[1]);
         }       
         write_psoc1(printPortB,10);
         
@@ -2728,7 +2732,9 @@ void pollingRFC_Tx(){
         bufferAreadyC = 1;
         if(PrinterType[1] == 1)
         {
-            printLogoP(printPortA,11);    
+            printLogoP(printPortA,logoPrint[1]);    
+        }else{
+            printLogoK(printPortA,logoPrint[1]);
         }       
         write_psoc1(printPortA,10);
         
@@ -3102,7 +3108,9 @@ void pollingRFD_Tx(){
         bufferAreadyD = 1;
         if(PrinterType[1] == 1)
         {
-            printLogoP(printPortB,11);    
+            printLogoP(printPortB,logoPrint[1]);    
+        }else{
+            printLogoK(printPortB,logoPrint[1]);
         }       
         write_psoc1(printPortB,10);
         
