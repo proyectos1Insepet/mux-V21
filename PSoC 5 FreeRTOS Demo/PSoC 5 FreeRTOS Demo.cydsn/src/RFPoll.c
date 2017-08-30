@@ -1701,6 +1701,14 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     }
                     
                 break;
+                
+                case 0xB3:
+                    if(PRF_rxBuffer[5] == side.a.RF)
+                    {
+                        SetPicture(1, DISPLAY_RECIBO_SALDO);                         
+                    }
+                    
+                break;
                              
                 case 0xE1:               //Configuracion de la estacion
                     

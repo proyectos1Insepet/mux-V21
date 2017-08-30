@@ -1185,8 +1185,7 @@ void PollingDisplay1(void){
                         break; 
                         case 0xB7:  //Saldo                           
                         	flowDisplay1 = 27;
-                        	numberKeys1 = 0;                                                    	                      	
-                        	vTaskDelay( 100 / portTICK_PERIOD_MS );
+                        	numberKeys1 = 0;                                                    	                      	                        	
                         	SetPicture(1, DISPLAY_ESPERANDO_ID_TERPEL);                                                                                  
                         break;
                         case 0x94:  //Pantalla Inicial
@@ -1329,8 +1328,8 @@ void PollingDisplay1(void){
                 Display1_ClearRxBuffer();
             }
         break;
-        case 28:
-            SetPicture(1, DISPLAY_POR_FAVOR_ESPERE);
+        case 28:            
+            side.a.rfState = RF_ASK_BALANCE;
             //Touch for return to init display
             if(Display1_GetRxBufferSize() == 8)
             {
@@ -1631,7 +1630,8 @@ void PollingDisplay1(void){
                                 bufferDisplay1.passCard[x] = bufferDisplay1.valueKeys[x];
                             }
                             side.a.RFstateReport = 2;
-                            vTaskDelay( 500 / portTICK_PERIOD_MS );                                                   
+                            vTaskDelay( 500 / portTICK_PERIOD_MS );  
+                            SetPicture(1, DISPLAY_POR_FAVOR_ESPERE);
                             flowDisplay1 = 28;
                         break;
                     }                    
