@@ -84,7 +84,7 @@ void borrar(void)
 uint8_t code_pirata(char pos, char tipo)
 {
 
-    uint16 x,i;                         //PUNTEROS
+    uint16 x;                         //PUNTEROS
     uint16_t check;                       //CHECL ES EL VALOR PARA DEFINIR SI LA TRAMA LLEGO COMPLETA
     uint16 tamano;                      //TAMAÑO DEL VECTOR QUE LLEGO
     uint8_t copy_tipo;

@@ -38,15 +38,11 @@ char mensaje2[] = {"RECHAZADA"};
 char mensaje3[] = {"MANGUERA"};
 char mensaje4[] = {"INCORRECTA"};
 
-// PRIME CASONA
-uint8 producto1[13] = "CORRIENTE    ";
-uint8 producto2[13] = "CORRIENTE    ";
-uint8 producto3[13] = "CORRIENTE    ";
-uint8 producto4[13] = "CORRIENTE    ";
-
-//ENCORE CASONA
-uint8 productoA[13] = "ACPM         ";
-uint8 productoB[13] = "ACPM         ";
+uint8 nombre[8]  = {"NOMBRE: "};
+uint8 placa[8]   = {"PLACA:  "};
+uint8 tarjeta[8] = {"TARJETA:"};
+uint8 saldo_d[8] = {"SALDO D."};
+uint8 saldo_a[8] = {"SALDO A."};
 
 uint8 precios = 0;
 
@@ -1361,6 +1357,123 @@ void PollingDisplay1(void){
             }
             Display1_ClearRxBuffer();             
         break;
+        
+        case 29:
+            if(cardmessagedisplay == 1){
+            for(x = 1; x < 31; x++)
+            {
+                WriteMessage(1, Encabezado1[x],4,x-1,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 4; x < 31; x++)
+            {
+                WriteMessage(1, Encabezado2[x],6,x-4,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 8; x++) //nombre
+            {
+                WriteMessage(1, nombre[x],8,x,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 20; x++)
+            {
+                WriteMessage(1, Company[x],8,x+8,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 8; x++) //placa
+            {
+                WriteMessage(1, placa[x],10,x,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 8; x++)
+            {
+                WriteMessage(1, LicensePlate[x],10,x+8,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 8; x++)//tarjeta
+            {
+                WriteMessage(1,tarjeta[x],12,x,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 5; x++)
+            {
+                WriteMessage(1,'*',12,x+8,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 3; x++)
+            {
+                WriteMessage(1,cardNumberA[x],12,x+13,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 8; x++)//saldo
+            {
+                WriteMessage(1,saldo_d[x],14,x,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 18; x++)
+            {
+                WriteMessage(1,BalanceA[x],14,x+8,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 8; x++)//saldo aprobado
+            {
+                WriteMessage(1,saldo_a[x],16,x,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 18; x++)
+            {
+                WriteMessage(1,BalanceB[x],16,x+8,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            }
+            if(cardmessagedisplay == 2)
+            {
+                for(x = 0; x < 25; x++)
+                {
+                    WriteMessage(1,cardmessage[x],6,x,1,0x0000,'Y');
+                }
+                for(x = 0; x < 25; x++)
+                {
+                    WriteMessage(1,cardmessage1[x],8,x,1,0x0000,'Y');
+                }
+                for(x = 0; x < 25; x++)
+                {
+                    WriteMessage(1,cardmessage2[x],10,x,1,0x0000,'Y');
+                }
+                for(x = 0; x < 25; x++)
+                {
+                    WriteMessage(1,cardmessage3[x],12,x,1,0x0000,'Y');
+                }
+            }
+            if(Display1_GetRxBufferSize() == 8)
+            {
+                if((Display1_rxBuffer[0] == 0xAA) && (Display1_rxBuffer[6] == 0xC3) && (Display1_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display1_rxBuffer[3])
+                    {                                                                                                 
+                        case 0x0A:
+                            printBalance(printPortA,side.a.dir);
+                            vTaskDelay( 200 / portTICK_PERIOD_MS );
+                            bufferDisplay1.flagPrint =  0;
+                            flowPos      = 0;
+                            flowDisplay1 = 0;                            
+                            PresetFlag   = 0;
+                            iButtonFlag  = 0;
+                            ShiftState   = 0; 
+                            SetPicture(1, DISPLAY_INICIO0);
+                        break;
+                        case 0x0B:  //Cancel Button                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            bufferDisplay1.flagPrint =  0;
+                            flowPos      = 0;
+                            flowDisplay1 = 0;                            
+                            PresetFlag   = 0;
+                            iButtonFlag  = 0;
+                            ShiftState   = 0;
+                        break;
+                            
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            bufferDisplay1.flagPrint =  0;
+                            flowPos      = 0;
+                            flowDisplay1 = 0;                            
+                            PresetFlag   = 0;
+                            iButtonFlag  = 0;
+                        break;
+                    }                    
+                }                
+                vTaskDelay( 10 / portTICK_PERIOD_MS );              //Freertos delay
+            }
+            Display1_ClearRxBuffer(); 
+            
+        break;
     ///////////////FIN CASOS PARA CRÉDITO  /////////////////////  
     
     //////////// CASOS PARA CONFIGURACIONES  ///////////////////
@@ -2647,16 +2760,24 @@ void PollingDisplay2(void){
                             SetPicture(2,DISPLAY_ESPERANDO_ID);                            
                         break; 
                         case 0xB7:  //ID por número
-                            flowDisplay2 = 24;
-                            numberKeys2 = 0;                            
-                            bufferDisplay2.flagPrint =  1;
-                            Tag_ClearRxBuffer();
-                            Tag_ClearTxBuffer();
-                            Tag_PutChar('O');
-                            Tag_PutChar('K');
-                            Tag_PutChar(0x02);
-                            vTaskDelay( 100 / portTICK_PERIOD_MS );
-                            SetPicture(2, DISPLAY_ESPERANDO_ID);                    
+                            if(logoPrint[1]!= 11){
+                            	flowDisplay2 = 24;
+                            	numberKeys2 = 0;                            
+                            	bufferDisplay2.flagPrint =  1;
+                            	Tag_ClearRxBuffer();
+                            	Tag_ClearTxBuffer();
+                            	Tag_PutChar('O');
+                            	Tag_PutChar('K');
+                            	Tag_PutChar(0x02);
+                            	vTaskDelay( 100 / portTICK_PERIOD_MS );
+                            	SetPicture(2, DISPLAY_ESPERANDO_ID);                           
+                            }else{
+                            	flowDisplay2 = 25;
+                                numberKeys2 = 0;
+                                bufferDisplay2.idType = 3;
+                            	vTaskDelay( 100 / portTICK_PERIOD_MS );
+                            	SetPicture(2, DISPLAY_SELECCIONE_OP_TERPEL);
+                            }                      
                         break;
                         case 0x94:  //Pantalla Inicial 
                             bufferDisplay2.flagPrint =  0;
@@ -4088,16 +4209,24 @@ void PollingDisplay3(void){
                             SetPicture(1, DISPLAY_ESPERANDO_ID);                            
                         break; 
                         case 0xB7:  //ID Number
-                            flowDisplay3 = 24;
-                            numberKeys3 = 0;                            
-                            bufferDisplay3.flagPrint =  1;
-                            Tag_ClearRxBuffer();
-                            Tag_ClearTxBuffer();
-                            Tag_PutChar('O');
-                            Tag_PutChar('K');
-                            Tag_PutChar(0x01);
-                            vTaskDelay( 100 / portTICK_PERIOD_MS );
-                            SetPicture(1, DISPLAY_ESPERANDO_ID);
+                            if(logoPrint[1]!= 11){
+                            	flowDisplay3 = 24;
+                            	numberKeys3 = 0;                            
+                            	bufferDisplay3.flagPrint =  1;
+                            	Tag_ClearRxBuffer();
+                            	Tag_ClearTxBuffer();
+                            	Tag_PutChar('O');
+                            	Tag_PutChar('K');
+                            	Tag_PutChar(0x01);
+                            	vTaskDelay( 100 / portTICK_PERIOD_MS );
+                            	SetPicture(1, DISPLAY_ESPERANDO_ID);                           
+                            }else{
+                            	flowDisplay3 = 25;
+                                numberKeys3 = 0;
+                                bufferDisplay3.idType = 3;
+                            	vTaskDelay( 100 / portTICK_PERIOD_MS );
+                            	SetPicture(1, DISPLAY_SELECCIONE_OP_TERPEL);
+                            }  
                         break;
                         case 0x94:  //Pantalla Inicial
                             bufferDisplay3.flagPrint =  0;
@@ -5530,16 +5659,24 @@ void PollingDisplay4(void){
                             SetPicture(2,DISPLAY_ESPERANDO_ID);                            
                         break; 
                         case 0xB7:  //ID por número
-                            flowDisplay4 = 23;
-                            numberKeys4 = 0;                            
-                            bufferDisplay4.flagPrint =  1;
-                            Tag_ClearRxBuffer();
-                            Tag_ClearTxBuffer();
-                            Tag_PutChar('O');
-                            Tag_PutChar('K');
-                            Tag_PutChar(0x02);
-                            vTaskDelay( 100 / portTICK_PERIOD_MS );
-                            SetPicture(2, DISPLAY_ESPERANDO_ID);    
+                            if(logoPrint[1]!= 11){
+                            	flowDisplay4 = 24;
+                            	numberKeys4 = 0;                            
+                            	bufferDisplay4.flagPrint =  1;
+                            	Tag_ClearRxBuffer();
+                            	Tag_ClearTxBuffer();
+                            	Tag_PutChar('O');
+                            	Tag_PutChar('K');
+                            	Tag_PutChar(0x02);
+                            	vTaskDelay( 100 / portTICK_PERIOD_MS );
+                            	SetPicture(2, DISPLAY_ESPERANDO_ID);                           
+                            }else{
+                            	flowDisplay4 = 25;
+                                numberKeys4 = 0;
+                                bufferDisplay4.idType = 3;
+                            	vTaskDelay( 100 / portTICK_PERIOD_MS );
+                            	SetPicture(2, DISPLAY_SELECCIONE_OP_TERPEL);
+                            }     
                         break;
                         case 0x94:  //Pantalla Inicial 
                             bufferDisplay4.flagPrint =  0;

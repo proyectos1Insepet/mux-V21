@@ -97,6 +97,8 @@
     volatile uint8 TempPos[4];
     volatile uint8 RFOnline;
     volatile uint8 OSonline;
+    volatile uint8 cardNumberA[3];
+    volatile uint8 cardNumberB[3];
   
     
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,8 +184,8 @@
     uint8 buffer_i2c[64];													//Buffer de lectura del i2c 
     uint8 LicensePlate[9];
     uint8 LicensePlate2[9];
-    uint8 BalanceA[11];
-    uint8 BalanceB[11];
+    uint8 BalanceA[21];
+    uint8 BalanceB[21];
     uint8 Company[21];
     uint8 CompanyB[21];
     uint8 CountID[21];
@@ -228,6 +230,11 @@
     uint32 PositionGAP;
     uint8 buffer_RX[500];
     uint8 buffer_TX[25];
+    uint8 cardmessage[25];
+    uint8 cardmessage1[25];
+    uint8 cardmessage2[25];
+    uint8 cardmessage3[25];
+    uint8 cardmessagedisplay;
     
     
 /*

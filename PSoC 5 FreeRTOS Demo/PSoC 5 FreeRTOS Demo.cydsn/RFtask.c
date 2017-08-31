@@ -102,18 +102,19 @@ void RF_Task(void *arg)
             {
                 LongEsperada = 19;
             }
+            
             else if ( buffer_rf[6] == 0xB3)
             {
                 if(buffer_rf[8] != 0x00)
                 {
-                    if(buffer_rf[8] + 0x09 < 234)
+                    if(buffer_rf[8] + 0x09 < 76)
                     {
                         LongEsperada = buffer_rf[8] + 0x09;
                         vTaskDelay( 1 / portTICK_PERIOD_MS );
                     }
                     else
                     {
-                        LongEsperada = 234;
+                        LongEsperada = 76;
                     }
                 }
             }
@@ -154,7 +155,7 @@ void RF_Task(void *arg)
                 {
                    RFOnline = 0;
                 }                  
-                buffer_rf[6] = 0xFF;
+                //buffer_rf[6] = 0xFF;
                 RF_Connection_ClearRxBuffer();            
                 break;
             }

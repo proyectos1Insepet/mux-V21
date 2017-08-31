@@ -1705,9 +1705,290 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                 case 0xB3:
                     if(PRF_rxBuffer[5] == side.a.RF)
                     {
-                        SetPicture(1, DISPLAY_RECIBO_SALDO);                         
+                        if(PRF_rxBuffer[7] == 0x01)
+                        {    
+                            cardmessagedisplay = 1;
+                            for(x = 0; x < 20; x++)
+                            {
+                                Company[x] = 0x00; 
+                            }   
+                            // Company
+                            for(x = 0; x < 20; x++)
+                            {
+                                Company[x] = PRF_rxBuffer[x + 9]; 
+                            }  
+                            for(x = 0; x < 8; x++)
+                            {
+                                LicensePlate[x] = 0x00; 
+                            }                        
+                            // Licese plate
+                            for(x = 0; x < 8; x++)
+                            {
+                                LicensePlate[x] = PRF_rxBuffer[x + 29]; 
+                            }                                                  
+                            for(x = 0; x < 3; x++)
+                            {
+                                cardNumberA[x] = PRF_rxBuffer[x + 37];
+                            }
+                            for(x = 0; x < 20; x++)
+                            {
+                                BalanceA[x] = 0x00; 
+                            }                            
+                            // Balance
+                            for(x = 0; x < 18; x++)
+                            {
+                                BalanceA[x] = PRF_rxBuffer[x + 40]; 
+                            }
+                            for(x = 0; x < 20; x++)
+                            {
+                                BalanceB[x] = 0x00; 
+                            }                            
+                            // Balance
+                            for(x = 0; x < 18; x++)
+                            {
+                                BalanceB[x] = PRF_rxBuffer[x + 58]; 
+                            }
+                            flowDisplay1 = 29;
+                            side.a.rfState = RF_IDLE;
+                            SetPicture(1, DISPLAY_RECIBO_SALDO); 
+                        }else{
+                            cardmessagedisplay = 2;
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage[x] = PRF_rxBuffer[x + 9]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage1[x] = PRF_rxBuffer[x + 34]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage2[x] = PRF_rxBuffer[x + 59]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage3[x] = PRF_rxBuffer[x + 84]; 
+                            }
+                            flowDisplay1 = 29;
+                            side.a.rfState = RF_IDLE;
+                            SetPicture(1, DISPLAY_RECIBO_SALDO);
+                        }
+                    }
+                    if(PRF_rxBuffer[5] == side.b.RF)
+                    {
+                        if(PRF_rxBuffer[7] == 0x01)
+                        {    
+                            cardmessagedisplay = 1;
+                            for(x = 0; x < 20; x++)
+                            {
+                                Company[x] = 0x00; 
+                            }   
+                            // Company
+                            for(x = 0; x < 20; x++)
+                            {
+                                Company[x] = PRF_rxBuffer[x + 9]; 
+                            }  
+                            for(x = 0; x < 8; x++)
+                            {
+                                LicensePlate[x] = 0x00; 
+                            }                        
+                            // Licese plate
+                            for(x = 0; x < 8; x++)
+                            {
+                                LicensePlate[x] = PRF_rxBuffer[x + 29]; 
+                            }                                                  
+                            for(x = 0; x < 3; x++)
+                            {
+                                cardNumberA[x] = PRF_rxBuffer[x + 37];
+                            }
+                            for(x = 0; x < 20; x++)
+                            {
+                                BalanceA[x] = 0x00; 
+                            }                            
+                            // Balance
+                            for(x = 0; x < 18; x++)
+                            {
+                                BalanceA[x] = PRF_rxBuffer[x + 40]; 
+                            }
+                            for(x = 0; x < 20; x++)
+                            {
+                                BalanceB[x] = 0x00; 
+                            }                            
+                            // Balance
+                            for(x = 0; x < 18; x++)
+                            {
+                                BalanceB[x] = PRF_rxBuffer[x + 58]; 
+                            }
+                            flowDisplay2 = 29;
+                            side.b.rfState = RF_IDLE;
+                            SetPicture(2, DISPLAY_RECIBO_SALDO); 
+                        }else{
+                            cardmessagedisplay = 2;
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage[x] = PRF_rxBuffer[x + 9]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage1[x] = PRF_rxBuffer[x + 34]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage2[x] = PRF_rxBuffer[x + 59]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage3[x] = PRF_rxBuffer[x + 84]; 
+                            }
+                            flowDisplay2 = 29;
+                            side.b.rfState = RF_IDLE;
+                            SetPicture(2, DISPLAY_RECIBO_SALDO);
+                        }
                     }
                     
+                    if(PRF_rxBuffer[5] == side.c.RF)
+                    {
+                        if(PRF_rxBuffer[7] == 0x01)
+                        {    
+                            cardmessagedisplay = 1;
+                            for(x = 0; x < 20; x++)
+                            {
+                                Company[x] = 0x00; 
+                            }   
+                            // Company
+                            for(x = 0; x < 20; x++)
+                            {
+                                Company[x] = PRF_rxBuffer[x + 9]; 
+                            }  
+                            for(x = 0; x < 8; x++)
+                            {
+                                LicensePlate[x] = 0x00; 
+                            }                        
+                            // Licese plate
+                            for(x = 0; x < 8; x++)
+                            {
+                                LicensePlate[x] = PRF_rxBuffer[x + 29]; 
+                            }                                                  
+                            for(x = 0; x < 3; x++)
+                            {
+                                cardNumberA[x] = PRF_rxBuffer[x + 37];
+                            }
+                            for(x = 0; x < 20; x++)
+                            {
+                                BalanceA[x] = 0x00; 
+                            }                            
+                            // Balance
+                            for(x = 0; x < 18; x++)
+                            {
+                                BalanceA[x] = PRF_rxBuffer[x + 40]; 
+                            }
+                            for(x = 0; x < 20; x++)
+                            {
+                                BalanceB[x] = 0x00; 
+                            }                            
+                            // Balance
+                            for(x = 0; x < 18; x++)
+                            {
+                                BalanceB[x] = PRF_rxBuffer[x + 58]; 
+                            }
+                            flowDisplay3 = 29;
+                            side.c.rfState = RF_IDLE;
+                            SetPicture(1, DISPLAY_RECIBO_SALDO); 
+                        }else{
+                            cardmessagedisplay = 2;
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage[x] = PRF_rxBuffer[x + 9]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage1[x] = PRF_rxBuffer[x + 34]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage2[x] = PRF_rxBuffer[x + 59]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage3[x] = PRF_rxBuffer[x + 84]; 
+                            }
+                            flowDisplay3 = 29;
+                            side.c.rfState = RF_IDLE;
+                            SetPicture(1, DISPLAY_RECIBO_SALDO);
+                        }
+                    }
+                    
+                    if(PRF_rxBuffer[5] == side.d.RF)
+                    {
+                        if(PRF_rxBuffer[7] == 0x01)
+                        {    
+                            cardmessagedisplay = 1;
+                            for(x = 0; x < 20; x++)
+                            {
+                                Company[x] = 0x00; 
+                            }   
+                            // Company
+                            for(x = 0; x < 20; x++)
+                            {
+                                Company[x] = PRF_rxBuffer[x + 9]; 
+                            }  
+                            for(x = 0; x < 8; x++)
+                            {
+                                LicensePlate[x] = 0x00; 
+                            }                        
+                            // Licese plate
+                            for(x = 0; x < 8; x++)
+                            {
+                                LicensePlate[x] = PRF_rxBuffer[x + 29]; 
+                            }                                                  
+                            for(x = 0; x < 3; x++)
+                            {
+                                cardNumberA[x] = PRF_rxBuffer[x + 37];
+                            }
+                            for(x = 0; x < 20; x++)
+                            {
+                                BalanceA[x] = 0x00; 
+                            }                            
+                            // Balance
+                            for(x = 0; x < 18; x++)
+                            {
+                                BalanceA[x] = PRF_rxBuffer[x + 40]; 
+                            }
+                            for(x = 0; x < 20; x++)
+                            {
+                                BalanceB[x] = 0x00; 
+                            }                            
+                            // Balance
+                            for(x = 0; x < 18; x++)
+                            {
+                                BalanceB[x] = PRF_rxBuffer[x + 58]; 
+                            }
+                            flowDisplay4 = 29;
+                            side.b.rfState = RF_IDLE;
+                            SetPicture(2, DISPLAY_RECIBO_SALDO); 
+                        }else{
+                            cardmessagedisplay = 2;
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage[x] = PRF_rxBuffer[x + 9]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage1[x] = PRF_rxBuffer[x + 34]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage2[x] = PRF_rxBuffer[x + 59]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage3[x] = PRF_rxBuffer[x + 84]; 
+                            }
+                            flowDisplay4 = 29;
+                            side.d.rfState = RF_IDLE;
+                            SetPicture(2, DISPLAY_RECIBO_SALDO);
+                        }
+                    }
                 break;
                              
                 case 0xE1:               //Configuracion de la estacion
