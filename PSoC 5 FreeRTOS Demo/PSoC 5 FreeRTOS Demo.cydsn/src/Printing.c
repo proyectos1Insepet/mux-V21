@@ -1995,8 +1995,8 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 
 void printBalance(uint8 val,uint8 pos){
     uint8 x;
-    uint8 nombre[8]  = {"NOMBRE: "};
-    uint8 placa[8]   = {"PLACA:  "};
+    uint8 nombre[8]  = {"NOMBRE :"};
+    uint8 placa[8]   = {"PLACA  :"};
     uint8 tarjeta[8] = {"TARJETA:"};
     uint8 saldo_d[21]  = {"SALDO DISPONIBLE:    "};
     uint8 saldo_a[21]  = {"SALDO EN APROBACION: "};
