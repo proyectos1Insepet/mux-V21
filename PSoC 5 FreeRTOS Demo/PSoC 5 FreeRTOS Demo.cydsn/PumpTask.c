@@ -37,15 +37,15 @@ char mensaje2[] = {"RECHAZADA"};
 char mensaje3[] = {"MANGUERA"};
 char mensaje4[] = {"INCORRECTA"};
 
-// PRIME CASONA
-uint8 producto1[13] = "CORRIENTE    ";
-uint8 producto2[13] = "CORRIENTE    ";
-uint8 producto3[13] = "CORRIENTE    ";
-uint8 producto4[13] = "CORRIENTE    ";
-
-//ENCORE CASONA
-uint8 productoA[13] = "ACPM         ";
-uint8 productoB[13] = "ACPM         ";
+//// PRIME CASONA
+//uint8 producto1[13] = "CORRIENTE    ";
+//uint8 producto2[13] = "CORRIENTE    ";
+//uint8 producto3[13] = "CORRIENTE    ";
+//uint8 producto4[13] = "CORRIENTE    ";
+//
+////ENCORE CASONA
+//uint8 productoA[13] = "ACPM         ";
+//uint8 productoB[13] = "ACPM         ";
 
 uint8 precios = 0;
 
@@ -54,7 +54,7 @@ uint8 precios = 0;
 
 /* Configuration Password */
 uint8 passwordPump[5] = "00204";
-
+uint8 MuxVersion [10] = "MUX 21.0";
 /*
 *********************************************************************************************************
 *                                         void InitDisplay1(void)
@@ -209,8 +209,7 @@ void InitDisplay1(){
 *
 *********************************************************************************************************
 */
-void InitDisplay2(){ 
-    uint8 MuxVersion [10] = "MUX V. 1.0";
+void InitDisplay2(){     
     if(NumPositions == 2){        
         SetPicture(2,DISPLAY_INICIO0);  
         flowDisplay2 = 0;
@@ -1384,6 +1383,10 @@ void PollingDisplay1(void){
         break;
             
         case 15: //Menu de configuraciones
+            for(x = 0; x < 10; x++)
+            {
+                WriteMessage(1, MuxVersion[x],11,6+x,2,0xffff,'Y'); //WriteMessage(1, producto1[x],11,7+x,2,0x0000,'Y');
+            }
             if(Display1_GetRxBufferSize() == 8)
             {
                 if((Display1_rxBuffer[0] == 0xAA) && (Display1_rxBuffer[6] == 0xC3) && (Display1_rxBuffer[7] == 0x3C))
