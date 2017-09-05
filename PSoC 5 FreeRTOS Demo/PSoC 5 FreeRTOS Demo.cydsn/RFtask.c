@@ -57,6 +57,7 @@ void RF_Task(void *arg)
             if (buffer_rfTMP == 0xBC)
             {
                 i = 0;
+                LongEsperada=0;
             }
 
             // Status
@@ -105,17 +106,11 @@ void RF_Task(void *arg)
             
             else if ( buffer_rf[6] == 0xB3)
             {
-                if(buffer_rf[8] != 0x00)
-                {
-                    if(buffer_rf[8] + 0x09 < 76)
-                    {
-                        LongEsperada = buffer_rf[8] + 0x09;
-                        vTaskDelay( 1 / portTICK_PERIOD_MS );
-                    }
-                    else
-                    {
-                        LongEsperada = 76;
-                    }
+                if(buffer_rf[7]== 0x01)
+                {                    
+                    LongEsperada = 76;                    
+                }else{
+                    LongEsperada = 100;
                 }
             }
             // big config
@@ -156,7 +151,7 @@ void RF_Task(void *arg)
                    RFOnline = 0;
                 }                  
                 //buffer_rf[6] = 0xFF;
-                RF_Connection_ClearRxBuffer();            
+                RF_Connection_ClearRxBuffer();                   
                 break;
             }
              
