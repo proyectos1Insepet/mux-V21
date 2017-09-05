@@ -1989,6 +1989,10 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             SetPicture(2, DISPLAY_RECIBO_SALDO);
                         }
                     }
+                    for(x = 0; x < 100; x++)
+                    {
+                        PRF_rxBuffer[x]=0x00; 
+                    }
                 break;
                              
                 case 0xE1:               //Configuracion de la estacion
