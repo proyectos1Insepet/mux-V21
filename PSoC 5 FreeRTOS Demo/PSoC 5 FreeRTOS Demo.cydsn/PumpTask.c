@@ -403,6 +403,10 @@ void PollingDisplay1(void){
                                 flowDisplay1 = 0;                                                                
                             }
                         break;
+                        
+                        case 0x0F:
+                            
+                        break;
                             
                         case 0x45:  //Pantalla otras opciones 
                             flowDisplay1 = 12;                            
@@ -2073,6 +2077,11 @@ void PollingDisplay1(void){
                     Display1_ClearRxBuffer();
                 }          
             }            
+        break;
+        
+        //////////////////CASOS PARA FIDELIZACIÓN TERPEL ///////
+        case 30:
+            
         break;
 
     }    
