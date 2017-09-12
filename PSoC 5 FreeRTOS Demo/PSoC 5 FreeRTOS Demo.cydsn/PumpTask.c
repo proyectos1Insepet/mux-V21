@@ -3029,7 +3029,7 @@ void PollingDisplay2(void){
             {
                 bufferDisplay2.idSerial[x] = 0x00;
             }
-            if(code_pirata('B','5') == 1)
+            if(code_pirata('A','5') == 1)
             {	
                 for (x = 2; x < 24; x++ ){
                     if(temporal[x] == 0x3F)
@@ -6637,7 +6637,7 @@ void PollingDisplay4(void){
             {
                 bufferDisplay4.idSerial[x] = 0x00;
             }
-            if(code_pirata('B','5') == 1)
+            if(code_pirata('A','5') == 1)
             {	
                 for (x = 2; x < 24; x++ ){
                     if(temporal[x] == 0x3F)
