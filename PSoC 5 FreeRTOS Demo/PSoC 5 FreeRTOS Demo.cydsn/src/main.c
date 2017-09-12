@@ -86,7 +86,7 @@ void loadConfiguration(){
     LeerEeprom(0,2);
 	for(x=0;x<=buffer_i2c[0];x++){
 		logoPrint[x]=buffer_i2c[x];
-	}
+	}    
     LeerEeprom(2,2);
 	for(x=0;x<=buffer_i2c[0];x++){
 		PrinterType[x]=buffer_i2c[x];
