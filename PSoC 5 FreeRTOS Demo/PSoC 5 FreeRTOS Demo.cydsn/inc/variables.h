@@ -404,7 +404,8 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_CONFIGURACIONES                 = 0x90, //antes 0x5A
     DISPLAY_KM_EFECTIVO                     = 0x91,
     DISPLAY_LECTORES_BANDA                  = 0x92,//Lectores banda
-    DISPLAY_IDEN_FIDELIZACION               = 0x93,//Lectores banda
+    DISPLAY_IDEN_FIDELIZACION               = 0x93,//Fidelizacion
+    DISPLAY_CONF_USUARIO                    = 0x94,
     DISPLAY_COPIA_RECIBO                    = 0x31,
     DISPLAY_IMPRIMIENDO_RECIBO              = 0x35,
 

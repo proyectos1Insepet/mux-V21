@@ -2390,7 +2390,7 @@ void PollingDisplay1(void){
             //Touch for return to init display
             vTaskDelay( 2000 / portTICK_PERIOD_MS );   
             flowDisplay1 = 36;
-            SetPicture(1, DISPLAY_RECIBO_SALDO);
+            SetPicture(1, DISPLAY_CONF_USUARIO);
             if(Display1_GetRxBufferSize() == 8)
             {
                 if((Display1_rxBuffer[0] == 0xAA) && (Display1_rxBuffer[6] == 0xC3) && (Display1_rxBuffer[7] == 0x3C))
@@ -2502,16 +2502,14 @@ void PollingDisplay1(void){
                 {
                     switch(Display1_rxBuffer[3])
                     {                                                                                                 
-                        case 0x0A:
-                            printBalance(printPortA,side.a.dir);
-                            vTaskDelay( 200 / portTICK_PERIOD_MS );
+                        case 0x0A:                            
                             bufferDisplay1.flagPrint =  0;
                             flowPos      = 0;
                             flowDisplay1 = 0;                            
                             PresetFlag   = 0;
                             iButtonFlag  = 0;
                             ShiftState   = 0; 
-                            SetPicture(1, DISPLAY_INICIO0);
+                            SetPicture(1, DISPLAY_ESPERANDO_AUTORIZACION);
                         break;
                         case 0x0B:  //Cancel Button                                                        
                             SetPicture(1, DISPLAY_INICIO0);
