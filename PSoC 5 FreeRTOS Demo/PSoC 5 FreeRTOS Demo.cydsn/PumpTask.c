@@ -405,7 +405,8 @@ void PollingDisplay1(void){
                         break;
                         
                         case 0x0F:
-                            
+                            flowDisplay1 = 33;                            
+                            SetPicture(1, DISPLAY_IDEN_FIDELIZACION);
                         break;
                             
                         case 0x45:  //Pantalla otras opciones 
@@ -653,13 +654,19 @@ void PollingDisplay1(void){
                                     numberKeys1 = 0; 
                                     flowDisplay1 = 9;
                                     side.a.hose = 1;                         
-                                    //Credit
+                                    //Cash
                                     if(AuthType == 2)
                                     {
-                                        bufferDisplay1.flagKeyboard = 1; 
-                                        SetPicture(1, DISPLAY_DIGITE_PLACA);
+                                        if(KmCash[1] == 0x01)
+                                        {
+                                            bufferDisplay1.flagKeyboard = 2; 
+                                            SetPicture(1, DISPLAY_INTRODUZCA_KILOMETRAJE);
+                                        }else{
+                                            bufferDisplay1.flagKeyboard = 1; 
+                                            SetPicture(1, DISPLAY_DIGITE_PLACA);
+                                        }                                        
                                     }                            
-                                    //Cash
+                                    //Credit
                                     if(AuthType == 1)
                                     {                    
                                         bufferDisplay1.flagKeyboard = 2;
@@ -674,13 +681,19 @@ void PollingDisplay1(void){
                                     numberKeys1=0; 
                                     flowDisplay1 = 9;
                                     side.a.hose = 2;
-                                    //Credit
+                                    //Cash
                                     if(AuthType == 2)
                                     {
-                                        bufferDisplay1.flagKeyboard = 1; 
-                                        SetPicture(1, DISPLAY_DIGITE_PLACA);
+                                        if(KmCash[1] == 0x01)
+                                        {
+                                            bufferDisplay1.flagKeyboard = 2; 
+                                            SetPicture(1, DISPLAY_INTRODUZCA_KILOMETRAJE);
+                                        }else{
+                                            bufferDisplay1.flagKeyboard = 1; 
+                                            SetPicture(1, DISPLAY_DIGITE_PLACA);
+                                        }                                        
                                     }                            
-                                    //Cash
+                                    //Credit
                                     if(AuthType == 1)
                                     {                    
                                         bufferDisplay1.flagKeyboard = 2;
@@ -699,8 +712,14 @@ void PollingDisplay1(void){
                                    //Credit
                                     if(AuthType == 2)
                                     {
-                                        bufferDisplay1.flagKeyboard = 1; 
-                                        SetPicture(1, DISPLAY_DIGITE_PLACA);
+                                        if(KmCash[1] == 0x01)
+                                        {
+                                            bufferDisplay1.flagKeyboard = 2; 
+                                            SetPicture(1, DISPLAY_INTRODUZCA_KILOMETRAJE);
+                                        }else{
+                                            bufferDisplay1.flagKeyboard = 1; 
+                                            SetPicture(1, DISPLAY_DIGITE_PLACA);
+                                        }                                        
                                     }                            
                                     //Cash
                                     if(AuthType == 1)
@@ -721,8 +740,14 @@ void PollingDisplay1(void){
                                     //Credit
                                     if(AuthType == 2)
                                     {
-                                        bufferDisplay1.flagKeyboard = 1; 
-                                        SetPicture(1, DISPLAY_DIGITE_PLACA);
+                                        if(KmCash[1] == 0x01)
+                                        {
+                                            bufferDisplay1.flagKeyboard = 2; 
+                                            SetPicture(1, DISPLAY_INTRODUZCA_KILOMETRAJE);
+                                        }else{
+                                            bufferDisplay1.flagKeyboard = 1; 
+                                            SetPicture(1, DISPLAY_DIGITE_PLACA);
+                                        }                                        
                                     }                            
                                     //Cash
                                     if(AuthType == 1)
@@ -916,11 +941,16 @@ void PollingDisplay1(void){
                                 flowDisplay1 = 7;                               
                                 SetPicture(1, DISPLAY_SUBA_MANIJA);
                             }
-                            else
-                            {                                
-                                flowDisplay1 = 6;       
-                                SetPicture(1, DISPLAY_DESEA_IMPRIMIR_RECIBO);
-                            }                                               
+                            if(AuthType == 2)
+                            {
+                                if(KmCash[1] == 0x01)
+                                {   
+                                    numberKeys1 = 0; 
+                                    flowDisplay1 = 9;
+                                    bufferDisplay1.flagKeyboard = 1; 
+                                    SetPicture(1, DISPLAY_DIGITE_PLACA);
+                                }                                         
+                            }                                                
                             Display1_ClearRxBuffer();                           
                         break;
                         
@@ -1214,7 +1244,7 @@ void PollingDisplay1(void){
             {
                 bufferDisplay1.idSerial[x] = 0x00;
             }
-            if(code_pirata('A','5') == 1)
+            if(code_pirata(magneticReader[1],'5') == 1)
             {	
                 for (x = 2; x < 24; x++ ){
                     if(temporal[x] == 0x3F)
@@ -1772,6 +1802,10 @@ void PollingDisplay1(void){
                             bufferDisplay1.flagKeyboard = 1;
                             SetPicture(1,DISPLAY_INTRODUZCA_VALOR);                            
                         break;
+                        case 0x83:  //KM efectivo 
+                            flowDisplay1 = 30;
+                            SetPicture(1,DISPLAY_KM_EFECTIVO);                            
+                        break;
                         case 0x65:  //Test Impresoras 
                             flowDisplay1 = 16; 
                             PrintTest();
@@ -1789,6 +1823,10 @@ void PollingDisplay1(void){
                             pumpGap[0]  = 2;
                             bufferDisplay1.flagKeyboard = 2;
                             SetPicture(1,DISPLAY_INTRODUZCA_VALOR);                            
+                        break;
+                        case 0x5B:  //Lectores banda 
+                            flowDisplay1 = 31;
+                            SetPicture(1,DISPLAY_LECTORES_BANDA);                            
                         break;
                         case 0x58:  //Hora y Fecha
                             flowDisplay1 = 18;
@@ -2079,11 +2117,427 @@ void PollingDisplay1(void){
             }            
         break;
         
-        //////////////////CASOS PARA FIDELIZACIÓN TERPEL ///////
-        case 30:
-            
+        //////////////////CASOS ADICIONALES CONFIGURACIÓN ///////
+        case 30://KM efectivo
+            if(Display1_GetRxBufferSize() == 8)
+            {
+                if((Display1_rxBuffer[0] == 0xAA) && (Display1_rxBuffer[6] == 0xC3) && (Display1_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display1_rxBuffer[3])
+                    {  
+                        case 0x0A:  //Init Screen                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay1 = 0;
+                            bufferDisplay1.flagPrint =  0;
+                            PresetFlag = 0;
+                            iButtonFlag = 0;
+                            ShiftState = 0;
+                            KmCash[0] = 0x01;
+                            KmCash[1] = 0x01;
+                            WriteEeprom(500,KmCash);
+                        break;
+                        
+                        case 0x0B:  //Cancel Button                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay1 = 0;
+                            bufferDisplay1.flagPrint =  0;
+                            PresetFlag = 0;
+                            iButtonFlag = 0;
+                            ShiftState = 0;
+                            KmCash[0] = 0x01;
+                            KmCash[1] = 0x00;
+                            WriteEeprom(500,KmCash);
+                        break;
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay1 = 0;
+                            bufferDisplay1.flagPrint =  0;
+                            PresetFlag = 0;
+                            iButtonFlag = 0;
+                            ShiftState = 0;
+                        break;
+                        
+                        case 0x94:  //Cancel Button                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay1 = 0;
+                            bufferDisplay1.flagPrint =  0;
+                            PresetFlag = 0;
+                            iButtonFlag = 0;
+                            ShiftState = 0;
+                        break;
+                    }                    
+                }                
+                vTaskDelay( 10 / portTICK_PERIOD_MS );              //Freertos delay
+            }
+            Display1_ClearRxBuffer();            
         break;
-
+            
+        case 31://Lectores
+            if(Display1_GetRxBufferSize() == 8)
+            {
+                if((Display1_rxBuffer[0] == 0xAA) && (Display1_rxBuffer[6] == 0xC3) && (Display1_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display1_rxBuffer[3])
+                    {  
+                        case 0x0A:  //Init Screen                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay1 = 0;
+                            bufferDisplay1.flagPrint =  0;
+                            PresetFlag = 0;
+                            iButtonFlag = 0;
+                            ShiftState = 0;
+                            magneticReader[0] = 0x02;
+                            magneticReader[1] = 'A';
+                            magneticReader[2] = 'A';
+                            WriteEeprom(503,magneticReader);
+                        break;
+                        
+                        case 0x0B:  //Cancel Button                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay1 = 0;
+                            bufferDisplay1.flagPrint =  0;
+                            PresetFlag = 0;
+                            iButtonFlag = 0;
+                            ShiftState = 0;
+                            magneticReader[0] = 0x02;
+                            magneticReader[1] = 'A';
+                            magneticReader[2] = 'B';
+                            WriteEeprom(503,magneticReader);
+                        break;
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay1 = 0;
+                            bufferDisplay1.flagPrint =  0;
+                            PresetFlag = 0;
+                            iButtonFlag = 0;
+                            ShiftState = 0;
+                        break;
+                        
+                        case 0x94:  //Cancel Button                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay1 = 0;
+                            bufferDisplay1.flagPrint =  0;
+                            PresetFlag = 0;
+                            iButtonFlag = 0;
+                            ShiftState = 0;
+                        break;
+                    }                    
+                }                
+                vTaskDelay( 10 / portTICK_PERIOD_MS );              //Freertos delay
+            }
+            Display1_ClearRxBuffer();            
+        break;
+        
+        ///////////////// CASOS FIDELIZACIÓN TERPEL /////////////        
+        case 32: //Teclado general      
+            switch (alphanumeric_keyboard(keysTerpel,0))
+            {
+                case 0: //Cancelar
+                    switch(bufferDisplay1.flagKeyboard)
+                    {                        
+                        case 1://Cedula
+                            
+                            for(x = 0; x < keysTerpel; x++)
+                            {
+                                bufferDisplay1.idTerpelFideliza[x] = 0;
+                            }                            
+                            flowDisplay1 = 0;
+                            ShiftState = 0;
+                            SetPicture(1,DISPLAY_INICIO0);
+                        break;                        
+                    }                    
+                    Display1_ClearRxBuffer();
+                break;
+                    
+                case 1: //Enter
+                    switch(bufferDisplay1.flagKeyboard)
+                    {   
+                        
+                        case 1://Pass turno
+                            
+                            for(x = 0; x < keysTerpel; x++)
+                            {
+                                bufferDisplay1.idTerpelFideliza[x] = bufferDisplay1.valueKeys[x];
+                            }                            
+                            flowDisplay1 = 35;                                                        
+                            SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
+                        break;
+                        
+                    }                    
+                    Display1_ClearRxBuffer();
+                break;
+            }            
+        break;
+            
+        case 33:
+            if(Display1_GetRxBufferSize() == 8)
+            {
+                if((Display1_rxBuffer[0] == 0xAA) && (Display1_rxBuffer[6] == 0xC3) && (Display1_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display1_rxBuffer[3])
+                    {  
+                        case 0x1A:  //Cedula
+                            flowDisplay1 = 32;
+                            numberKeys1 = 0;
+                            keysTerpel = 12;                            
+                            bufferDisplay1.flagKeyboard = 1;
+                            SetPicture(1, DISPLAY_INTRODUZCA_CEDULA);
+                        break;
+                        
+                        case 0x1B:  //extranjería                                                        
+                            flowDisplay1 = 32;
+                            numberKeys1 = 0;
+                            keysTerpel = 12;                            
+                            bufferDisplay1.flagKeyboard = 1;
+                            SetPicture(1, DISPLAY_INTRODUZCA_CEDULA);
+                        break;
+                        case 0x1c: //PASAPORTE
+                            flowDisplay1 = 32;
+                            numberKeys1 = 0;
+                            keysTerpel = 12;                            
+                            bufferDisplay1.flagKeyboard = 1;
+                            SetPicture(1, DISPLAY_PASAPORTE);
+                            
+                        break;
+                        case 0x1d: //Lifemiles
+                            flowDisplay1 = 34;                                                       
+                            bufferDisplay1.flagPrint =  1;
+                            SetPicture(1, DISPLAY_ESPERANDO_ID_TERPEL); 
+                            
+                        break;
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay1 = 0;
+                            bufferDisplay1.flagPrint =  0;
+                            PresetFlag = 0;
+                            iButtonFlag = 0;
+                            ShiftState = 0;
+                        break;
+                        
+                        case 0x94:  //Cancel Button                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay1 = 0;
+                            bufferDisplay1.flagPrint =  0;
+                            PresetFlag = 0;
+                            iButtonFlag = 0;
+                            ShiftState = 0;
+                        break;
+                    }                    
+                }                
+                vTaskDelay( 10 / portTICK_PERIOD_MS );              //Freertos delay
+            }
+            Display1_ClearRxBuffer();            
+        break;
+        
+        case 34:
+            for(x = 0; x < 30; x++)
+            {
+                temporal[x] = 0x00;
+            }
+            for(x = 0; x < 25; x++)
+            {
+                bufferDisplay1.idSerial[x] = 0x00;
+            }
+            if(code_pirata(magneticReader[1],'5') == 1)
+            {	
+                for (x = 2; x < 24; x++ ){
+                    if(temporal[x] == 0x3F)
+                        break;
+				    bufferDisplay1.idSerial[x-1] = temporal[x];                    
+                }
+                bufferDisplay1.idSerial[0] = x-2;
+                // Authorization request
+                SetPicture(1,DISPLAY_ID_RECONOCIDO);                                                                 
+                vTaskDelay( 500 / portTICK_PERIOD_MS );                       
+                iButtonFlag = 1;
+                flowDisplay1 = 35;                                                        
+                SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);                              
+                Display1_ClearRxBuffer();                                                                        									                                       
+			}                     
+            //Touch for return to init display
+            if(Display1_GetRxBufferSize() == 8)
+            {
+                if((Display1_rxBuffer[0] == 0xAA) && (Display1_rxBuffer[6] == 0xC3) && (Display1_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display1_rxBuffer[3])
+                    {                        
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay1 = 0;
+                            bufferDisplay1.flagPrint =  0;
+                            PresetFlag = 0;
+                            iButtonFlag = 0;
+                            AuthType = 0;
+                            Display1_ClearRxBuffer();
+                        break;
+                        
+                        case 0x94:  //Cancel Button                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay1 = 0;
+                            bufferDisplay1.flagPrint =  0;
+                            PresetFlag = 0;
+                            iButtonFlag = 0;
+                            AuthType = 0;
+                            Display1_ClearRxBuffer();
+                        break;
+                    }                    
+                }                
+                Display1_ClearRxBuffer();
+            }
+        break;
+        case 35:
+            //side.a.rfState = RF_ASK_BALANCE;
+            //Touch for return to init display
+            vTaskDelay( 2000 / portTICK_PERIOD_MS );   
+            flowDisplay1 = 36;
+            SetPicture(1, DISPLAY_RECIBO_SALDO);
+            if(Display1_GetRxBufferSize() == 8)
+            {
+                if((Display1_rxBuffer[0] == 0xAA) && (Display1_rxBuffer[6] == 0xC3) && (Display1_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display1_rxBuffer[3])
+                    {                        
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            bufferDisplay1.flagPrint =  0;
+                            flowPos      = 0;
+                            flowDisplay1 = 0;                            
+                            PresetFlag   = 0;
+                            iButtonFlag  = 0;
+                        break;
+                        
+                        case 0x94:  //Cancel Button                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            bufferDisplay1.flagPrint =  0;
+                            flowPos      = 0;
+                            flowDisplay1 = 0;                            
+                            PresetFlag   = 0;
+                            iButtonFlag  = 0;
+                            ShiftState   = 0;
+                        break;
+                    }                    
+                }                
+                vTaskDelay( 10 / portTICK_PERIOD_MS );              //Freertos delay
+            }
+            Display1_ClearRxBuffer(); 
+        break;
+        
+        case 36:            
+            if(cardmessagedisplay == 1){
+            for(x = 1; x < 31; x++)
+            {
+                WriteMessage(1, Encabezado1[x],4,x-1,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 4; x < 31; x++)
+            {
+                WriteMessage(1, Encabezado2[x],6,x-4,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 8; x++) //nombre
+            {
+                WriteMessage(1, nombre[x],8,x,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 20; x++)
+            {
+                WriteMessage(1, Company[x],8,x+8,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 8; x++) //placa
+            {
+                WriteMessage(1, placa[x],10,x,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 8; x++)
+            {
+                WriteMessage(1, LicensePlate[x],10,x+8,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 8; x++)//tarjeta
+            {
+                WriteMessage(1,tarjeta[x],12,x,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 5; x++)
+            {
+                WriteMessage(1,'*',12,x+8,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 3; x++)
+            {
+                WriteMessage(1,cardNumberA[x],12,x+13,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 8; x++)//saldo
+            {
+                WriteMessage(1,saldo_d[x],14,x,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 18; x++)
+            {
+                WriteMessage(1,BalanceA[x],14,x+8,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 8; x++)//saldo aprobado
+            {
+                WriteMessage(1,saldo_a[x],16,x,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            for(x = 0; x < 18; x++)
+            {
+                WriteMessage(1,BalanceB[x],16,x+8,1,0x0000,'Y');//WriteMessage(2, producto1[x],11,7+x,2,0x0000,'Y');
+            }
+            }
+            if(cardmessagedisplay == 2)
+            {
+                for(x = 0; x < 25; x++)
+                {
+                    WriteMessage(1,cardmessage[x],6,x,1,0x0000,'Y');
+                }
+                for(x = 0; x < 25; x++)
+                {
+                    WriteMessage(1,cardmessage1[x],8,x,1,0x0000,'Y');
+                }
+                for(x = 0; x < 25; x++)
+                {
+                    WriteMessage(1,cardmessage2[x],10,x,1,0x0000,'Y');
+                }
+                for(x = 0; x < 25; x++)
+                {
+                    WriteMessage(1,cardmessage3[x],12,x,1,0x0000,'Y');
+                }
+            }
+            if(Display1_GetRxBufferSize() == 8)
+            {
+                if((Display1_rxBuffer[0] == 0xAA) && (Display1_rxBuffer[6] == 0xC3) && (Display1_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display1_rxBuffer[3])
+                    {                                                                                                 
+                        case 0x0A:
+                            printBalance(printPortA,side.a.dir);
+                            vTaskDelay( 200 / portTICK_PERIOD_MS );
+                            bufferDisplay1.flagPrint =  0;
+                            flowPos      = 0;
+                            flowDisplay1 = 0;                            
+                            PresetFlag   = 0;
+                            iButtonFlag  = 0;
+                            ShiftState   = 0; 
+                            SetPicture(1, DISPLAY_INICIO0);
+                        break;
+                        case 0x0B:  //Cancel Button                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            bufferDisplay1.flagPrint =  0;
+                            flowPos      = 0;
+                            flowDisplay1 = 0;                            
+                            PresetFlag   = 0;
+                            iButtonFlag  = 0;
+                            ShiftState   = 0;
+                        break;
+                            
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            bufferDisplay1.flagPrint =  0;
+                            flowPos      = 0;
+                            flowDisplay1 = 0;                            
+                            PresetFlag   = 0;
+                            iButtonFlag  = 0;
+                        break;
+                    }                    
+                }                
+                vTaskDelay( 10 / portTICK_PERIOD_MS );              //Freertos delay
+            }
+            Display1_ClearRxBuffer();                     
+        break;
+           
     }    
 }
 
@@ -2470,10 +2924,16 @@ void PollingDisplay2(void){
                                 side.b.hose = 1;                            
                                 //Credit
                                 if(AuthType2 == 2)
-                                {
-                                    bufferDisplay2.flagKeyboard = 1; 
-                                    SetPicture(2, DISPLAY_DIGITE_PLACA);
-                                }                            
+                                    {
+                                        if(KmCash[1] == 0x01)
+                                        {
+                                            bufferDisplay2.flagKeyboard = 2; 
+                                            SetPicture(2, DISPLAY_INTRODUZCA_KILOMETRAJE);
+                                        }else{
+                                            bufferDisplay2.flagKeyboard = 1; 
+                                            SetPicture(2, DISPLAY_DIGITE_PLACA);
+                                        }                                        
+                                    }                            
                                 //Cash
                                 if(AuthType2 == 1)
                                 {                    
@@ -2492,10 +2952,15 @@ void PollingDisplay2(void){
                                 //Credit
                                 if(AuthType2 == 2)
                                 {
-                                    bufferDisplay2.flagKeyboard = 1; 
-                                    SetPicture(2, DISPLAY_DIGITE_PLACA);
-                                }
-                                
+                                    if(KmCash[1] == 0x01)
+                                    {
+                                        bufferDisplay2.flagKeyboard = 2; 
+                                        SetPicture(2, DISPLAY_INTRODUZCA_KILOMETRAJE);
+                                    }else{
+                                        bufferDisplay2.flagKeyboard = 1; 
+                                        SetPicture(2, DISPLAY_DIGITE_PLACA);
+                                    }                                        
+                                }                                
                                 //Cash
                                 if(AuthType2 == 1)
                                 {                    
@@ -2514,10 +2979,16 @@ void PollingDisplay2(void){
                                 side.b.hose = 3;                            
                                 //Credit
                                 if(AuthType2 == 2)
-                                {
-                                    bufferDisplay2.flagKeyboard = 1; 
-                                    SetPicture(2, DISPLAY_DIGITE_PLACA);
-                                }
+                                    {
+                                        if(KmCash[1] == 0x01)
+                                        {
+                                            bufferDisplay2.flagKeyboard = 2; 
+                                            SetPicture(2, DISPLAY_INTRODUZCA_KILOMETRAJE);
+                                        }else{
+                                            bufferDisplay2.flagKeyboard = 1; 
+                                            SetPicture(2, DISPLAY_DIGITE_PLACA);
+                                        }                                        
+                                    }
                                 
                                 //Cash
                                 if(AuthType2 == 1)
@@ -2538,8 +3009,14 @@ void PollingDisplay2(void){
                                 //Credit
                                 if(AuthType2 == 2)
                                 {
-                                    bufferDisplay2.flagKeyboard = 1; 
-                                    SetPicture(2, DISPLAY_DIGITE_PLACA);
+                                    if(KmCash[1] == 0x01)
+                                    {
+                                        bufferDisplay2.flagKeyboard = 2; 
+                                        SetPicture(2, DISPLAY_INTRODUZCA_KILOMETRAJE);
+                                    }else{
+                                        bufferDisplay2.flagKeyboard = 1; 
+                                        SetPicture(2, DISPLAY_DIGITE_PLACA);
+                                    }                                        
                                 }                            
                                 //Cash
                                 if(AuthType2 == 1)
@@ -2736,11 +3213,16 @@ void PollingDisplay2(void){
                                 flowDisplay2 = 7;                                
                                 SetPicture(2,DISPLAY_SUBA_MANIJA);
                             }
-                            else
+                            if(AuthType2 == 2)
                             {
-                                flowDisplay2 = 6;      
-                                SetPicture(2,DISPLAY_DESEA_IMPRIMIR_RECIBO);
-                            }
+                                if(KmCash[1] == 0x01)
+                                {   
+                                    numberKeys2 = 0; 
+                                    flowDisplay2 = 9;
+                                    bufferDisplay2.flagKeyboard = 1; 
+                                    SetPicture(2, DISPLAY_DIGITE_PLACA);
+                                }                                         
+                            } 
                             Display2_ClearRxBuffer();
                         break;
                         
@@ -3029,7 +3511,7 @@ void PollingDisplay2(void){
             {
                 bufferDisplay2.idSerial[x] = 0x00;
             }
-            if(code_pirata('A','5') == 1)
+            if(code_pirata(magneticReader[2],'5') == 1)
             {	
                 for (x = 2; x < 24; x++ ){
                     if(temporal[x] == 0x3F)
@@ -3616,7 +4098,11 @@ void PollingDisplay2(void){
                             flowDisplay2 = 16; 
                             PrintTest();
                             SetPicture(2,DISPLAY_AMBAS_IMPRESORAS_FUNCIONANDO);                           
-                        break;                        
+                        break;  
+                        case 0x83:  //KM efectivo 
+                            flowDisplay2 = 30;
+                            SetPicture(2,DISPLAY_KM_EFECTIVO);                            
+                        break;
                         case 0x5A:  //Umbral 
                             flowDisplay2 = 14;
                             numberKeys2 = 0;
@@ -3629,6 +4115,10 @@ void PollingDisplay2(void){
                             pumpGap[0]  = 2;
                             bufferDisplay2.flagKeyboard = 2;
                             SetPicture(2,DISPLAY_INTRODUZCA_VALOR);                            
+                        break;
+                        case 0x5B:  //Lectores banda 
+                            flowDisplay2 = 31;
+                            SetPicture(2,DISPLAY_LECTORES_BANDA);                            
                         break;
                         case 0x58:  //Hora y Fecha
                             flowDisplay2 = 18;
@@ -3885,7 +4375,116 @@ void PollingDisplay2(void){
 
             }      
         break;
-         
+        case 30://KM efectivo
+            if(Display2_GetRxBufferSize() == 8)
+            {
+                if((Display2_rxBuffer[0] == 0xAA) && (Display2_rxBuffer[6] == 0xC3) && (Display2_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display2_rxBuffer[3])
+                    {  
+                        case 0x0A:  //Init Screen                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            flowDisplay2 = 0;
+                            bufferDisplay2.flagPrint =  0;
+                            PresetFlag2 = 0;
+                            iButtonFlag2 = 0;
+                            ShiftStateB = 0;
+                            KmCash[0] = 0x01;
+                            KmCash[1] = 0x01;
+                            WriteEeprom(500,KmCash);
+                        break;
+                        
+                        case 0x0B:  //Cancel Button                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            flowDisplay2 = 0;
+                            bufferDisplay2.flagPrint =  0;
+                            PresetFlag2 = 0;
+                            iButtonFlag2 = 0;
+                            ShiftStateB = 0;
+                            KmCash[0] = 0x01;
+                            KmCash[1] = 0x00;
+                            WriteEeprom(500,KmCash);
+                        break;
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            flowDisplay2 = 0;
+                            bufferDisplay2.flagPrint =  0;
+                            PresetFlag2 = 0;
+                            iButtonFlag2 = 0;
+                            ShiftStateB = 0;
+                        break;
+                        
+                        case 0x94:  //Cancel Button                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            flowDisplay2 = 0;
+                            bufferDisplay2.flagPrint =  0;
+                            PresetFlag2 = 0;
+                            iButtonFlag2 = 0;
+                            ShiftStateB = 0;
+                        break;
+                    }                    
+                }                
+                vTaskDelay( 10 / portTICK_PERIOD_MS );              //Freertos delay
+            }
+            Display2_ClearRxBuffer();            
+        break;
+            
+        case 31://Banda
+            if(Display2_GetRxBufferSize() == 8)
+            {
+                if((Display2_rxBuffer[0] == 0xAA) && (Display2_rxBuffer[6] == 0xC3) && (Display2_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display2_rxBuffer[3])
+                    {  
+                        case 0x0A:  //Init Screen                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            flowDisplay2 = 0;
+                            bufferDisplay2.flagPrint =  0;
+                            PresetFlag2 = 0;
+                            iButtonFlag2 = 0;
+                            ShiftStateB = 0;
+                            magneticReader[0] = 0x02;
+                            magneticReader[1] = 'A';
+                            magneticReader[2] = 'A';
+                            WriteEeprom(503,magneticReader);
+                        break;
+                        
+                        case 0x0B:  //Cancel Button                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            flowDisplay2 = 0;
+                            bufferDisplay2.flagPrint =  0;
+                            PresetFlag2 = 0;
+                            iButtonFlag2 = 0;
+                            ShiftStateB = 0;
+                            magneticReader[0] = 0x02;
+                            magneticReader[1] = 'A';
+                            magneticReader[2] = 'B';
+                            WriteEeprom(503,magneticReader);
+                        break;
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            flowDisplay2 = 0;
+                            bufferDisplay2.flagPrint =  0;
+                            PresetFlag2 = 0;
+                            iButtonFlag2 = 0;
+                            ShiftStateB = 0;
+                        break;
+                        
+                        case 0x94:  //Cancel Button                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            flowDisplay2 = 0;
+                            bufferDisplay2.flagPrint =  0;
+                            PresetFlag2 = 0;
+                            iButtonFlag2 = 0;
+                            ShiftStateB = 0;
+                        break;
+                    }                    
+                }                
+                vTaskDelay( 10 / portTICK_PERIOD_MS );              //Freertos delay
+            }
+            Display2_ClearRxBuffer();            
+        break;
+                
     }    
 }
 
@@ -4259,10 +4858,15 @@ void PollingDisplay3(void){
                                 //Credit
                                 if(AuthType3 == 2)
                                 {
-                                    bufferDisplay3.flagKeyboard = 1; 
-                                    SetPicture(1, DISPLAY_DIGITE_PLACA);
-                                }
-                                
+                                    if(KmCash[1] == 0x01)
+                                    {
+                                        bufferDisplay3.flagKeyboard = 2; 
+                                        SetPicture(1, DISPLAY_INTRODUZCA_KILOMETRAJE);
+                                    }else{
+                                        bufferDisplay3.flagKeyboard = 1; 
+                                        SetPicture(1, DISPLAY_DIGITE_PLACA);
+                                    }                                        
+                                }                                
                                 //Cash
                                 if(AuthType3 == 1)
                                 {                    
@@ -4282,9 +4886,15 @@ void PollingDisplay3(void){
                                 //Credit
                                 if(AuthType3 == 2)
                                 {
-                                    bufferDisplay3.flagKeyboard = 1; 
-                                    SetPicture(1, DISPLAY_DIGITE_PLACA);
-                                }                            
+                                    if(KmCash[1] == 0x01)
+                                    {
+                                        bufferDisplay3.flagKeyboard = 2; 
+                                        SetPicture(1, DISPLAY_INTRODUZCA_KILOMETRAJE);
+                                    }else{
+                                        bufferDisplay3.flagKeyboard = 1; 
+                                        SetPicture(1, DISPLAY_DIGITE_PLACA);
+                                    }                                        
+                                }                           
                                 //Cash
                                 if(AuthType3 == 1)
                                 {                    
@@ -4304,8 +4914,14 @@ void PollingDisplay3(void){
                                //Credit
                                 if(AuthType3 == 2)
                                 {
-                                    bufferDisplay3.flagKeyboard = 1; 
-                                    SetPicture(1, DISPLAY_DIGITE_PLACA);
+                                    if(KmCash[1] == 0x01)
+                                    {
+                                        bufferDisplay3.flagKeyboard = 2; 
+                                        SetPicture(1, DISPLAY_INTRODUZCA_KILOMETRAJE);
+                                    }else{
+                                        bufferDisplay3.flagKeyboard = 1; 
+                                        SetPicture(1, DISPLAY_DIGITE_PLACA);
+                                    }                                        
                                 }                            
                                 //Cash
                                 if(AuthType3 == 1)
@@ -4326,8 +4942,14 @@ void PollingDisplay3(void){
                                 //Credit
                                 if(AuthType3 == 2)
                                 {
-                                    bufferDisplay3.flagKeyboard = 1; 
-                                    SetPicture(1, DISPLAY_DIGITE_PLACA);
+                                    if(KmCash[1] == 0x01)
+                                    {
+                                        bufferDisplay3.flagKeyboard = 2; 
+                                        SetPicture(1, DISPLAY_INTRODUZCA_KILOMETRAJE);
+                                    }else{
+                                        bufferDisplay3.flagKeyboard = 1; 
+                                        SetPicture(1, DISPLAY_DIGITE_PLACA);
+                                    }                                        
                                 }                            
                                 //Cash
                                 if(AuthType3 == 1)
@@ -4536,11 +5158,16 @@ void PollingDisplay3(void){
                                 flowDisplay3 = 7;                               
                                 SetPicture(1, DISPLAY_SUBA_MANIJA);
                             }
-                            else
-                            {                                
-                                flowDisplay3 = 6;       
-                                SetPicture(1, DISPLAY_DESEA_IMPRIMIR_RECIBO);
-                            }                                               
+                            if(AuthType3 == 2)
+                            {
+                                if(KmCash[1] == 0x01)
+                                {   
+                                    numberKeys3 = 0; 
+                                    flowDisplay3 = 9;
+                                    bufferDisplay3.flagKeyboard = 1; 
+                                    SetPicture(1, DISPLAY_DIGITE_PLACA);
+                                }                                         
+                            }                                                
                             Display1_ClearRxBuffer();                           
                         break;
                         
@@ -4831,7 +5458,7 @@ void PollingDisplay3(void){
             {
                 bufferDisplay3.idSerial[x] = 0x00;
             }
-            if(code_pirata('A','5') == 1)
+            if(code_pirata(magneticReader[1],'5') == 1)
             {	
                 for (x = 2; x < 24; x++ ){
                     if(temporal[x] == 0x3F)
@@ -5391,6 +6018,10 @@ void PollingDisplay3(void){
                             bufferDisplay3.flagKeyboard = 1;
                             SetPicture(1,DISPLAY_INTRODUZCA_VALOR);                            
                         break;
+                        case 0x83:  //KM efectivo 
+                            flowDisplay3 = 30;
+                            SetPicture(1,DISPLAY_KM_EFECTIVO);                            
+                        break;
                         case 0x65:  //Test Impresoras 
                             flowDisplay3 = 16; 
                             PrintTest();
@@ -5408,6 +6039,10 @@ void PollingDisplay3(void){
                             pumpGap[0]  = 2;
                             bufferDisplay3.flagKeyboard = 2;
                             SetPicture(1,DISPLAY_INTRODUZCA_VALOR);                            
+                        break;
+                        case 0x5B:  //Lectores banda 
+                            flowDisplay3 = 31;
+                            SetPicture(1,DISPLAY_LECTORES_BANDA);                            
                         break;
                         case 0x58:  //Hora y Fecha
                             flowDisplay3 = 18;
@@ -5694,7 +6329,117 @@ void PollingDisplay3(void){
                 Display1_ClearRxBuffer();
             } 
 
+        break; 
+            
+        //////////////////CASOS PARA FIDELIZACIÓN TERPEL ///////
+        case 30://KM efectivo
+            if(Display1_GetRxBufferSize() == 8)
+            {
+                if((Display1_rxBuffer[0] == 0xAA) && (Display1_rxBuffer[6] == 0xC3) && (Display1_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display1_rxBuffer[3])
+                    {  
+                        case 0x0A:  //Init Screen                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay3 = 0;
+                            bufferDisplay3.flagPrint =  0;
+                            PresetFlag3 = 0;
+                            iButtonFlag3 = 0;
+                            ShiftStateC = 0;
+                            KmCash[0] = 0x01;
+                            KmCash[1] = 0x01;
+                            WriteEeprom(500,KmCash);
+                        break;
+                        
+                        case 0x0B:  //Cancel Button                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay3 = 0;
+                            bufferDisplay3.flagPrint =  0;
+                            PresetFlag3 = 0;
+                            iButtonFlag3 = 0;
+                            ShiftStateC = 0;
+                            KmCash[0] = 0x01;
+                            KmCash[1] = 0x00;
+                            WriteEeprom(500,KmCash);
+                        break;
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay3 = 0;
+                            bufferDisplay3.flagPrint =  0;
+                            PresetFlag3 = 0;
+                            iButtonFlag3 = 0;
+                            ShiftStateC = 0;
+                        break;
+                        
+                        case 0x94:  //Cancel Button                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay3 = 0;
+                            bufferDisplay3.flagPrint =  0;
+                            PresetFlag3 = 0;
+                            iButtonFlag3 = 0;
+                            ShiftStateC = 0;
+                        break;
+                    }                    
+                }                
+                vTaskDelay( 10 / portTICK_PERIOD_MS );              //Freertos delay
+            }
+            Display1_ClearRxBuffer();            
         break;   
+        case 31://KM efectivo
+            if(Display1_GetRxBufferSize() == 8)
+            {
+                if((Display1_rxBuffer[0] == 0xAA) && (Display1_rxBuffer[6] == 0xC3) && (Display1_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display1_rxBuffer[3])
+                    {  
+                        case 0x0A:  //Init Screen                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay3 = 0;
+                            bufferDisplay3.flagPrint =  0;
+                            PresetFlag3 = 0;
+                            iButtonFlag3 = 0;
+                            ShiftStateC = 0;
+                            magneticReader[0] = 0x02;
+                            magneticReader[1] = 'A';
+                            magneticReader[2] = 'A';
+                            WriteEeprom(503,magneticReader);
+                        break;
+                        
+                        case 0x0B:  //Cancel Button                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay3 = 0;
+                            bufferDisplay3.flagPrint =  0;
+                            PresetFlag3 = 0;
+                            iButtonFlag3 = 0;
+                            ShiftStateC = 0;
+                            magneticReader[0] = 0x02;
+                            magneticReader[1] = 'A';
+                            magneticReader[2] = 'B';
+                            WriteEeprom(503,magneticReader);
+                        break;
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay3 = 0;
+                            bufferDisplay3.flagPrint =  0;
+                            PresetFlag3 = 0;
+                            iButtonFlag3 = 0;
+                            ShiftStateC = 0;
+                        break;
+                        
+                        case 0x94:  //Cancel Button                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            flowDisplay3 = 0;
+                            bufferDisplay3.flagPrint =  0;
+                            PresetFlag3 = 0;
+                            iButtonFlag3 = 0;
+                            ShiftStateC = 0;
+                        break;
+                    }                    
+                }                
+                vTaskDelay( 10 / portTICK_PERIOD_MS );              //Freertos delay
+            }
+            Display1_ClearRxBuffer();            
+        break; 
     }    
 }
 /*
@@ -6068,10 +6813,15 @@ void PollingDisplay4(void){
                                 //Credit
                                 if(AuthType4 == 2)
                                 {
-                                    bufferDisplay4.flagKeyboard = 1; 
-                                    SetPicture(2, DISPLAY_DIGITE_PLACA);
+                                    if(KmCash[1] == 0x01)
+                                    {
+                                        bufferDisplay4.flagKeyboard = 2; 
+                                        SetPicture(2, DISPLAY_INTRODUZCA_KILOMETRAJE);
+                                    }else{
+                                        bufferDisplay4.flagKeyboard = 1; 
+                                        SetPicture(2, DISPLAY_DIGITE_PLACA);
+                                    }                                        
                                 }
-                                
                                 //Cash
                                 if(AuthType4 == 1)
                                 {                    
@@ -6090,10 +6840,15 @@ void PollingDisplay4(void){
                                 //Credit
                                 if(AuthType4 == 2)
                                 {
-                                    bufferDisplay4.flagKeyboard = 1; 
-                                    SetPicture(2, DISPLAY_DIGITE_PLACA);
+                                    if(KmCash[1] == 0x01)
+                                    {
+                                        bufferDisplay4.flagKeyboard = 2; 
+                                        SetPicture(2, DISPLAY_INTRODUZCA_KILOMETRAJE);
+                                    }else{
+                                        bufferDisplay4.flagKeyboard = 1; 
+                                        SetPicture(2, DISPLAY_DIGITE_PLACA);
+                                    }                                        
                                 }
-                                
                                 //Cash
                                 if(AuthType4 == 1)
                                 {                    
@@ -6113,10 +6868,15 @@ void PollingDisplay4(void){
                                 //Credit
                                 if(AuthType4 == 2)
                                 {
-                                    bufferDisplay4.flagKeyboard = 1; 
-                                    SetPicture(2, DISPLAY_DIGITE_PLACA);
-                                }
-                                
+                                    if(KmCash[1] == 0x01)
+                                    {
+                                        bufferDisplay4.flagKeyboard = 2; 
+                                        SetPicture(2, DISPLAY_INTRODUZCA_KILOMETRAJE);
+                                    }else{
+                                        bufferDisplay4.flagKeyboard = 1; 
+                                        SetPicture(2, DISPLAY_DIGITE_PLACA);
+                                    }                                        
+                                }                                
                                 //Cash
                                 if(AuthType4 == 1)
                                 {                    
@@ -6136,10 +6896,15 @@ void PollingDisplay4(void){
                                 //Credit
                                 if(AuthType4 == 2)
                                 {
-                                    bufferDisplay4.flagKeyboard = 1; 
-                                    SetPicture(2, DISPLAY_DIGITE_PLACA);
+                                    if(KmCash[1] == 0x01)
+                                    {
+                                        bufferDisplay4.flagKeyboard = 2; 
+                                        SetPicture(2, DISPLAY_INTRODUZCA_KILOMETRAJE);
+                                    }else{
+                                        bufferDisplay4.flagKeyboard = 1; 
+                                        SetPicture(2, DISPLAY_DIGITE_PLACA);
+                                    }                                        
                                 }
-                                
                                 //Cash
                                 if(AuthType4 == 1)
                                 {                    
@@ -6342,11 +7107,16 @@ void PollingDisplay4(void){
                                 flowDisplay4 = 7;                                
                                 SetPicture(2,DISPLAY_SUBA_MANIJA);
                             }
-                            else
+                            if(AuthType4 == 2)
                             {
-                                flowDisplay4 = 6;      
-                                SetPicture(2,DISPLAY_DESEA_IMPRIMIR_RECIBO);
-                            }
+                                if(KmCash[1] == 0x01)
+                                {   
+                                    numberKeys4 = 0; 
+                                    flowDisplay4 = 9;
+                                    bufferDisplay4.flagKeyboard = 1; 
+                                    SetPicture(2, DISPLAY_DIGITE_PLACA);
+                                }                                         
+                            } 
                             Display2_ClearRxBuffer();
                         break;
                         
@@ -6637,7 +7407,7 @@ void PollingDisplay4(void){
             {
                 bufferDisplay4.idSerial[x] = 0x00;
             }
-            if(code_pirata('A','5') == 1)
+            if(code_pirata(magneticReader[2],'5') == 1)
             {	
                 for (x = 2; x < 24; x++ ){
                     if(temporal[x] == 0x3F)
@@ -7209,6 +7979,10 @@ void PollingDisplay4(void){
                             bufferDisplay4.flagKeyboard = 1;
                             SetPicture(2,DISPLAY_INTRODUZCA_VALOR);                            
                         break;
+                        case 0x83:  //KM efectivo 
+                            flowDisplay4 = 30;
+                            SetPicture(2,DISPLAY_KM_EFECTIVO);                            
+                        break;
                         case 0x65:  //Test Impresoras 
                             flowDisplay4 = 16; 
                             PrintTest();
@@ -7226,6 +8000,10 @@ void PollingDisplay4(void){
                             pumpGap[0]  = 2;
                             bufferDisplay4.flagKeyboard = 2;
                             SetPicture(2,DISPLAY_INTRODUZCA_VALOR);                            
+                        break;
+                        case 0x5B:  //Lectores banda 
+                            flowDisplay4 = 31;
+                            SetPicture(2,DISPLAY_LECTORES_BANDA);                            
                         break;
                         case 0x58:  //Hora y Fecha
                             flowDisplay4 = 18;
@@ -7474,10 +8252,118 @@ void PollingDisplay4(void){
                 flowDisplay4 = 0;               
                 Display2_ClearRxBuffer();
             } 
-        }
-         
+        }         
         break;
-         
+        
+        case 30://KM efectivo
+            if(Display2_GetRxBufferSize() == 8)
+            {
+                if((Display2_rxBuffer[0] == 0xAA) && (Display2_rxBuffer[6] == 0xC3) && (Display2_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display2_rxBuffer[3])
+                    {  
+                        case 0x0A:  //Init Screen                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            flowDisplay4 = 0;
+                            bufferDisplay4.flagPrint =  0;
+                            PresetFlag4 = 0;
+                            iButtonFlag4 = 0;
+                            ShiftStateD = 0;
+                            KmCash[0] = 0x01;
+                            KmCash[1] = 0x01;
+                            WriteEeprom(500,KmCash);
+                        break;
+                        
+                        case 0x0B:  //Cancel Button                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            flowDisplay4 = 0;
+                            bufferDisplay4.flagPrint =  0;
+                            PresetFlag4 = 0;
+                            iButtonFlag4 = 0;
+                            ShiftStateC = 0;
+                            KmCash[0] = 0x01;
+                            KmCash[1] = 0x00;
+                            WriteEeprom(500,KmCash);
+                        break;
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            flowDisplay4 = 0;
+                            bufferDisplay4.flagPrint =  0;
+                            PresetFlag4 = 0;
+                            iButtonFlag4 = 0;
+                            ShiftStateD = 0;
+                        break;
+                        
+                        case 0x94:  //Cancel Button                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            flowDisplay4 = 0;
+                            bufferDisplay4.flagPrint =  0;
+                            PresetFlag4 = 0;
+                            iButtonFlag4 = 0;
+                            ShiftStateD = 0;
+                        break;
+                    }                    
+                }                
+                vTaskDelay( 10 / portTICK_PERIOD_MS );              //Freertos delay
+            }
+            Display2_ClearRxBuffer();            
+        break;
+            
+        case 31://KM efectivo
+            if(Display2_GetRxBufferSize() == 8)
+            {
+                if((Display2_rxBuffer[0] == 0xAA) && (Display2_rxBuffer[6] == 0xC3) && (Display2_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display2_rxBuffer[3])
+                    {  
+                        case 0x0A:  //Init Screen                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            flowDisplay4 = 0;
+                            bufferDisplay4.flagPrint =  0;
+                            PresetFlag4 = 0;
+                            iButtonFlag4 = 0;
+                            ShiftStateD = 0;
+                            magneticReader[0] = 0x02;
+                            magneticReader[1] = 'A';
+                            magneticReader[2] = 'A';
+                            WriteEeprom(503,magneticReader);
+                        break;
+                        
+                        case 0x0B:  //Cancel Button                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            flowDisplay4 = 0;
+                            bufferDisplay4.flagPrint =  0;
+                            PresetFlag4 = 0;
+                            iButtonFlag4 = 0;
+                            ShiftStateC = 0;
+                            magneticReader[0] = 0x02;
+                            magneticReader[1] = 'A';
+                            magneticReader[2] = 'B';
+                            WriteEeprom(503,magneticReader);
+                        break;
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            flowDisplay4 = 0;
+                            bufferDisplay4.flagPrint =  0;
+                            PresetFlag4 = 0;
+                            iButtonFlag4 = 0;
+                            ShiftStateD = 0;
+                        break;
+                        
+                        case 0x94:  //Cancel Button                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            flowDisplay4 = 0;
+                            bufferDisplay4.flagPrint =  0;
+                            PresetFlag4 = 0;
+                            iButtonFlag4 = 0;
+                            ShiftStateD = 0;
+                        break;
+                    }                    
+                }                
+                vTaskDelay( 10 / portTICK_PERIOD_MS );              //Freertos delay
+            }
+            Display2_ClearRxBuffer();            
+        break;
     }    
 }
 

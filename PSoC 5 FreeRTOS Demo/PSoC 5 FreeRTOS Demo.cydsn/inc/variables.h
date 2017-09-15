@@ -235,6 +235,9 @@
     uint8 cardmessage2[25];
     uint8 cardmessage3[25];
     uint8 cardmessagedisplay;
+    uint8 KmCash[2];
+    uint8 magneticReader[3];
+    uint8 keysTerpel;
     
     
 /*
@@ -290,6 +293,7 @@ struct buffer{
     uint8 PrintCopy;
     uint8 EndSaleReport;
     uint8 passCard[8];
+    uint8 idTerpelFideliza[20];
 
 };
 
@@ -397,7 +401,10 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_INTRODUZCA_VOLUMEN              = 0x0D,
     DISPLAY_INTRODUZCA_KILOMETRAJE          = 0x0E,
     DISPLAY_OPERACIONES                     = 0x83, //antes 0x22
-    DISPLAY_CONFIGURACIONES                 = 0x5A,
+    DISPLAY_CONFIGURACIONES                 = 0x90, //antes 0x5A
+    DISPLAY_KM_EFECTIVO                     = 0x91,
+    DISPLAY_LECTORES_BANDA                  = 0x92,//Lectores banda
+    DISPLAY_IDEN_FIDELIZACION               = 0x93,//Lectores banda
     DISPLAY_COPIA_RECIBO                    = 0x31,
     DISPLAY_IMPRIMIENDO_RECIBO              = 0x35,
 
@@ -425,6 +432,7 @@ enum _AVAILABLE_DISPLAYS_
     
     DISPLAY_IDENTIFICADOR_ESTACION          = 0x64,
     DISPLAY_PRECIO_POR_UNIDAD               = 0x65,
+    DISPLAY_PASAPORTE                       = 0x6F,
     
     DISPLAY_DUMMY0                          = 0x99,
     DISPLAY_DUMMY1                          = 0x9A,

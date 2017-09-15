@@ -641,6 +641,17 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
     			write_psoc1(val,bufferDisplay1.licenceSale[x]);	
     		}
             write_psoc1(val,10);
+          	if(KmCash[1] == 0x01){
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_MILLEAGE[x]);    //Km opcional en efectivo
+    			}	
+    			for(x = 1; x <= bufferDisplay1.mileageSale[0]; x++)
+                {
+    				write_psoc1(val,bufferDisplay1.mileageSale[x]);	
+    			}
+                write_psoc1(val,10);
+            }
             
             for(x = 0; x < 13; x++)
             {																		
@@ -1008,6 +1019,18 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
     			write_psoc1(val,bufferDisplay2.licenceSale[x]);	
     		}
             write_psoc1(val,10);
+            
+            if(KmCash[1] == 0x01){
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_MILLEAGE[x]);    //Km opcional en efectivo
+    			}	
+    			for(x = 1; x <= bufferDisplay2.mileageSale[0]; x++)
+                {
+    				write_psoc1(val,bufferDisplay2.mileageSale[x]);	
+    			}
+                write_psoc1(val,10);
+            }
             for(x = 0; x < 13; x++)
             {																		
     			write_psoc1(val,PRN_PRESET[x]);                          //Preset
@@ -1373,6 +1396,18 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
     			write_psoc1(val,bufferDisplay3.licenceSale[x]);	
     		}
             write_psoc1(val,10);
+            
+            if(KmCash[1] == 0x01){
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_MILLEAGE[x]);    //Km opcional en efectivo
+    			}	
+    			for(x = 1; x <= bufferDisplay3.mileageSale[0]; x++)
+                {
+    				write_psoc1(val,bufferDisplay3.mileageSale[x]);	
+    			}
+                write_psoc1(val,10);
+            }
             for(x = 0; x < 13; x++)
             {																		
     			write_psoc1(val,PRN_PRESET[x]);                          //Preset
@@ -1736,6 +1771,18 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
     			write_psoc1(val,bufferDisplay4.licenceSale[x]);	
     		}
             write_psoc1(val,10);
+            
+            if(KmCash[1] == 0x01){
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_MILLEAGE[x]);    //Km opcional en efectivo
+    			}	
+    			for(x = 1; x <= bufferDisplay4.mileageSale[0]; x++)
+                {
+    				write_psoc1(val,bufferDisplay4.mileageSale[x]);	
+    			}
+                write_psoc1(val,10);
+            }
             for(x = 0; x < 13; x++)
             {																		
     			write_psoc1(val,PRN_PRESET[x]);                          //Preset

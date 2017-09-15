@@ -160,15 +160,21 @@ void loadConfiguration(){
 		side.d.GradesHose[x]=buffer_i2c[x];
 	}
     
-    //LeerEeprom(500,31);
+    LeerEeprom(500,2);
+    for(x=0;x<=buffer_i2c[0];x++){
+		KmCash[x]=buffer_i2c[x];
+	}
+    LeerEeprom(503,3);
+    for(x=0;x<=buffer_i2c[0];x++){
+		magneticReader[x]=buffer_i2c[x];
+	}
 	for(x=1;x<=30;x++){
 		Pie1[x]=EEPROM_1_ReadByte(100+x);
-	}
+	}    
     LeerEeprom(600,31);
 	for(x=0;x<=buffer_i2c[0];x++){
 		Pie2[x]=buffer_i2c[x];
-	}
-    
+	}    
 	for(x=1;x<=30;x++){
 		Pie3[x]=EEPROM_1_ReadByte(130+x);
 	}
