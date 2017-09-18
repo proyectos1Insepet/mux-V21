@@ -1264,7 +1264,7 @@ void PollingDisplay1(void){
                 // Authorization request
                 SetPicture(1,DISPLAY_ID_RECONOCIDO);                                                                 
                 vTaskDelay( 500 / portTICK_PERIOD_MS );                       
-                iButtonFlag = 1;
+                iButtonFlag = 2;
                 flowDisplay1 = 14;
                 bufferDisplay1.flagKeyboard = 4;
                 numberKeys1 = 0;
@@ -1315,7 +1315,7 @@ void PollingDisplay1(void){
             {
                 bufferDisplay1.idSerial[x] = 0x00;
             }
-            if(code_pirata('A','5') == 1)
+            if(code_pirata(magneticReader[1],'5') == 1)
             {	
                 for (x = 2; x < 24; x++ ){
                     if(temporal[x] == 0x3F)
@@ -1326,7 +1326,7 @@ void PollingDisplay1(void){
                 // Authorization request
                 SetPicture(1,DISPLAY_ID_RECONOCIDO);                                                                 
                 vTaskDelay( 500 / portTICK_PERIOD_MS );                       
-                iButtonFlag = 1;
+                iButtonFlag = 2;
                 flowDisplay1 = 14;
                 bufferDisplay1.flagKeyboard = 7;
                 numberKeys1 = 0;
@@ -3694,7 +3694,7 @@ void PollingDisplay2(void){
             {
                 bufferDisplay2.idSerial[x] = 0x00;
             }
-            if(code_pirata('B','5') == 1)
+            if(code_pirata(magneticReader[2],'5') == 1)
             {	
                 for (x = 2; x < 24; x++ ){
                     if(temporal[x] == 0x3F)
@@ -3705,7 +3705,7 @@ void PollingDisplay2(void){
                 // Authorization request
                 SetPicture(2,DISPLAY_ID_RECONOCIDO);                                                                 
                 vTaskDelay( 500 / portTICK_PERIOD_MS );                       
-                iButtonFlag2 = 1;
+                iButtonFlag2 = 2;
                 flowDisplay2 = 14;
                 bufferDisplay2.flagKeyboard = 7;
                 numberKeys2 = 0;
@@ -5702,15 +5702,14 @@ void PollingDisplay3(void){
                 // Authorization request
                 SetPicture(1,DISPLAY_ID_RECONOCIDO);                                                                 
                 vTaskDelay( 500 / portTICK_PERIOD_MS );                       
-                iButtonFlag3 = 1;
+                iButtonFlag3 = 2;
                 flowDisplay3 = 14;
                 bufferDisplay3.flagKeyboard = 4;
                 numberKeys3 = 0;
                 hiddenKeys = 5;
                 controlChar ='*';
                 SetPicture(1,DISPLAY_INGRESE_PASSWORD);  
-                Display1_ClearRxBuffer();                                                                        
-									                                       
+                Display1_ClearRxBuffer();                                                                        									                                       
 			}                     
             //Touch for return to init display
             if(Display1_GetRxBufferSize() == 8)
@@ -5753,7 +5752,7 @@ void PollingDisplay3(void){
             {
                 bufferDisplay3.idSerial[x] = 0x00;
             }
-            if(code_pirata('A','5') == 1)
+            if(code_pirata(magneticReader[1],'5') == 1)
             {	
                 for (x = 2; x < 24; x++ ){
                     if(temporal[x] == 0x3F)
@@ -5764,15 +5763,14 @@ void PollingDisplay3(void){
                 // Authorization request
                 SetPicture(1,DISPLAY_ID_RECONOCIDO);                                                                 
                 vTaskDelay( 500 / portTICK_PERIOD_MS );                       
-                iButtonFlag3 = 1;
+                iButtonFlag3 = 2;
                 flowDisplay3 = 14;
                 bufferDisplay3.flagKeyboard = 7;
                 numberKeys3 = 0;
                 hiddenKeys = 5;
                 controlChar ='*';
                 SetPicture(1,DISPLAY_INGRESE_PASSWORD);  
-                Display1_ClearRxBuffer();                                                                        
-									                                       
+                Display1_ClearRxBuffer();                                                                        									                                       
 			}                     
             //Touch for return to init display
             if(Display1_GetRxBufferSize() == 8)
@@ -7695,7 +7693,7 @@ void PollingDisplay4(void){
                 // Authorization request
                 SetPicture(2,DISPLAY_ID_RECONOCIDO);                                                                 
                 vTaskDelay( 500 / portTICK_PERIOD_MS );                       
-                iButtonFlag4 = 1;
+                iButtonFlag4 = 2;
                 flowDisplay4 = 14;
                 bufferDisplay4.flagKeyboard = 4;
                 numberKeys4 = 0;
@@ -7745,7 +7743,7 @@ void PollingDisplay4(void){
             {
                 bufferDisplay4.idSerial[x] = 0x00;
             }
-            if(code_pirata('B','5') == 1)
+            if(code_pirata(magneticReader[2],'5') == 1)
             {	
                 for (x = 2; x < 24; x++ ){
                     if(temporal[x] == 0x3F)
@@ -8113,8 +8111,7 @@ void PollingDisplay4(void){
                 case 0: //Cancelar
                     switch(bufferDisplay4.flagKeyboard)
                     {
-                        case 1://ID Estacion
-                            
+                        case 1://ID Estacion                            
                             for(x = 0; x <= 4; x++)
                             {
                                 idStation[x] = 0;
@@ -9524,7 +9521,7 @@ void Display_Task(void *arg)
 // Almacena las variables preset y placa para impresion
 void DataPrinter(uint8 Position)
 {
-    uint8 x, y, z;
+    uint8 x;
                   
     if(Position == side.a.dir)
     {
