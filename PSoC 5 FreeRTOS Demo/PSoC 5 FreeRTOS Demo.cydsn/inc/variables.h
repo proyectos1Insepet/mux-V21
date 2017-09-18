@@ -1,36 +1,26 @@
-/*
-*********************************************************************************************************
-*                                         MUX ADVANCE CODE
-*
-*                             (c) Copyright 2016; Sistemas Insepet LTDA
-*
-*               All rights reserved.  Protected by international copyright laws.
-*               Knowledge of the source code may NOT be used to develop a similar product.
-*               Please help us continue to provide the Embedded community with the finest
-*               software available.  Your honesty is greatly appreciated.
-*********************************************************************************************************
+/* ========================================
+ *
+ * Copyright SISTEMAS INSEPET, 2017
+ * All Rights Reserved
+ * UNPUBLISHED, LICENSED SOFTWARE.
+ *
+ * CONFIDENTIAL AND PROPRIETARY INFORMATION
+ * WHICH IS THE PROPERTY OF SISTEMAS INSEPET.
+ *
+ * ========================================
+
+
 */
 
-/*
-*********************************************************************************************************
-*
-*                                             MUX ADVANCE CODE
-*
-*                                             CYPRESS PSoC5LP
-*                                                with the
-*                                            CY8C5969AXI-LP035
-*
-* Filename      : variables.h
-* Version       : V1.00
-* Programmer(s) : 
-                  
-*********************************************************************************************************
-*/
+/*  INCLUDES  */
 
 #ifndef VARIABLES_H
 #define VARIABLES_H
-#include <device.h>	
-    	
+#include <device.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
  
 /*
 *********************************************************************************************************
@@ -99,6 +89,7 @@
     volatile uint8 OSonline;
     volatile uint8 cardNumberA[3];
     volatile uint8 cardNumberB[3];
+
   
     
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144,10 +135,10 @@
     uint8 Product3[17];
     uint8 Product4[17];
     uint8 CopiasCredito;        
-    uint8 FlagTotal;
-    uint8 FlagTotalB;
-    uint8 FlagTotalC;
-    uint8 FlagTotalD;
+
+
+
+
     uint8 StatePosition[8];
     uint8 ActualState[20];
     uint8 InitState[4];
@@ -181,7 +172,7 @@
     uint8 ppuiButtonB[5];
     uint8 PPUAux;
     uint16 LongEsperada;
-    uint8 buffer_i2c[64];													//Buffer de lectura del i2c 
+    uint8 buffer_i2c[64]; //Buffer de lectura del i2c 
     uint8 LicensePlate[9];
     uint8 LicensePlate2[9];
     uint8 BalanceA[21];
@@ -238,6 +229,8 @@
     uint8 KmCash[2];
     uint8 magneticReader[3];
     uint8 keysTerpel;
+    uint16 RfActive;
+    uint8 KmCash[2];
     
     
 /*
@@ -282,7 +275,7 @@ struct buffer{
     uint8 flagEndSale;              //Bandera que indica que la venta finalizo, se valida en introducir placa
     uint8 flagChangePPU;            //Bandera que habilita cambiar PPUs cuando los envie el beagle
     uint8 flagPrint;                //Bandera de impresion de recibo
-    uint8 flagActiveSale;           //Bandera de venta activa
+    bool flagActiveSale;           //Bandera de venta activa
     uint8 shiftId[11];
     uint8 shiftPassword[11];
     uint8 CreditpresetValue[2][10];
@@ -294,6 +287,14 @@ struct buffer{
     uint8 EndSaleReport;
     uint8 passCard[8];
     uint8 idTerpelFideliza[20];
+    uint8 LastFlowDisplay;
+    uint8 PrintPreset[2][10];
+    uint8 PrintLicense[11];
+    uint8 PrintType;
+    uint8 PrintEnd;
+    uint8 VarActual;
+    uint8 buffer_TX[100];
+
 
 };
 
@@ -332,6 +333,8 @@ struct position{
     uint8 GradesHose[5];
     uint8 BusyChange;
     uint8 RF;
+    uint8 TotalRequest;
+    uint8 FlagTotal;
 };
 
 struct pump{
@@ -385,14 +388,14 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_PASSWORD_INVALIDO               = 0x27,
     DISPLAY_NUEVO_PASSWORD                  = 0x2F,
     
-    DISPLAY_TIEMPO_EXPIRADO                 = 0x2C,
-    
+    DISPLAY_TIEMPO_EXPIRADO                 = 0x2C,    
     DISPLAY_GRACIAS_VUELVA_PRONTO           = 0x0C,
 
     DISPLAY_ID_DIGITAL                      = 0x85,
     DISPLAY_ID_TERPEL                       = 0x8B,
     DISPLAY_ESPERANDO_ID_TERPEL             = 0x8E,
     DISPLAY_SELECCIONE_OP_TERPEL            = 0x8F,
+
     DISPLAY_ID_NO_RECONOCIDO                = 0x1C,//0x11,
     DISPLAY_ESPERANDO_ID                    = 0x12,
     DISPLAY_ID_RECONOCIDO                   = 0x13,
@@ -411,6 +414,8 @@ enum _AVAILABLE_DISPLAYS_
 
     DISPLAY_SELECCIONE_POSICION             = 0x2E,
     DISPLAY_RECIBO_SALDO                    = 0x8C,
+
+    DISPLAY_OPERACION_CANCELADA             = 0x8C,
     DISPLAY_ESPERANDO_AUTORIZACION          = 0x96,
     DISPLAY_POR_FAVOR_ESPERE                = 0x39,
     DISPLAY_AUTORIZACION_ACEPTADA           = 0x97,
@@ -433,15 +438,17 @@ enum _AVAILABLE_DISPLAYS_
     
     DISPLAY_IDENTIFICADOR_ESTACION          = 0x64,
     DISPLAY_PRECIO_POR_UNIDAD               = 0x65,
-    DISPLAY_PASAPORTE                       = 0x6F,
-    
+    DISPLAY_PASAPORTE                       = 0x6F,    
     DISPLAY_DUMMY0                          = 0x99,
     DISPLAY_DUMMY1                          = 0x9A,
     DISPLAY_DUMMY2                          = 0x9B,
     DISPLAY_DUMMY3                          = 0x9C,
     
     DISPLAY_SIDE_DUMMY_DISPLAY              = 0xFA,
-    DISPLAY_NULL                            = 0xFF
+    DISPLAY_NULL                            = 0xFF,
+    
+    DISPLAY_MESSAGE                         = 0x88
+
 };
 
 enum _PUMP_STATES_
@@ -467,7 +474,7 @@ enum _RF_STATES_
     RF_CREDITSALEREPORT = 0x06,    
     RF_COPY_RECEIPT     = 0x0B,
     RF_ZERO_SALE        = 0x0C,
-    RF_ASK_BALANCE      = 0x0D
+    RF_ASK_BALANCE      = 0x0D,
 };
 
 enum _AUTH_TYPE_

@@ -1,18 +1,20 @@
 /* ========================================
  *
- * Copyright CLS LED, 2015
+ * Copyright SISTEMAS INSEPET, 2017
+
  * All Rights Reserved
  * UNPUBLISHED, LICENSED SOFTWARE.
  *
  * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF CLS LED.
+ * WHICH IS THE PROPERTY OF SISTEMAS INSEPET.
  *
  * ========================================
 */
+
 /**
  * @file main.c
  * @brief Entry point and RTOS resources
- * @author Ingmar Delsink
+
  */
 
 /*  INCLUDES  */
@@ -39,6 +41,7 @@
 
 xSemaphoreHandle g_pUARTSemaphore;
       
+char Version[] = "MUX Version 22.0";
 
 /*
  * Inicializa los perifiericos del sistema
@@ -168,6 +171,7 @@ void loadConfiguration(){
     for(x=0;x<=buffer_i2c[0];x++){
 		magneticReader[x]=buffer_i2c[x];
 	}
+
 	for(x=1;x<=30;x++){
 		Pie1[x]=EEPROM_1_ReadByte(100+x);
 	}    
@@ -175,10 +179,11 @@ void loadConfiguration(){
 	for(x=0;x<=buffer_i2c[0];x++){
 		Pie2[x]=buffer_i2c[x];
 	}    
+
 	for(x=1;x<=30;x++){
 		Pie3[x]=EEPROM_1_ReadByte(130+x);
 	}
-    logoPrint[1] = 11; //Fijo para pruebas
+
     //LeerEeprom(700,31);
     MoneyDec   = EEPROM_1_ReadByte(2);  //Punto decimal dinero
     VolDec     = EEPROM_1_ReadByte(3);  //Punto decimal volumen
@@ -322,7 +327,21 @@ int main()
     CyGlobalIntEnable;                          /* Init the interrupts                  */
     GlobalInitializer();
     
-    //CyDelay(5000);
+    uint8 x;
+    
+    //Muestra la version del MUX
+    SetPicture(1, DISPLAY_MESSAGE);
+    SetPicture(2, DISPLAY_MESSAGE);
+    for(x = 0; x < 16; x++)
+    {                
+        WriteMessage(1, Version[x], 17, 1 + x, 1, 0x0000, 'N');                    
+    }
+    for(x = 0; x < 16; x++)
+    {                
+        WriteMessage(2, Version[x], 17, 1 + x, 1, 0x0000, 'N');                    
+    }
+    CyDelay(10);
+    
     
     /* Init Pump                                                                        */       
     InitPump(); 
@@ -343,14 +362,15 @@ int main()
     }
     console(side.a.dir);
     OSonline = 0;
-    CyDelay(100);
+
     
     /* OS Init                                                                          */
     osInit();                               /* Initialize all thread related tasks      */ 
     prvHardwareSetup();                     /* FreeRTOS setup                           */
 	vTaskStartScheduler();                  /* Start the scheduler                      */
 
-	return 1;
+	//return 1;
+    for(;;);
 }
 
 int osInit(void)

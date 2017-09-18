@@ -1,3 +1,16 @@
+/* ========================================
+ *
+ * Copyright SISTEMAS INSEPET, 2017
+ * All Rights Reserved
+ * UNPUBLISHED, LICENSED SOFTWARE.
+ *
+ * CONFIDENTIAL AND PROPRIETARY INFORMATION
+ * WHICH IS THE PROPERTY OF SISTEMAS INSEPET.
+ *
+ * ========================================
+*/
+
+/*  INCLUDES  */
 #include <project.h>
 #include <protocol.h>
 #include <variables.h>
@@ -15,280 +28,10 @@
 #include <semphr.h>
 #include "os_resource.h"
 
-extern xSemaphoreHandle g_pUARTSemaphore;
-uint8_t lengthPrint;
-
-void RFTotalA(void)
+void nop(void)
 {
-    uint16 x,y,z;
-    
-    for(x = 0; x < 100; x ++)
-    {
-        buffer_txTotals[x] = 0x00;        
-    }
-    
-        pollTotals = 0;
-        y = 0;
-        buffer_txTotals[y] = 0xBC; y++;
-        buffer_txTotals[y] = 0xCB; y++;
-        buffer_txTotals[y] = 0xC8; y++;
-        buffer_txTotals[y] = IDCast[0]; y++;
-        buffer_txTotals[y] = IDCast[1]; y++;
-        buffer_txTotals[5] = side.a.RF; y++;
-        buffer_txTotals[y] = 0xE8; y++;
-        buffer_txTotals[y] = side.a.rfState; y++;
-        buffer_txTotals[y] = 0x00; y++;
-        
-        for(z = 1;z <= side.a.hoseNumber; z++)
-        {
-            buffer_txTotals[y] = z; y++;                    
-            if (digits == 6 || digits == 5)
-            {                            
-                for(x = 8; x > 0; x--)
-                {  
-                    //Volumen
-                    buffer_txTotals[y] = (side.a.totalsHandle[z - 1][0][x]) - 48; y++;
-                }
-                for(x =0; x < 4; x++)
-                {
-                    buffer_txTotals[y] = 0x00; y++;
-                }
-                for(x = 8; x > 0; x--)
-                {  
-                    //Dinero
-                    buffer_txTotals[y] = (side.a.totalsHandle[z - 1][1][x]) - 48; y++;
-                }
-                for(x =0; x < 4; x++)
-                {
-                    buffer_txTotals[y] = 0x00; y++;
-                }
-            }
-            else{
-                for(x = 12; x > 0; x--)
-                { 
-                    //Volumen              
-                    buffer_txTotals[y] = (side.a.totalsHandle[z - 1][0][x]) - 48; y++;
-                }                        
-                for(x = 12; x > 0; x--)
-                { 
-                    //Dinero
-                    buffer_txTotals[y] = (side.a.totalsHandle[z - 1][1][x]) - 48; y++;
-                }                        
-            } 
-        }
-        buffer_txTotals[8] = y - 9;
-        buffer_txTotals[y] = verificar_check(buffer_txTotals,y + 1);y++;                 
-        
-        for (x = 0; x < y; x++)
-        {
-            RF_Connection_PutChar(buffer_txTotals[x]);
-        }        
-        
     return;
 }
-
-void RFTotalB(void)
-{
-    uint16 x,y,z;
-    for(x = 0; x < 100; x ++)
-    {
-        buffer_txTotals[x] = 0x00;        
-    }
-    
-        pollTotalsB = 0;
-        y = 0;
-        buffer_txTotals[y] = 0xBC; y++;
-        buffer_txTotals[y] = 0xCB; y++;
-        buffer_txTotals[y] = 0xC8; y++;
-        buffer_txTotals[y] = IDCast[0]; y++;
-        buffer_txTotals[y] = IDCast[1]; y++;
-        buffer_txTotals[5] = side.b.RF; y++;
-        buffer_txTotals[y] = 0xE8; y++;
-        buffer_txTotals[y] = side.b.rfState; y++;
-        buffer_txTotals[y] = 0x00; y++;
-        for(z = 1; z <= side.b.hoseNumber; z++)
-        {
-            buffer_txTotals[y] = z; y++;                    
-            if (digits == 6 || digits == 5)
-            {   
-                //Volumen
-                for(x = 8; x > 0; x--)
-                { 
-                    buffer_txTotals[y] = (side.b.totalsHandle[z - 1][0][x]) - 48; y++;
-                }
-                for(x = 0; x < 4; x++)
-                {
-                    buffer_txTotals[y] = 0x00; y++;
-                }
-                for(x = 8; x > 0; x--)
-                {//Dinero
-                    buffer_txTotals[y] = (side.b.totalsHandle[z - 1][1][x]) - 48; y++;
-                }
-                for(x = 0; x < 4; x++)
-                {
-                    buffer_txTotals[y] = 0x00; y++;
-                }
-            }else
-            {
-                 //Volumen
-                for(x = 12; x > 0; x--)
-                {
-                    buffer_txTotals[y] = (side.b.totalsHandle[z - 1][0][x]) - 48; y++;
-                }     
-                
-                //Dinero
-                for(x = 12; x > 0; x--)
-                {
-                    buffer_txTotals[y] = (side.b.totalsHandle[z - 1][1][x]) - 48; y++;
-                }                        
-            } 
-        }
-        buffer_txTotals[8] = y - 9;
-        buffer_txTotals[y] = verificar_check(buffer_txTotals,y + 1);y++;                 
-        
-        for (x = 0; x < y; x++)
-        {
-            RF_Connection_PutChar(buffer_txTotals[x]);
-        }        
-
-        return;
-       
-    }    
-    
-void RFTotalC(void)
-{
-    uint16 x,y,z;
-    for(x = 0; x < 100; x ++)
-    {
-        buffer_txTotals[x] = 0x00;        
-    }
-
-        pollTotalsC = 0;
-        y = 0;
-        buffer_txTotals[y] = 0xBC; y++;
-        buffer_txTotals[y] = 0xCB; y++;
-        buffer_txTotals[y] = 0xC8; y++;
-        buffer_txTotals[y] = IDCast[0]; y++;
-        buffer_txTotals[y] = IDCast[1]; y++;
-        buffer_txTotals[5] = side.c.RF; y++;
-        buffer_txTotals[y] = 0xE8; y++;
-        buffer_txTotals[y] = side.c.rfState; y++;
-        buffer_txTotals[y] = 0x00; y++;
-        
-        for(z = 1;z <= side.c.hoseNumber; z++)
-        {
-            buffer_txTotals[y] = z; y++;                    
-            if (digits == 6 || digits == 5)
-            {                            
-                for(x = 8; x > 0; x--)
-                {  
-                    //Volumen
-                    buffer_txTotals[y] = (side.c.totalsHandle[z - 1][0][x]) - 48; y++;
-                }
-                for(x =0; x < 4; x++)
-                {
-                    buffer_txTotals[y] = 0x00; y++;
-                }
-                for(x = 8; x > 0; x--)
-                {  
-                    //Dinero
-                    buffer_txTotals[y] = (side.c.totalsHandle[z - 1][1][x]) - 48; y++;
-                }
-                for(x =0; x < 4; x++)
-                {
-                    buffer_txTotals[y] = 0x00; y++;
-                }
-            }else{
-                for(x = 12; x > 0; x--)
-                { 
-                    //Volumen              
-                    buffer_txTotals[y] = (side.c.totalsHandle[z - 1][0][x]) - 48; y++;
-                }                        
-                for(x = 12; x > 0; x--)
-                { 
-                    //Dinero
-                    buffer_txTotals[y] = (side.c.totalsHandle[z - 1][1][x]) - 48; y++;
-                }                        
-            } 
-        }
-        buffer_txTotals[8] = y - 9;
-        buffer_txTotals[y] = verificar_check(buffer_txTotals,y + 1);y++;                 
-        
-        for (x = 0; x < y; x++)
-        {
-            RF_Connection_PutChar(buffer_txTotals[x]);
-        }        
-        
-    return;
-}
-
-void RFTotalD(void)
-{
-    uint16 x,y,z;
-    for(x = 0; x < 100; x ++)
-    {
-        buffer_txTotals[x] = 0x00;        
-    }
-    
-        pollTotalsD = 0;
-        y = 0;
-        buffer_txTotals[y] = 0xBC; y++;
-        buffer_txTotals[y] = 0xCB; y++;
-        buffer_txTotals[y] = 0xC8; y++;
-        buffer_txTotals[y] = IDCast[0]; y++;
-        buffer_txTotals[y] = IDCast[1]; y++;
-        buffer_txTotals[5] = side.d.dir; y++;
-        buffer_txTotals[y] = 0xE8; y++;
-        buffer_txTotals[y] = side.d.rfState; y++;
-        buffer_txTotals[y] = 0x00; y++;
-        for(z = 1; z <= side.d.hoseNumber; z++)
-        {
-            buffer_txTotals[y] = z; y++;                    
-            if (digits == 6 || digits == 5)
-            {   
-                //Volumen
-                for(x = 8; x > 0; x--)
-                { 
-                    buffer_txTotals[y] = (side.d.totalsHandle[z - 1][0][x]) - 48; y++;
-                }
-                for(x = 0; x < 4; x++)
-                {
-                    buffer_txTotals[y] = 0x00; y++;
-                }
-                for(x = 8; x > 0; x--)
-                {//Dinero
-                    buffer_txTotals[y] = (side.d.totalsHandle[z - 1][1][x]) - 48; y++;
-                }
-                for(x = 0; x < 4; x++)
-                {
-                    buffer_txTotals[y] = 0x00; y++;
-                }
-            }else
-            {
-                 //Volumen
-                for(x = 12; x > 0; x--)
-                {
-                    buffer_txTotals[y] = (side.d.totalsHandle[z - 1][0][x]) - 48; y++;
-                }     
-                
-                //Dinero
-                for(x = 12; x > 0; x--)
-                {
-                    buffer_txTotals[y] = (side.d.totalsHandle[z - 1][1][x]) - 48; y++;
-                }                        
-            } 
-        }
-        buffer_txTotals[8] = y - 9;
-        buffer_txTotals[y] = verificar_check(buffer_txTotals,y + 1);y++;                 
-        
-        for (x = 0; x < y; x++)
-        {
-            RF_Connection_PutChar(buffer_txTotals[x]);
-        }        
-
-        return;
-       
-    }
 
 /*
 *********************************************************************************************************
@@ -329,6 +72,899 @@ uint8 verificar_check(uint8 *datos, uint16 size){
 }
 
 
+void RFTotalA(void)
+{
+    uint16 x,y,z;
+    
+    pollTotals = 0;
+    
+    
+    if(bufferDisplay1.VarActual == 1)
+    {
+        for(x = 0; x < 100; x ++)
+        {
+            bufferDisplay1.buffer_TX[x] = 0x00;        
+        }
+        y = 0;
+    }
+    
+    
+   // Entrega solo totales
+    if(side.a.TotalRequest == 1)
+    {   
+        //Encabezado totales
+        bufferDisplay1.buffer_TX[y] = 0xBC; y++;
+        bufferDisplay1.buffer_TX[y] = 0xCB; y++;
+        bufferDisplay1.buffer_TX[y] = 0xC8; y++;
+        bufferDisplay1.buffer_TX[y] = IDCast[0]; y++;
+        bufferDisplay1.buffer_TX[y] = IDCast[1]; y++;
+        bufferDisplay1.buffer_TX[5] = side.a.RF; y++;
+        bufferDisplay1.buffer_TX[y] = 0xE8; y++;
+        bufferDisplay1.buffer_TX[y] = side.a.rfState; y++;
+        bufferDisplay1.buffer_TX[y] = 0x00; y++;
+        
+        for(z = 1; z <= side.a.hoseNumber; z++)
+        {
+            bufferDisplay1.buffer_TX[y] = z; y++;   // Producto                 
+            if (digits == 6 || digits == 5)
+            {                            
+                for(x = 8; x > 0; x--)
+                {  
+                    //Volumen
+                    bufferDisplay1.buffer_TX[y] = (side.a.totalsHandle[z - 1][0][x]) - 48; y++;
+                }
+                for(x =0; x < 4; x++)
+                {
+                    bufferDisplay1.buffer_TX[y] = 0x00; y++;
+                }
+                for(x = 8; x > 0; x--)
+                {  
+                    //Dinero
+                    bufferDisplay1.buffer_TX[y] = (side.a.totalsHandle[z - 1][1][x]) - 48; y++;
+                }
+                for(x =0; x < 4; x++)
+                {
+                    bufferDisplay1.buffer_TX[y] = 0x00; y++;
+                }
+            }
+            else{
+                for(x = 12; x > 0; x--)
+                { 
+                    //Volumen              
+                    bufferDisplay1.buffer_TX[y] = (side.a.totalsHandle[z - 1][0][x]) - 48; y++;
+                }                        
+                for(x = 12; x > 0; x--)
+                { 
+                    //Dinero
+                    bufferDisplay1.buffer_TX[y] = (side.a.totalsHandle[z - 1][1][x]) - 48; y++;
+                }                        
+            } 
+        }
+        bufferDisplay1.buffer_TX[8] = y - 9;        
+        side.a.FlagTotal = 0;
+        bufferDisplay1.buffer_TX[y] = verificar_check(bufferDisplay1.buffer_TX,y + 1);y++;                        
+        for (x = 0; x < y; x++)
+        {
+            RF_Connection_PutChar(bufferDisplay1.buffer_TX[x]);
+        }
+    }
+    else //Entrega fin venta + totales
+    {
+        if(side.a.activeHose != 0)
+        {
+            if(bufferDisplay1.VarActual == 1)
+            {
+            //Encabezado Fin Venta
+            bufferDisplay1.buffer_TX[y] = 0xBC; y++;
+            bufferDisplay1.buffer_TX[y] = 0xCB; y++;
+            bufferDisplay1.buffer_TX[y] = 0xC8; y++;
+            bufferDisplay1.buffer_TX[y] = IDCast[0]; y++;
+            bufferDisplay1.buffer_TX[y] = IDCast[1]; y++;
+            bufferDisplay1.buffer_TX[y] = side.a.RF; y++;
+            bufferDisplay1.buffer_TX[y] = 0xA4; y++; //0xE8; y++;
+            bufferDisplay1.buffer_TX[y] = RF_CASHSALEREPORT; y++;
+            bufferDisplay1.buffer_TX[y] = side.a.activeHose - 1; y++;
+            
+            // Datos de la ultima venta
+            for(x = side.a.ppuSale[0]; x > 0 ; x--)
+            {						   							
+        		tempPPU[side.a.ppuSale[0] - x] = side.a.ppuSale[x];
+        	}
+            
+            for(x = 9; x <= 13; x++)
+            {
+                bufferDisplay1.buffer_TX[x] = tempPPU[x - 9];                 
+                y++;
+            } 
+            
+            if(digits == 5 || digits == 6)
+            {
+                for(x = 1; x <= side.a.volumeSale[0]; x++)
+                {						   							
+                    bufferDisplay1.buffer_TX[x + 13] = side.a.volumeSale[7 - x]; 
+                    y++;
+            	}
+                
+                if(digits == 5)
+                {
+                    bufferDisplay1.buffer_TX[19] = 0x30; y++;
+                    bufferDisplay1.buffer_TX[20] = 0x30; y++;
+                    bufferDisplay1.buffer_TX[21] = 0x30; y++;
+                }
+                else
+                {
+                    bufferDisplay1.buffer_TX[20] = 0x30; y++;
+                    bufferDisplay1.buffer_TX[21] = 0x30; y++;              
+                }           
+            }
+            else
+            {
+                for(x = 1; x <= side.a.volumeSale[0]; x++)
+                {						   							
+                    bufferDisplay1.buffer_TX[x + 13] = side.a.volumeSale[9 - x]; 
+                    y++;
+            	}
+                if(digits == 7)
+                {
+                    bufferDisplay1.buffer_TX[21] = 0x30;
+                }
+            }        
+                   
+            if(digits == 5 || digits == 6)
+            {
+                for(x = 1; x <= side.a.moneySale[0]; x++)
+                {						   							
+            		bufferDisplay1.buffer_TX[x + 21] = side.a.moneySale[7 - x]; 
+                    y++;
+            	} 
+                if(digits == 5)
+                {
+                    bufferDisplay1.buffer_TX[27] = 0x30; y++;
+                    bufferDisplay1.buffer_TX[28] = 0x30; y++;
+                    bufferDisplay1.buffer_TX[29] = 0x30; y++;
+                }
+                else
+                {
+                    bufferDisplay1.buffer_TX[28] = 0x30; y++;
+                    bufferDisplay1.buffer_TX[29] = 0x30; y++;              
+                }
+            }else
+            {
+                for(x = 1; x <= side.a.moneySale[0]; x++)
+                {						   							
+            		bufferDisplay1.buffer_TX[x + 21] = side.a.moneySale[9 - x]; 
+                    y++;
+            	}
+                if(digits == 7)
+                {
+                    bufferDisplay1.buffer_TX[21] = 0x30; 
+                }
+            }
+            
+            // Totales
+                z = side.a.activeHose; //Producto
+                                   
+                if (digits == 6 || digits == 5)
+                {                            
+                    for(x = 8; x > 0; x--)
+                    {  
+                        //Volumen
+                        bufferDisplay1.buffer_TX[y] = (side.a.totalsHandle[z - 1][0][x]) - 48; y++;
+                    }
+                    for(x =0; x < 4; x++)
+                    {
+                        bufferDisplay1.buffer_TX[y] = 0x00; y++;
+                    }
+                    for(x = 8; x > 0; x--)
+                    {  
+                        //Dinero
+                        bufferDisplay1.buffer_TX[y] = (side.a.totalsHandle[z - 1][1][x]) - 48; y++;
+                    }
+                    for(x =0; x < 4; x++)
+                    {
+                        bufferDisplay1.buffer_TX[y] = 0x00; y++;
+                    }
+                }
+                else{
+                    for(x = 12; x > 0; x--)
+                    { 
+                        //Volumen              
+                        bufferDisplay1.buffer_TX[y] = (side.a.totalsHandle[z - 1][0][x]) - 48; y++;
+                    }                        
+                    for(x = 12; x > 0; x--)
+                    { 
+                        //Dinero
+                        bufferDisplay1.buffer_TX[y] = (side.a.totalsHandle[z - 1][1][x]) - 48; y++;
+                    }                        
+                }
+                bufferDisplay1.buffer_TX[y] = verificar_check(bufferDisplay1.buffer_TX,y + 1);y++;  
+                bufferDisplay1.VarActual = 0;
+            }
+                
+                for (x = 0; x < 55; x++)
+                {
+                    RF_Connection_PutChar(bufferDisplay1.buffer_TX[x]);
+                } 
+        }
+        else
+        {
+            side.a.FlagTotal = 0;
+        }
+    }
+    
+    side.a.TotalRequest = 0;    
+    return;
+}
+
+void RFTotalB(void)
+{
+    uint16 x,y,z;
+    
+    pollTotalsB = 0;
+    
+    if(bufferDisplay2.VarActual == 1)
+    {
+        for(x = 0; x < 100; x ++)
+        {
+            bufferDisplay2.buffer_TX[x] = 0x00;        
+        }
+        y = 0;
+    }
+    
+    
+    
+    // Entrega solo totales
+    if(side.b.TotalRequest == 1)
+    {
+        
+        //Encabezado Totales
+        bufferDisplay2.buffer_TX[y] = 0xBC; y++;
+        bufferDisplay2.buffer_TX[y] = 0xCB; y++;
+        bufferDisplay2.buffer_TX[y] = 0xC8; y++;
+        bufferDisplay2.buffer_TX[y] = IDCast[0]; y++;
+        bufferDisplay2.buffer_TX[y] = IDCast[1]; y++;
+        bufferDisplay2.buffer_TX[5] = side.b.RF; y++;
+        bufferDisplay2.buffer_TX[y] = 0xE8; y++;
+        bufferDisplay2.buffer_TX[y] = side.b.rfState; y++;
+        bufferDisplay2.buffer_TX[y] = 0x00; y++;
+        for(z = 1; z <= side.b.hoseNumber; z++)
+        {
+            bufferDisplay2.buffer_TX[y] = z; y++;                    
+            if (digits == 6 || digits == 5)
+            {   
+                //Volumen
+                for(x = 8; x > 0; x--)
+                { 
+                    bufferDisplay2.buffer_TX[y] = (side.b.totalsHandle[z - 1][0][x]) - 48; y++;
+                }
+                for(x = 0; x < 4; x++)
+                {
+                    bufferDisplay2.buffer_TX[y] = 0x00; y++;
+                }
+                for(x = 8; x > 0; x--)
+                {//Dinero
+                    bufferDisplay2.buffer_TX[y] = (side.b.totalsHandle[z - 1][1][x]) - 48; y++;
+                }
+                for(x = 0; x < 4; x++)
+                {
+                    bufferDisplay2.buffer_TX[y] = 0x00; y++;
+                }
+            }else
+            {
+                 //Volumen
+                for(x = 12; x > 0; x--)
+                {
+                    bufferDisplay2.buffer_TX[y] = (side.b.totalsHandle[z - 1][0][x]) - 48; y++;
+                }     
+                
+                //Dinero
+                for(x = 12; x > 0; x--)
+                {
+                    bufferDisplay2.buffer_TX[y] = (side.b.totalsHandle[z - 1][1][x]) - 48; y++;
+                }                        
+            } 
+        }
+        bufferDisplay2.buffer_TX[8] = y - 9;
+        side.b.FlagTotal = 0;
+        bufferDisplay2.buffer_TX[y] = verificar_check(bufferDisplay2.buffer_TX,y + 1);y++;                 
+    
+        for (x = 0; x < y; x++)
+        {
+            RF_Connection_PutChar(bufferDisplay2.buffer_TX[x]);
+        }    
+    }
+    else //Entrega fin venta + totales
+    {
+        if(side.b.activeHose != 0)
+        {
+
+            if(bufferDisplay2.VarActual == 1)
+            {
+                //Encabezado Fin Venta
+                bufferDisplay2.buffer_TX[y] = 0xBC; y++;
+                bufferDisplay2.buffer_TX[y] = 0xCB; y++;
+                bufferDisplay2.buffer_TX[y] = 0xC8; y++;
+                bufferDisplay2.buffer_TX[y] = IDCast[0]; y++;
+                bufferDisplay2.buffer_TX[y] = IDCast[1]; y++;
+                bufferDisplay2.buffer_TX[y] = side.b.RF; y++;
+                bufferDisplay2.buffer_TX[y] = 0xA4; y++;  
+                bufferDisplay2.buffer_TX[y] = RF_CASHSALEREPORT; y++;
+                bufferDisplay2.buffer_TX[y] = side.b.activeHose - 1; y++;
+                
+                // Datos de la ultima venta
+                for(x = side.b.ppuSale[0]; x > 0 ; x--)
+                {						   							
+            		tempPPU[side.b.ppuSale[0] - x] = side.b.ppuSale[x];
+            	}
+                
+                for(x = 9; x <= 13; x++)
+                {
+                    bufferDisplay2.buffer_TX[x] = tempPPU[x - 9]; 
+                    
+
+                    y++;
+                } 
+                
+                if(digits == 5 || digits == 6)
+                {
+                    for(x = 1; x <= side.b.volumeSale[0]; x++)
+                    {						   							
+                        bufferDisplay2.buffer_TX[x + 13] = side.b.volumeSale[7 - x]; 
+                        y++;
+                	}
+                    
+                    if(digits == 5)
+                    {
+                        bufferDisplay2.buffer_TX[19] = 0x30; y++;
+                        bufferDisplay2.buffer_TX[20] = 0x30; y++;
+                        bufferDisplay2.buffer_TX[21] = 0x30; y++;
+                    }
+                    else
+                    {
+                        bufferDisplay2.buffer_TX[20] = 0x30; y++;
+                        bufferDisplay2.buffer_TX[21] = 0x30; y++;              
+                    }           
+                }
+                else
+                {
+                    for(x = 1; x <= side.b.volumeSale[0]; x++)
+                    {						   							
+                        bufferDisplay2.buffer_TX[x + 13] = side.b.volumeSale[9 - x]; 
+                        y++;
+                	}
+                    if(digits == 7)
+                    {
+                        bufferDisplay2.buffer_TX[21] = 0x30;
+                    }
+                }        
+                       
+                if(digits == 5 || digits == 6)
+                {
+                    for(x = 1; x <= side.b.moneySale[0]; x++)
+                    {						   							
+                		bufferDisplay2.buffer_TX[x + 21] = side.b.moneySale[7 - x]; 
+                        y++;
+                	} 
+                    if(digits == 5)
+                    {
+                        bufferDisplay2.buffer_TX[27] = 0x30; y++;
+                        bufferDisplay2.buffer_TX[28] = 0x30; y++;
+                        bufferDisplay2.buffer_TX[29] = 0x30; y++;
+                    }
+                    else
+                    {
+                        bufferDisplay2.buffer_TX[28] = 0x30; y++;
+                        bufferDisplay2.buffer_TX[29] = 0x30; y++;              
+                    }
+                }else
+                {
+                    for(x = 1; x <= side.b.moneySale[0]; x++)
+                    {						   							
+                		bufferDisplay2.buffer_TX[x + 21] = side.b.moneySale[9 - x]; 
+                        y++;
+                	}
+                    if(digits == 7)
+                    {
+                        bufferDisplay2.buffer_TX[21] = 0x30; 
+                    }
+                }
+                
+                // Totales
+                    z = side.b.activeHose; //Producto
+                                       
+                    if (digits == 6 || digits == 5)
+                    {                            
+                        for(x = 8; x > 0; x--)
+                        {  
+                            //Volumen
+                            bufferDisplay2.buffer_TX[y] = (side.b.totalsHandle[z - 1][0][x]) - 48; y++;
+                        }
+                        for(x = 0; x < 4; x++)
+                        {
+                            bufferDisplay2.buffer_TX[y] = 0x00; y++;
+                        }
+                        for(x = 8; x > 0; x--)
+                        {  
+                            //Dinero
+                            bufferDisplay2.buffer_TX[y] = (side.b.totalsHandle[z - 1][1][x]) - 48; y++;
+                        }
+                        for(x = 0; x < 4; x++)
+                        {
+                            bufferDisplay2.buffer_TX[y] = 0x00; y++;
+                        }
+                    }
+                    else{
+                        for(x = 12; x > 0; x--)
+                        { 
+                            //Volumen              
+                            bufferDisplay2.buffer_TX[y] = (side.b.totalsHandle[z - 1][0][x]) - 48; y++;
+                        }                        
+                        for(x = 12; x > 0; x--)
+                        { 
+                            //Dinero
+                            bufferDisplay2.buffer_TX[y] = (side.b.totalsHandle[z - 1][1][x]) - 48; y++;
+                        }                        
+                    }
+                    bufferDisplay2.buffer_TX[y] = verificar_check(bufferDisplay2.buffer_TX,y + 1);y++;                 
+            }
+            
+            for (x = 0; x < 55; x++)
+            {
+                RF_Connection_PutChar(bufferDisplay2.buffer_TX[x]);
+            }
+        }
+        else
+        {
+            side.b.FlagTotal = 0;
+        } 
+    }              
+    
+    side.b.TotalRequest = 0;
+    return;
+       
+}    
+    
+void RFTotalC(void)
+{
+    uint16 x,y,z;
+    
+    pollTotalsC = 0;
+    
+    if(bufferDisplay3.VarActual == 1)
+    {
+        for(x = 0; x < 100; x ++)
+        {
+            bufferDisplay3.buffer_TX[x] = 0x00;        
+        }
+        y = 0;
+    }
+
+    // Entrega solo totales
+    if(side.c.TotalRequest == 1)
+    {
+        
+        //Encabezado totales
+        bufferDisplay3.buffer_TX[y] = 0xBC; y++;
+        bufferDisplay3.buffer_TX[y] = 0xCB; y++;
+        bufferDisplay3.buffer_TX[y] = 0xC8; y++;
+        bufferDisplay3.buffer_TX[y] = IDCast[0]; y++;
+        bufferDisplay3.buffer_TX[y] = IDCast[1]; y++;
+        bufferDisplay3.buffer_TX[5] = side.c.RF; y++;
+        bufferDisplay3.buffer_TX[y] = 0xE8; y++;
+        bufferDisplay3.buffer_TX[y] = side.c.rfState; y++;
+        bufferDisplay3.buffer_TX[y] = 0x00; y++;
+        
+        for(z = 1;z <= side.c.hoseNumber; z++)
+        {
+            bufferDisplay3.buffer_TX[y] = z; y++;                    
+            if (digits == 6 || digits == 5)
+            {                            
+                for(x = 8; x > 0; x--)
+                {  
+                    //Volumen
+                    bufferDisplay3.buffer_TX[y] = (side.c.totalsHandle[z - 1][0][x]) - 48; y++;
+                }
+                for(x =0; x < 4; x++)
+                {
+                    bufferDisplay3.buffer_TX[y] = 0x00; y++;
+                }
+                for(x = 8; x > 0; x--)
+                {  
+                    //Dinero
+                    bufferDisplay3.buffer_TX[y] = (side.c.totalsHandle[z - 1][1][x]) - 48; y++;
+                }
+                for(x =0; x < 4; x++)
+                {
+                    bufferDisplay3.buffer_TX[y] = 0x00; y++;
+                }
+            }else{
+                for(x = 12; x > 0; x--)
+                { 
+                    //Volumen              
+                    bufferDisplay3.buffer_TX[y] = (side.c.totalsHandle[z - 1][0][x]) - 48; y++;
+                }                        
+                for(x = 12; x > 0; x--)
+                { 
+                    //Dinero
+                    bufferDisplay3.buffer_TX[y] = (side.c.totalsHandle[z - 1][1][x]) - 48; y++;
+                }                        
+            } 
+        }
+        bufferDisplay3.buffer_TX[8] = y - 9;
+        side.c.FlagTotal = 0;
+        bufferDisplay3.buffer_TX[y] = verificar_check(bufferDisplay3.buffer_TX,y + 1);y++;                 
+        for (x = 0; x < y; x++)
+        {
+            RF_Connection_PutChar(bufferDisplay3.buffer_TX[x]);
+        }
+    }
+    else
+    {
+        if(side.c.activeHose != 0)
+        {
+            if(bufferDisplay3.VarActual == 1)
+            {
+            //Encabezado Fin Venta
+            bufferDisplay3.buffer_TX[y] = 0xBC; y++;
+            bufferDisplay3.buffer_TX[y] = 0xCB; y++;
+            bufferDisplay3.buffer_TX[y] = 0xC8; y++;
+            bufferDisplay3.buffer_TX[y] = IDCast[0]; y++;
+            bufferDisplay3.buffer_TX[y] = IDCast[1]; y++;
+            bufferDisplay3.buffer_TX[y] = side.c.RF; y++;
+            bufferDisplay3.buffer_TX[y] = 0xA4; y++;  
+            bufferDisplay3.buffer_TX[y] = RF_CASHSALEREPORT; y++;
+            bufferDisplay3.buffer_TX[y] = side.c.activeHose - 1; y++;
+            
+            // Datos de la ultima venta
+            for(x = side.c.ppuSale[0]; x > 0 ; x--)
+            {						   							
+        		tempPPU[side.c.ppuSale[0] - x] = side.c.ppuSale[x];
+        	}
+            
+            for(x = 9; x <= 13; x++)
+            {
+                bufferDisplay3.buffer_TX[x] = tempPPU[x - 9]; 
+                y++;
+            } 
+            
+            if(digits == 5 || digits == 6)
+            {
+                for(x = 1; x <= side.c.volumeSale[0]; x++)
+                {						   							
+                    bufferDisplay3.buffer_TX[x + 13] = side.c.volumeSale[7 - x]; 
+                    y++;
+            	}
+                
+                if(digits == 5)
+                {
+                    bufferDisplay3.buffer_TX[19] = 0x30; y++;
+                    bufferDisplay3.buffer_TX[20] = 0x30; y++;
+                    bufferDisplay3.buffer_TX[21] = 0x30; y++;
+                }
+                else
+                {
+                    bufferDisplay3.buffer_TX[20] = 0x30; y++;
+                    bufferDisplay3.buffer_TX[21] = 0x30; y++;              
+                }           
+            }
+            else
+            {
+                for(x = 1; x <= side.c.volumeSale[0]; x++)
+                {						   							
+                    bufferDisplay3.buffer_TX[x + 13] = side.c.volumeSale[9 - x]; 
+                    y++;
+            	}
+                if(digits == 7)
+                {
+                    bufferDisplay3.buffer_TX[21] = 0x30; 
+                }
+            }        
+                   
+            if(digits == 5 || digits == 6)
+            {
+                for(x = 1; x <= side.c.moneySale[0]; x++)
+                {						   							
+            		bufferDisplay3.buffer_TX[x + 21] = side.c.moneySale[7 - x]; 
+                    y++;
+            	} 
+                if(digits == 5)
+                {
+                    bufferDisplay3.buffer_TX[27] = 0x30; y++;
+                    bufferDisplay3.buffer_TX[28] = 0x30; y++;
+                    bufferDisplay3.buffer_TX[29] = 0x30; y++;
+                }
+                else
+                {
+                    bufferDisplay3.buffer_TX[28] = 0x30; y++;
+                    bufferDisplay3.buffer_TX[29] = 0x30; y++;              
+                }
+            }else
+            {
+                for(x = 1; x <= side.c.moneySale[0]; x++)
+                {						   							
+            		bufferDisplay3.buffer_TX[x + 21] = side.c.moneySale[9 - x]; 
+                    y++;
+            	}
+                if(digits == 7)
+                {
+                    bufferDisplay3.buffer_TX[21] = 0x30; 
+                }
+            }
+            
+            // Totales
+                z = side.c.activeHose; //Producto
+                                   
+                if (digits == 6 || digits == 5)
+                {                            
+                    for(x = 8; x > 0; x--)
+                    {  
+                        //Volumen
+                        bufferDisplay3.buffer_TX[y] = (side.c.totalsHandle[z - 1][0][x]) - 48; y++;
+                    }
+                    for(x = 0; x < 4; x++)
+                    {
+                        bufferDisplay3.buffer_TX[y] = 0x00; y++;
+                    }
+                    for(x = 8; x > 0; x--)
+                    {  
+                        //Dinero
+                        bufferDisplay3.buffer_TX[y] = (side.c.totalsHandle[z - 1][1][x]) - 48; y++;
+                    }
+                    for(x = 0; x < 4; x++)
+                    {
+                        bufferDisplay3.buffer_TX[y] = 0x00; y++;
+                    }
+                }
+                else{
+                    for(x = 12; x > 0; x--)
+                    { 
+                        //Volumen              
+                        bufferDisplay3.buffer_TX[y] = (side.c.totalsHandle[z - 1][0][x]) - 48; y++;
+                    }                        
+                    for(x = 12; x > 0; x--)
+                    { 
+                        //Dinero
+                        bufferDisplay3.buffer_TX[y] = (side.c.totalsHandle[z - 1][1][x]) - 48; y++;
+                    }                        
+                }
+                bufferDisplay3.buffer_TX[y] = verificar_check(bufferDisplay3.buffer_TX,y + 1);y++;  
+            }
+            
+                for (x = 0; x < 55; x++)
+                {
+                    RF_Connection_PutChar(bufferDisplay3.buffer_TX[x]);
+                } 
+        }
+        else
+        {
+            side.c.FlagTotal = 0;
+        }
+    }
+    
+    side.c.TotalRequest = 0;            
+    return;
+}
+
+void RFTotalD(void)
+{
+    uint16 x,y,z;
+    pollTotalsD = 0;
+    
+    if(bufferDisplay4.VarActual == 1)
+    {
+        for(x = 0; x < 100; x ++)
+        {
+            bufferDisplay4.buffer_TX[x] = 0x00;        
+        }
+        y = 0;
+    }
+    
+    
+    
+    // Entrega solo totales
+    if(side.d.TotalRequest == 1)
+    {
+        
+        bufferDisplay4.buffer_TX[y] = 0xBC; y++;
+        bufferDisplay4.buffer_TX[y] = 0xCB; y++;
+        bufferDisplay4.buffer_TX[y] = 0xC8; y++;
+        bufferDisplay4.buffer_TX[y] = IDCast[0]; y++;
+        bufferDisplay4.buffer_TX[y] = IDCast[1]; y++;
+        bufferDisplay4.buffer_TX[5] = side.d.dir; y++;
+        bufferDisplay4.buffer_TX[y] = 0xE8; y++;
+        bufferDisplay4.buffer_TX[y] = side.d.rfState; y++;
+        bufferDisplay4.buffer_TX[y] = 0x00; y++;
+        for(z = 1; z <= side.d.hoseNumber; z++)
+        {
+            bufferDisplay4.buffer_TX[y] = z; y++;                    
+            if (digits == 6 || digits == 5)
+            {   
+                //Volumen
+                for(x = 8; x > 0; x--)
+                { 
+                    bufferDisplay4.buffer_TX[y] = (side.d.totalsHandle[z - 1][0][x]) - 48; y++;
+                }
+                for(x = 0; x < 4; x++)
+                {
+                    bufferDisplay4.buffer_TX[y] = 0x00; y++;
+                }
+                for(x = 8; x > 0; x--)
+                {//Dinero
+                    bufferDisplay4.buffer_TX[y] = (side.d.totalsHandle[z - 1][1][x]) - 48; y++;
+                }
+                for(x = 0; x < 4; x++)
+                {
+                    bufferDisplay4.buffer_TX[y] = 0x00; y++;
+                }
+            }else
+            {
+                 //Volumen
+                for(x = 12; x > 0; x--)
+                {
+                    bufferDisplay4.buffer_TX[y] = (side.d.totalsHandle[z - 1][0][x]) - 48; y++;
+                }     
+                
+                //Dinero
+                for(x = 12; x > 0; x--)
+                {
+                    bufferDisplay4.buffer_TX[y] = (side.d.totalsHandle[z - 1][1][x]) - 48; y++;
+                }                        
+            } 
+        }
+        bufferDisplay4.buffer_TX[8] = y - 9;
+        side.d.FlagTotal = 0;
+        bufferDisplay4.buffer_TX[y] = verificar_check(bufferDisplay4.buffer_TX,y + 1);y++;                    
+        for (x = 0; x < y; x++)
+        {
+            RF_Connection_PutChar(bufferDisplay4.buffer_TX[x]);
+        }
+    }
+    else //Entrega fin venta + totales
+    {
+        if(side.d.activeHose != 0)
+        {
+            if(bufferDisplay4.VarActual == 1)
+            {
+            //Encabezado Fin Venta
+            bufferDisplay4.buffer_TX[y] = 0xBC; y++;
+            bufferDisplay4.buffer_TX[y] = 0xCB; y++;
+            bufferDisplay4.buffer_TX[y] = 0xC8; y++;
+            bufferDisplay4.buffer_TX[y] = IDCast[0]; y++;
+            bufferDisplay4.buffer_TX[y] = IDCast[1]; y++;
+            bufferDisplay4.buffer_TX[y] = side.d.RF; y++;
+            bufferDisplay4.buffer_TX[y] = 0xA4; y++;  
+            bufferDisplay4.buffer_TX[y] = RF_CASHSALEREPORT; y++;
+            bufferDisplay4.buffer_TX[y] = side.d.activeHose - 1; y++;
+            
+            // Datos de la ultima venta
+            for(x = side.d.ppuSale[0]; x > 0 ; x--)
+            {						   							
+        		tempPPU[side.d.ppuSale[0] - x] = side.d.ppuSale[x];
+        	}
+            
+            for(x = 9; x <= 13; x++)
+            {
+                bufferDisplay4.buffer_TX[x] = tempPPU[x - 9]; 
+                y++;
+            } 
+            
+            if(digits == 5 || digits == 6)
+            {
+                for(x = 1; x <= side.d.volumeSale[0]; x++)
+                {						   							
+                    bufferDisplay4.buffer_TX[x + 13] = side.d.volumeSale[7 - x]; 
+                    y++;
+            	}
+                
+                if(digits == 5)
+                {
+                    bufferDisplay4.buffer_TX[19] = 0x30; y++;
+                    bufferDisplay4.buffer_TX[20] = 0x30; y++;
+                    bufferDisplay4.buffer_TX[21] = 0x30; y++;
+                }
+                else
+                {
+                    bufferDisplay4.buffer_TX[20] = 0x30; y++;
+                    bufferDisplay4.buffer_TX[21] = 0x30; y++;              
+                }           
+            }
+            else
+            {
+                for(x = 1; x <= side.d.volumeSale[0]; x++)
+                {						   							
+                    bufferDisplay4.buffer_TX[x + 13] = side.d.volumeSale[9 - x]; 
+                    y++;
+            	}
+                if(digits == 7)
+                {
+                    bufferDisplay4.buffer_TX[21] = 0x30;
+                }
+            }        
+                   
+            if(digits == 5 || digits == 6)
+            {
+                for(x = 1; x <= side.d.moneySale[0]; x++)
+                {						   							
+            		bufferDisplay4.buffer_TX[x + 21] = side.d.moneySale[7 - x]; 
+                    y++;
+            	} 
+                if(digits == 5)
+                {
+                    bufferDisplay4.buffer_TX[27] = 0x30; y++;
+                    bufferDisplay4.buffer_TX[28] = 0x30; y++;
+                    bufferDisplay4.buffer_TX[29] = 0x30; y++;
+                }
+                else
+                {
+                    bufferDisplay4.buffer_TX[28] = 0x30; y++;
+                    bufferDisplay4.buffer_TX[29] = 0x30; y++;              
+                }
+            }else
+            {
+                for(x = 1; x <= side.d.moneySale[0]; x++)
+                {						   							
+            		bufferDisplay4.buffer_TX[x + 21] = side.d.moneySale[9 - x]; 
+                    y++;
+            	}
+                if(digits == 7)
+                {
+                    bufferDisplay4.buffer_TX[21] = 0x30; 
+                }
+            }
+            
+            // Totales
+                z = side.d.activeHose; //Producto
+                                   
+                if (digits == 6 || digits == 5)
+                {                            
+                    for(x = 8; x > 0; x--)
+                    {  
+                        //Volumen
+                        bufferDisplay4.buffer_TX[y] = (side.d.totalsHandle[z - 1][0][x]) - 48; y++;
+                    }
+                    for(x = 0; x < 4; x++)
+                    {
+                        bufferDisplay4.buffer_TX[y] = 0x00; y++;
+                    }
+                    for(x = 8; x > 0; x--)
+                    {  
+                        //Dinero
+                        bufferDisplay4.buffer_TX[y] = (side.d.totalsHandle[z - 1][1][x]) - 48; y++;
+                    }
+                    for(x = 0; x < 4; x++)
+                    {
+                        bufferDisplay4.buffer_TX[y] = 0x00; y++;
+                    }
+                }
+                else{
+                    for(x = 12; x > 0; x--)
+                    { 
+                        //Volumen              
+                        bufferDisplay4.buffer_TX[y] = (side.d.totalsHandle[z - 1][0][x]) - 48; y++;
+                    }                        
+                    for(x = 12; x > 0; x--)
+                    { 
+                        //Dinero
+                        bufferDisplay4.buffer_TX[y] = (side.d.totalsHandle[z - 1][1][x]) - 48; y++;
+                    }                        
+                }
+                bufferDisplay4.buffer_TX[y] = verificar_check(bufferDisplay4.buffer_TX,y + 1);y++;
+            }
+                for (x = 0; x < y; x++)
+                {
+                    RF_Connection_PutChar(bufferDisplay4.buffer_TX[x]);
+                }
+        }
+        else
+        {
+            side.d.FlagTotal = 0;
+        }
+    } 
+    
+    side.d.TotalRequest = 0;
+    return;      
+}
+
 void pollingRF_Rx(uint8 PRF_rxBuffer[])
 {
     uint16  x, y;      
@@ -357,10 +993,10 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     {
                         side.a.rfState = RF_ZERO_SALE;
                         bufferDisplay1.zeroSend = 0;
-                        return;
+                       
                     }
-                    // Idle state
-                    if(bufferAready == 0 && FlagTotal == 0)
+                    // Idle state 
+                    if(bufferAready == 0 && side.a.FlagTotal == 0)
                     {                          
                         buffer_tx[5] = side.a.RF; y++;
                         buffer_tx[y] = 0xA1; y++;
@@ -375,7 +1011,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         return;
                     }
                     
-                    // Preset or End Sale
+                    // Preset 
                     if(bufferAready == 1)
                     {                                                                    
                         for (x = 1; x < buffer_A[0]; x++)
@@ -421,11 +1057,10 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     }
                  
                     // Total
-                    if(bufferAready == 0 && FlagTotal == 1)
-                    {                                           
+                    if(bufferAready == 0 && side.a.FlagTotal == 1)
+                    {    
                         RFTotalA();
-                        FlagTotal = 0;
-                        pollTotals = 0;   
+                        pollTotals = 0;
                         return;
                     }      
                 }
@@ -436,9 +1071,9 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     if(bufferDisplay2.zeroSend  == 1){
                         side.b.rfState = RF_ZERO_SALE;
                         bufferDisplay2.zeroSend = 0;
-                        return;
+                       
                     }
-                    if(bufferAreadyB == 0 && FlagTotalB == 0)
+                    if(bufferAreadyB == 0 && side.b.FlagTotal == 0)
                     {                        
                         buffer_tx[5] = side.b.RF; y++;
                         buffer_tx[y] = 0xA1; y++;
@@ -451,7 +1086,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         return;
                     }
                     
-                    // Si el estado es PRESET o Fin Venta
+                    // Si el estado es PRESET 
                     if(bufferAreadyB == 1)
                     {                                                                   
                         for (x = 0; x < buffer_B[100]; x++)
@@ -477,12 +1112,10 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     }
                                                                                               
                     // Totales
-                    if(bufferAreadyB == 0 && FlagTotalB == 1)
+                    if(bufferAreadyB == 0 && side.b.FlagTotal == 1)
                     {                                           
                         RFTotalB(); 
-                        FlagTotalB = 0;
-                        pollTotalsB = 0;
-                        bufferAreadyB = 0;
+                        pollTotalsB = 0;                      
                         return;
                     }           
                 }
@@ -493,10 +1126,10 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     if(bufferDisplay3.zeroSend  == 1){
                         side.c.rfState = RF_ZERO_SALE;
                         bufferDisplay3.zeroSend = 0;
-                        return;
+                     
                     }
                     // Idle state
-                    if(bufferAreadyC == 0 && FlagTotalC == 0)
+                    if(bufferAreadyC == 0 && side.c.FlagTotal == 0)
                     {                         
                         buffer_tx[5] = side.c.RF; y++;
                         buffer_tx[y] = 0xA1; y++;
@@ -511,7 +1144,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         return;
                     }
                     
-                    // Preset or End Sale
+                    // Preset 
                     if(bufferAreadyC == 1)
                     {                                                                    
                         for (x = 1; x < buffer_C[0]; x++)
@@ -537,10 +1170,9 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     
                    
                     // Total
-                    if(bufferAreadyC == 0 && FlagTotalC == 1)
+                    if(bufferAreadyC == 0 && side.c.FlagTotal == 1)
                     {                                           
                         RFTotalC();
-                        FlagTotalC = 0;
                         pollTotalsC = 0;
                         return;
                     }      
@@ -552,13 +1184,13 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     if(bufferDisplay4.zeroSend  == 1){
                         side.d.rfState = RF_ZERO_SALE;
                         bufferDisplay4.zeroSend = 0;
-                        return;
+                        
                     }
                     // Idle state
-                    if(bufferAreadyD == 0 && FlagTotalD == 0)
+                    if(bufferAreadyD == 0 && side.d.FlagTotal == 0)
                     {                        
                         buffer_tx[5] = side.d.RF; y++;
-                        buffer_tx[y] = 0xA1; y++;
+                        buffer_tx[y] = 0xA1; y++;                                         
                         buffer_tx[y] = side.d.rfState; y++;
                         buffer_tx[y] = verificar_check(buffer_tx,y+1); y++;
                                                         
@@ -570,7 +1202,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         return;
                     }
                     
-                    // Preset or End Sale
+                    // Preset 
                     if(bufferAreadyD == 1)
                     {                                                                    
                         for (x = 1; x < buffer_D[0]; x++)
@@ -595,10 +1227,9 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     }                                 
                     
                     // Total
-                    if(bufferAreadyD == 0 && FlagTotalD == 1)
+                    if(bufferAreadyD == 0 && side.d.FlagTotal == 1)
                     {                                           
                         RFTotalD();
-                        FlagTotalD = 0;
                         pollTotalsD = 0;
                         return;
                     }      
@@ -696,8 +1327,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             }
                             flowDisplay1 = 21;                                                                           
                         }
-                    } 
-                    
+                    }                 
                     if(PRF_rxBuffer[5] == side.b.RF)
                     {
                         if(PRF_rxBuffer[8] == 0x01)
@@ -787,7 +1417,6 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             flowDisplay2 = 21;
                         }
                     } 
-                    
                     if(PRF_rxBuffer[5] == side.c.RF)
                     {
                         if(PRF_rxBuffer[8] == 0x01)
@@ -878,7 +1507,6 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                                                                            
                         }
                     }
-                    
                     if(PRF_rxBuffer[5] == side.d.RF)
                     {
                         if(PRF_rxBuffer[8] == 0x01)
@@ -970,29 +1598,69 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         }
                     }
                 break;
-                  
+                
+                case 0xA4:               // End Sale ACK
+                    
+                    if(PRF_rxBuffer[5] == side.a.RF)
+                    {  
+                        if(PRF_rxBuffer[7] == ACK)
+                        {
+                            side.a.FlagTotal = 0; 
+                            bufferDisplay1.VarActual = 1;
+                        }  
+                        return;
+                    }                                  
+                    if(PRF_rxBuffer[5] == side.b.RF)
+                    {                      
+                        if(PRF_rxBuffer[7] == ACK)
+                        {
+                            side.b.FlagTotal = 0; 
+                        }
+                        return;
+                    }  
+                    if(PRF_rxBuffer[5] == side.c.RF)
+                    {                      
+                        if(PRF_rxBuffer[7] == ACK)
+                        {
+                            side.c.FlagTotal = 0; 
+                        }
+                        return;
+                    }
+                    if(PRF_rxBuffer[5] == side.d.RF)
+                    {                      
+                        if(PRF_rxBuffer[7] == ACK)
+                        {
+                            side.d.FlagTotal = 0; 
+                        }
+                        return;
+                    }
+                 
+                break; 
                              
                 case 0xA5:               // Total Request
                     
                     if(PRF_rxBuffer[5] == side.a.RF)
                     {                      
-                        pollTotals = 1;                     
+                        pollTotals = 1;
+                        side.a.TotalRequest = 1;
                         return;
-                    }                
-                    
+                    }                                  
                     if(PRF_rxBuffer[5] == side.b.RF)
                     {                      
                         pollTotalsB = 1;
+                        side.b.TotalRequest = 1;
                         return;
                     }  
                     if(PRF_rxBuffer[5] == side.c.RF)
                     {                      
                         pollTotalsC = 1;
+                        side.c.TotalRequest = 1;
                         return;
                     }
                     if(PRF_rxBuffer[5] == side.d.RF)
                     {                      
                         pollTotalsD = 1;
+                        side.d.TotalRequest = 1;
                         return;
                     }
                  
@@ -1178,6 +1846,20 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         buffer_tx[7] = side.a.rfState;
                         buffer_tx[8] = 0x03;
                         buffer_tx[9] = verificar_check(buffer_tx,10); 
+                        //Imprime logo solo si es copia de recibo
+                        if(bufferDisplay1.PrintCopy == 1)
+                        {    
+                            if(PrinterType[1] == 1)
+                            {
+                                printLogoP(printPortA,logoPrint[1]);    
+                            }
+                            else
+                            {
+                                printLogoK(printPortA,logoPrint[1]);
+                            }
+                            write_psoc1(printPortA,10);
+                        }
+                        bufferDisplay1.PrintCopy = 0;
                         
                         for(x = 9; x <= PRF_rxBuffer[8] + 8; x++)
                         {
@@ -1195,7 +1877,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {
                             RF_Connection_PutChar(buffer_tx[x]);
                         } 
-                        bufferDisplay1.PrintCopy = 0;
+                        
                     }  
                     
                     if(PRF_rxBuffer[5] == side.b.RF)
@@ -1205,6 +1887,21 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         buffer_tx[7] = side.b.rfState;
                         buffer_tx[8] = 0x03;
                         buffer_tx[9] = verificar_check(buffer_tx, 10);
+                        
+                        //Imprime logo solo si es recibo de copia
+                        if(bufferDisplay2.PrintCopy == 1)
+                        {
+                            if(PrinterType[1] == 1)
+                            {
+                                printLogoP(printPortB,logoPrint[1]);    
+                            }
+                            else
+                            {
+                                printLogoK(printPortB,logoPrint[1]);
+                            }
+                            write_psoc1(printPortB,10);
+                        }
+                        bufferDisplay2.PrintCopy = 0;
                         
                         for(x = 9; x <= PRF_rxBuffer[8] + 8; x++)
                         {
@@ -1222,7 +1919,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             RF_Connection_PutChar(buffer_tx[x]);
                         }
                         
-                        bufferDisplay2.PrintCopy = 0;
+                        
                     }
                     
                     if(PRF_rxBuffer[5] == side.c.RF)
@@ -1232,6 +1929,21 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         buffer_tx[7] = side.c.rfState;
                         buffer_tx[8] = 0x03;
                         buffer_tx[9] = verificar_check(buffer_tx, 10);
+                        if(bufferDisplay3.PrintCopy == 1)
+                        {
+                            if(PrinterType[1] == 1)
+                            {
+                                printLogoP(printPortA,logoPrint[1]);    
+                            }
+                            else
+                            {
+                                printLogoK(printPortA,logoPrint[1]);
+                            }
+                            
+                            write_psoc1(printPortA,10);
+                            
+                        }
+                        bufferDisplay3.PrintCopy = 0;
                         
                         for(x = 9; x <= PRF_rxBuffer[8] + 8; x++)
                         {
@@ -1248,7 +1960,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {
                             RF_Connection_PutChar(buffer_tx[x]);
                         }
-                        bufferDisplay3.PrintCopy = 0;
+                        
                     }
                     
                     if(PRF_rxBuffer[5] == side.d.RF)
@@ -1258,6 +1970,20 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         buffer_tx[7] = side.d.rfState;
                         buffer_tx[8] = 0x03;
                         buffer_tx[9] = verificar_check(buffer_tx, 10);
+                        
+                        if(bufferDisplay4.PrintCopy == 1)
+                        {
+                            if(PrinterType[1] == 1)
+                            {
+                                printLogoP(printPortB,logoPrint[1]);    
+                            }
+                            else
+                            {
+                                printLogoK(printPortB,logoPrint[1]);
+                            }
+                            write_psoc1(printPortB,10);                           
+                        }
+                        bufferDisplay4.PrintCopy = 0;
                         
                         for(x = 9; x <= PRF_rxBuffer[8] + 8; x++)
                         {
@@ -1274,7 +2000,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {
                             RF_Connection_PutChar(buffer_tx[x]);
                         }
-                        bufferDisplay4.PrintCopy = 0;
+                       
                     }
 
                 break;
@@ -1320,6 +2046,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {
                             Company[x] = 0x00; 
                         }   
+                        
                         // Company
                         for(x = 0; x < 20; x++)
                         {
@@ -1334,7 +2061,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         // Count ID
                         for(x = 0; x < 20; x++)
                         {
-                            CountID[x] = PRF_rxBuffer[x + 36]; 
+                            CountID[x] = PRF_rxBuffer[x + 56]; 
                         }  
 
                         DayVisit = PRF_rxBuffer[76] + 0x30;
@@ -1387,7 +2114,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         }
                         
                         ControlType = PRF_rxBuffer[116];
-
+                        bufferDisplay1.PrintFlagEOT = 1;
+                        bufferDisplay1.PrintEnd = 0;
                         return;
 
                     }
@@ -1436,7 +2164,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         //Count ID
                         for(x = 0; x < 20; x++)
                         {
-                            CountIDB[x] = PRF_rxBuffer[x + 36]; 
+                            CountIDB[x] = PRF_rxBuffer[x + 56]; 
                         }  
                                                 
                         DayVisitB = PRF_rxBuffer[76] + 0x30;
@@ -1469,7 +2197,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         }
                         
                         ControlType = PRF_rxBuffer[116];
-                                                                 
+                        bufferDisplay2.PrintFlagEOT = 1;
+                        bufferDisplay2.PrintEnd = 0;
                         return;
                     }
                     
@@ -1526,7 +2255,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         // Count ID
                         for(x = 0; x < 20; x++)
                         {
-                            CountID[x] = PRF_rxBuffer[x + 36]; 
+                            CountID[x] = PRF_rxBuffer[x + 56]; 
                         }  
 
                         DayVisit = PRF_rxBuffer[76] + 0x30;
@@ -1579,7 +2308,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         }
                         
                         ControlType = PRF_rxBuffer[116];
-
+                        bufferDisplay3.PrintFlagEOT = 1;
+                        bufferDisplay3.PrintEnd = 0;
                         return;
 
                     }
@@ -1628,7 +2358,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         //Count ID
                         for(x = 0; x < 20; x++)
                         {
-                            CountIDB[x] = PRF_rxBuffer[x + 36]; 
+                            CountIDB[x] = PRF_rxBuffer[x + 56]; 
                         }  
                                                 
                         DayVisitB = PRF_rxBuffer[76] + 0x30;
@@ -1653,7 +2383,6 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             VolumeMonthB[x] = PRF_rxBuffer[x + 93]; 
                         }
                        
-
                         //Count type
                         for(x = 0; x < 16; x++)
                         {
@@ -1661,7 +2390,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         }
                         
                         ControlType = PRF_rxBuffer[116];
-                                                                 
+                        bufferDisplay4.PrintFlagEOT = 1;
+                        bufferDisplay4.PrintEnd = 0;
                         return;
                     }
 
@@ -1673,16 +2403,18 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     {
                         for(x = 0; x < 10; x++)
                         {
-                            side.a.saleNumber[x] = PRF_rxBuffer[x+8];
-                        }                          
+                            side.a.saleNumber[x] = PRF_rxBuffer[x + 8];
+                        } 
+                        bufferDisplay1.PrintFlagEOT = 1;
                     }
                     
                     if(PRF_rxBuffer[5] == side.b.RF)
                     {
                         for(x = 0; x < 10; x++)
                         {
-                            side.b.saleNumber[x] = PRF_rxBuffer[x+8];
-                        }                        
+                            side.b.saleNumber[x] = PRF_rxBuffer[x + 8];
+                        }  
+                        bufferDisplay2.PrintFlagEOT = 1;
                     }
                     
                     if(PRF_rxBuffer[5] == side.c.RF)
@@ -1690,14 +2422,18 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         for(x = 0; x < 10; x++)
                         {
                             side.c.saleNumber[x] = PRF_rxBuffer[x + 8];
-                        }
+                        }         
+                        bufferDisplay3.PrintFlagEOT = 1;
+                                               
                     }
+                    
                     if(PRF_rxBuffer[5] == side.d.RF)
                     {
                         for(x = 0; x < 10; x++)
                         {
                             side.d.saleNumber[x] = PRF_rxBuffer[x + 8];
                         }
+                        bufferDisplay4.PrintFlagEOT = 1;
                     }
                     
                 break;
@@ -2139,7 +2875,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                 
                 case 0xE4:               //Turno  
                     
-                    if(PRF_rxBuffer[5] == side.a.RF)//if(PRF_rxBuffer[5] == side.a.RF && ShiftDone == 0)
+                    if(PRF_rxBuffer[5] == side.a.RF)
                     {
                         ShiftDone = 1;
                         if(PRF_rxBuffer[7] == 0x02)
@@ -2148,8 +2884,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
                             flowDisplay1 = 0;
                             ShiftState = 0;
-                            side.a.rfState = RF_IDLE;
-                            side.a.RFstateReport = 0;
+
                         }
                         else
                         {
@@ -2164,13 +2899,17 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             }else{
                                 SetPicture(1, DISPLAY_SELECCIONE_POSICION);
                             }
-                            side.a.RFstateReport = 0;
-                            side.a.rfState = RF_IDLE; 
+                            //side.a.RFstateReport = 0;
+                            //side.a.rfState = RF_IDLE; 
+                            //bufferDisplay1.flagPrint =  0;
+                            //PresetFlag = 0;
+                            //iButtonFlag = 0;
+                            //AuthType = 0;
                             return;
                         }
                     }   
                     
-                    if(PRF_rxBuffer[5] == side.b.RF) //if(PRF_rxBuffer[5] == side.b.RF && ShiftDone == 0)
+                    if(PRF_rxBuffer[5] == side.b.RF) 
                     {
                         ShiftDone = 1;
                         if(PRF_rxBuffer[7] == 0x02)
@@ -2179,8 +2918,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
                             flowDisplay2 = 0;
                             ShiftState = 0;
-                            side.b.rfState = RF_IDLE;
-                            side.b.RFstateReport = 0;
+                            //side.b.rfState = RF_IDLE;
+                            //side.b.RFstateReport = 0;
                         }
                         else
                         {
@@ -2195,13 +2934,17 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             }else{
                                 SetPicture(2, DISPLAY_SELECCIONE_POSICION);
                             } 
-                            side.b.RFstateReport = 0;
-                            side.b.rfState = RF_IDLE; 
+                            //side.b.RFstateReport = 0;
+                            //side.b.rfState = RF_IDLE; 
+                            //bufferDisplay2.flagPrint =  0;
+                            //PresetFlag2 = 0;
+                            //iButtonFlag2 = 0;
+                            //AuthType2 = 0;                       
                             return;
                         }
                     } 
                     
-                    if(PRF_rxBuffer[5] == side.c.RF)//if(PRF_rxBuffer[5] == side.a.RF && ShiftDone == 0)
+                    if(PRF_rxBuffer[5] == side.c.RF)
                     {
                         ShiftDone = 1;
                         if(PRF_rxBuffer[7] == 0x02)
@@ -2210,8 +2953,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
                             flowDisplay3 = 0;
                             ShiftState = 0;
-                            side.c.rfState = RF_IDLE;
-                            side.c.RFstateReport = 0;
+                            //side.c.rfState = RF_IDLE;
+                            //side.c.RFstateReport = 0;
                         }
                         else
                         {
@@ -2226,13 +2969,17 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             }else{
                                 SetPicture(1, DISPLAY_SELECCIONE_POSICION);
                             }
-                            side.c.RFstateReport = 0;
-                            side.c.rfState = RF_IDLE; 
+//                            side.c.RFstateReport = 0;
+//                            //side.c.rfState = RF_IDLE;
+//                            bufferDisplay3.flagPrint =  0;
+//                            PresetFlag3 = 0;
+//                            iButtonFlag3 = 0;
+//                            AuthType3 = 0;
                             return;
                         }
                     }
                     
-                    if(PRF_rxBuffer[5] == side.d.RF) //if(PRF_rxBuffer[5] == side.b.RF && ShiftDone == 0)
+                    if(PRF_rxBuffer[5] == side.d.RF)
                     {
                         ShiftDone = 1;
                         if(PRF_rxBuffer[7] == 0x02)
@@ -2241,8 +2988,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
                             flowDisplay4 = 0;
                             ShiftState = 0;
-                            side.d.rfState = RF_IDLE;
-                            side.d.RFstateReport = 0;
+                            //side.d.rfState = RF_IDLE;
+                            //side.d.RFstateReport = 0;
                         }
                         else
                         {
@@ -2257,8 +3004,12 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             }else{
                                 SetPicture(2, DISPLAY_SELECCIONE_POSICION);
                             }
-                            side.d.RFstateReport = 0;
-                            side.d.rfState = RF_IDLE; 
+//                            side.d.RFstateReport = 0;
+//                            //side.d.rfState = RF_IDLE;
+//                            bufferDisplay4.flagPrint =  0;
+//                            PresetFlag4 = 0;
+//                            iButtonFlag4 = 0;
+//                            AuthType4 = 0;
                             return;
                         }
                     }
@@ -2401,8 +3152,7 @@ void pollingRFA_Tx(){
         }
         buffer_A[38+bufferDisplay1.idSerial[0]] = verificar_check(buffer_A,39+bufferDisplay1.idSerial[0]);
         side.a.RFstateReport = 0;
-        bufferAready = 4;
-        FlagTotal = 0;        
+        bufferAready = 4;             
         CreditAuth = 0;
         AckFlag = 0;       
         side.a.rfState = RF_CREDITSALEAUTH; 
@@ -2435,8 +3185,7 @@ void pollingRFA_Tx(){
         }
         buffer_A[18+bufferDisplay1.idSerial[0]] = verificar_check(buffer_A,19+bufferDisplay1.idSerial[0]);
         side.a.RFstateReport = 0;
-        bufferAready = 5;
-        FlagTotal = 0;        
+        bufferAready = 5;           
         CreditAuth = 0;
         AckFlag = 0;       
         side.a.rfState = RF_ASK_BALANCE; 
@@ -2455,14 +3204,7 @@ void pollingRFA_Tx(){
         buffer_A[8]   = RF_COPY_RECEIPT;
         buffer_A[9]   = verificar_check(buffer_A,10);        
 		side.a.RFstateReport = 0;
-        side.a.rfState = RF_IDLE;
-        bufferAready = 1;
-        if(PrinterType[1] == 1)
-        {
-            printLogoP(printPortA,11);    
-        }       
-        write_psoc1(printPortA,10);
-        
+        bufferAready = 1;  
         side.a.rfStateCopy = 0;
     }
     ////////////// PRESET - BUSY ////////////////////////////////////
@@ -2530,91 +3272,18 @@ void pollingRFA_Tx(){
         side.a.rfState = RF_DELIVERING;     
         side.a.RFstateReport = 0;
         bufferAready = 1;
-        FlagTotal = 0;  
+        //side.a.FlagTotal = 0;  
         
     }            
     ////////////// END SALE - CASH ////////////////////////////////////
     if(bufferDisplay1.flagEndSale && side.a.RFstateReport == 1) //if((side.a.pumpState == PUMP_PEOT || side.a.pumpState == PUMP_FEOT) && side.a.RFstateReport == 1)
     {        
-        for(x = 0; x < 255; x++)
-        {
-            buffer_A[x] = 0x00;
-        }        
-        buffer_A[0]  = 32;
-		buffer_A[1]  = 0xBC;
-        buffer_A[2]  = 0xCB;
-        buffer_A[3]  = 0xC8;
-        buffer_A[4]  = IDCast[0];
-        buffer_A[5]  = IDCast[1];
-        buffer_A[6]  = side.a.RF;
-        buffer_A[7]  = 0xA4;
-        buffer_A[8]  = RF_CASHSALEREPORT;
-        buffer_A[9]  = side.a.activeHose - 1;
-        
-        for(x = side.a.ppuSale[0]; x > 0 ; x--)
-        {						   							
-    		tempPPU[side.a.ppuSale[0] - x] = side.a.ppuSale[x];
-    	}
-        
-        for(x = 10; x <= 14; x++)
-        {
-            buffer_A[x] = tempPPU[x - 10]; 
-            if(buffer_A[x] == 0x00)
-                buffer_A[x] = 0x30;
-        } 
-        if(digits == 5 || digits == 6)
-        {
-            for(x = 1; x <= side.a.volumeSale[0]; x++)
-            {						   							
-                buffer_A[x + 14] = side.a.volumeSale[7 - x];                
-        	}
-        }else
-        {
-            for(x = 1; x <= side.a.volumeSale[0]; x++)
-            {						   							
-                buffer_A[x + 14] = side.a.volumeSale[9 - x];                
-        	}
-        }        
-        if(buffer_A[21] == 0x00)
-        {
-            buffer_A[21] = 0x30;
-            buffer_A[22] = 0x30;
-        }
-        if(digits == 5 || digits == 6)
-        {
-            for(x = 1; x <= side.a.moneySale[0]; x++)
-            {						   							
-        		buffer_A[x + 22] = side.a.moneySale[7 - x];                
-        	} 
-        }else
-        {
-            for(x = 1; x <= side.a.moneySale[0]; x++)
-            {						   							
-        		buffer_A[x + 22] = side.a.moneySale[9 - x];                
-        	}            
-        }
-        if(buffer_A[29] == 0x00)
-        {
-            buffer_A[29] = 0x30;
-            buffer_A[30] = 0x30;
-        }
-        buffer_A[31]                    = verificar_check(buffer_A,32);                          
-        side.a.pumpState                = PUMP_IDLE;
-        //side.a.rfState                  = RF_IDLE;        
+                         
+        //side.a.pumpState                = RF_DELIVERING;       
         bufferDisplay1.flagEndSale      = false;
         side.a.RFstateReport            = 0;
         pollTotals                      = 1;
-        bufferAready                    = 1;
-        FlagTotal                       = 0;
-        if(bufferDisplay1.flagPrint == 1)
-        {
-            bufferDisplay1.PrintFlagEOT     = 1;
-        }else
-        {
-            bufferDisplay1.PrintFlagEOT     = 0;
-            bufferDisplay1.flagActiveSale   = false;
-            flowDisplay1 = 0;
-        }
+        bufferAready                    = 0;
         side.a.BusyChange = 0;
     }   
     
@@ -2768,10 +3437,8 @@ void pollingRFA_Tx(){
                 tempPreset2[x + DecimalFaltante] = tempPreset[x];
             }
             for(x = 3; x < 8; x++)
-            {
-                
-                tempPreset2[x] = tempPreset[x - DecimalFaltante + 1];
-            
+            {                
+                tempPreset2[x] = tempPreset[x - DecimalFaltante + 1];           
             }
         }
 
@@ -2813,7 +3480,7 @@ void pollingRFA_Tx(){
         buffer_A[36] = verificar_check(buffer_A,37);    
         side.a.RFstateReport = 0;
         bufferAready = 2;
-        FlagTotal = 0;        
+        //side.a.FlagTotal = 0;        
         CreditAuth = 0;
         AckFlag = 0;
     }
@@ -2836,13 +3503,7 @@ void pollingRFB_Tx(){
         buffer_B[8]   = verificar_check(buffer_B,9);        
 		side.b.RFstateReport = 0;
         side.b.rfState = RF_IDLE;
-        bufferAreadyB = 1;
-        if(PrinterType[1] == 1)
-        {
-            printLogoP(printPortB,11);    
-        }       
-        write_psoc1(printPortB,10);
-        
+        bufferAreadyB = 1;      
         side.b.rfStateCopy = 0;
     }    
     ////////////// PRESET - DISPENSANDO ////////////////////////////////////
@@ -2888,115 +3549,32 @@ void pollingRFB_Tx(){
                 }  
             }
             buffer_B[18]  = 0x00;
-            for(x = 0; x <8 ; x++)
+            for(x = 0; x < 8 ; x++)
             {
                 buffer_B[19+x]=bufferDisplay2.licenceSale[x+1];
                 tempPreset[x] = 0x00;
             }            
-            for(x=27; x<=37;x++)
+            for(x = 27; x <= 37; x++)
             {
-                buffer_B[x]= 0x30;
+                buffer_B[x] = 0x30;
             }
             
-            buffer_B[38] = verificar_check(buffer_B,39);            
-            //for (x = 0; x < 40; x++){
-            //    RF_Connection_PutChar(buffer_B[x]);
-            //}            
+            buffer_B[38] = verificar_check(buffer_B,39);                        
             side.b.rfState       = RF_DELIVERING;
             side.b.RFstateReport = 0;
             bufferAreadyB        = 1;
-            FlagTotalB           = 0;
                       
     }      
     ////////////// END SALE ////////////////////////////////////
  
    if (bufferDisplay2.flagEndSale && side.b.RFstateReport == 1)    
     {
-        for(x = 0; x < 255; x++)
-        {
-            buffer_B[x] = 0x00;
-        }
-        
-        buffer_B[100] = 31;
-        buffer_B[0]  = 0xBC;
-        buffer_B[1]  = 0xCB;
-        buffer_B[2]  = 0xC8;
-        buffer_B[3]  = IDCast[0];
-        buffer_B[4]  = IDCast[1];
-        buffer_B[5]  = side.b.RF;
-        buffer_B[6]  = 0xA4;
-        buffer_B[7]  = RF_CASHSALEREPORT;
-        buffer_B[8]  = side.b.activeHose - 1;
-        
-        for(x = side.b.ppuSale[0]; x > 0 ; x--)
-        {						   							
-    		tempPPU[side.b.ppuSale[0] - x] = side.b.ppuSale[x];
-    	}
-        
-        for(x = 9; x <= 13; x++)
-        {
-            buffer_B[x] = tempPPU[x - 9]; 
-            if(buffer_B[x] == 0x00)
-                buffer_B[x] = 0x30;
-        } 
-        
-        if(digits == 5 || digits == 6)
-        {
-            for(x = 1; x <= side.b.volumeSale[0]; x++)
-            {						   							
-                buffer_B[x + 13] = side.b.volumeSale[7 - x];                
-        	}
-        }else
-        {
-            for(x = 1; x <= side.b.volumeSale[0]; x++)
-            {						   							
-                buffer_B[x + 13] = side.b.volumeSale[9 - x];                
-        	}
-        }  
-        
-        if(buffer_B[20] == 0x00)
-        {
-            buffer_B[20] = 0x30;
-            buffer_B[21] = 0x30;
-        }
-        
-        if(digits == 5 || digits == 6)
-        {
-            for(x = 1; x <= side.b.moneySale[0]; x++)
-            {						   							
-        		buffer_B[x + 21] = side.b.moneySale[7 - x];                
-        	} 
-        }else
-        {
-            for(x = 1; x <= side.b.moneySale[0]; x++)
-            {						   							
-        		buffer_B[x + 21] = side.b.moneySale[9 - x];                
-        	}            
-        }
-        
-        if(buffer_B[28] == 0x00)
-        {
-            buffer_B[28] = 0x30;
-            buffer_B[29] = 0x30;
-        }
-        
-        buffer_B[30]              = verificar_check(buffer_B, 31);        
-        side.b.pumpState              = PUMP_IDLE;
-        //side.b.rfState                = RF_IDLE;        
+              
+        //side.b.pumpState              = RF_DELIVERING;  
         bufferDisplay2.flagEndSale    = false;
         side.b.RFstateReport          = 0;
         pollTotalsB                   = 1;        
-        bufferAreadyB                 = 1;
-        FlagTotalB                    = 0;    
-        if(bufferDisplay2.flagPrint == 1)
-        {
-            bufferDisplay2.PrintFlagEOT     = 1;
-        }else
-        {
-            bufferDisplay2.PrintFlagEOT     = 0;
-            bufferDisplay2.flagActiveSale = false;
-            flowDisplay2 = 0;
-        }
+        bufferAreadyB                 = 0;
         side.b.BusyChange = 0;
     }                                               
     ////////////// SHIFT ////////////////////////////////////
@@ -3182,7 +3760,7 @@ void pollingRFB_Tx(){
                
         side.b.RFstateReport = 0;
         bufferAreadyB = 2;
-        FlagTotalB = 0;        
+        //side.b.FlagTotal = 0;        
         CreditAuth2 = 0;
         AckFlag2 = 0;
     }
@@ -3206,13 +3784,7 @@ void pollingRFC_Tx(){
         buffer_C[9]   = verificar_check(buffer_C,10);        
 		side.c.RFstateReport = 0;
         side.c.rfState = RF_IDLE;
-        bufferAreadyC = 1;
-        if(PrinterType[1] == 1)
-        {
-            printLogoP(printPortA,11);    
-        }       
-        write_psoc1(printPortA,10);
-        
+        bufferAreadyC = 1;    
         side.c.rfStateCopy = 0;
     }
     ////////////// PRESET - BUSY ////////////////////////////////////
@@ -3273,92 +3845,17 @@ void pollingRFC_Tx(){
         side.c.rfState = RF_DELIVERING;     
         side.c.RFstateReport = 0;
         bufferAreadyC     = 1;
-        FlagTotalC        = 0;
+        //side.c.FlagTotal  = 0;
       
     }            
     ////////////// END SALE - CASH ////////////////////////////////////
     if(bufferDisplay3.flagEndSale && side.c.RFstateReport == 1) //if((side.a.pumpState == PUMP_PEOT || side.a.pumpState == PUMP_FEOT) && side.a.RFstateReport == 1)
     {        
-        for(x = 0; x < 255; x++)
-        {
-            buffer_C[x] = 0x00;
-        }
-        
-        buffer_C[0]  = 32;
-		buffer_C[1]  = 0xBC;
-        buffer_C[2]  = 0xCB;
-        buffer_C[3]  = 0xC8;
-        buffer_C[4]  = IDCast[0];
-        buffer_C[5]  = IDCast[1];
-        buffer_C[6]  = side.c.RF;
-        buffer_C[7]  = 0xA4;
-        buffer_C[8]  = RF_CASHSALEREPORT;
-        buffer_C[9]  = side.c.activeHose - 1;
-        
-        for(x = side.c.ppuSale[0]; x > 0 ; x--)
-        {						   							
-    		tempPPU[side.c.ppuSale[0] - x] = side.c.ppuSale[x];
-    	}
-        
-        for(x = 10; x <= 14; x++)
-        {
-            buffer_C[x] = tempPPU[x - 10]; 
-            if(buffer_C[x] == 0x00)
-                buffer_C[x] = 0x30;
-        } 
-        if(digits == 5 || digits == 6)
-        {
-            for(x = 1; x <= side.c.volumeSale[0]; x++)
-            {						   							
-                buffer_C[x + 14] = side.c.volumeSale[7 - x];                
-        	}
-        }else
-        {
-            for(x = 1; x <= side.c.volumeSale[0]; x++)
-            {						   							
-                buffer_C[x + 14] = side.c.volumeSale[9 - x];                
-        	}
-        }        
-        if(buffer_C[21] == 0x00)
-        {
-            buffer_C[21] = 0x30;
-            buffer_C[22] = 0x30;
-        }
-        if(digits == 5 || digits == 6)
-        {
-            for(x = 1; x <= side.c.moneySale[0]; x++)
-            {						   							
-        		buffer_C[x + 22] = side.c.moneySale[7 - x];                
-        	} 
-        }else
-        {
-            for(x = 1; x <= side.c.moneySale[0]; x++)
-            {						   							
-        		buffer_C[x + 22] = side.c.moneySale[9 - x];                
-        	}            
-        }
-        if(buffer_C[29] == 0x00)
-        {
-            buffer_C[29] = 0x30;
-            buffer_C[30] = 0x30;
-        }
-        buffer_C[31]                    = verificar_check(buffer_C,32);                          
-        side.c.pumpState                = PUMP_IDLE;
-        //side.c.rfState                  = RF_IDLE;        
+                                       
         bufferDisplay3.flagEndSale      = false;
         side.c.RFstateReport            = 0;
         pollTotalsC                     = 1;
-        bufferAreadyC                   = 1;
-        FlagTotalC                      = 0;
-        if(bufferDisplay3.flagPrint == 1)
-        {
-            bufferDisplay3.PrintFlagEOT     = 1;
-        }else
-        {
-            bufferDisplay3.PrintFlagEOT     = 0;
-            bufferDisplay3.flagActiveSale   = false;
-            flowDisplay3 = 0;
-        }
+        bufferAreadyC                   = 0;
         side.c.BusyChange = 0;
     }   
     
@@ -3556,7 +4053,7 @@ void pollingRFC_Tx(){
         buffer_C[36] = verificar_check(buffer_C,37);    
         side.c.RFstateReport = 0;
         bufferAreadyC = 2;
-        FlagTotalC = 0;        
+        //side.c.FlagTotal = 0;        
         CreditAuth3 = 0;
         AckFlag = 0;
     }
@@ -3581,12 +4078,6 @@ void pollingRFD_Tx(){
 		side.d.RFstateReport = 0;
         side.d.rfState = RF_IDLE;
         bufferAreadyD = 1;
-        if(PrinterType[1] == 1)
-        {
-            printLogoP(printPortB,11);    
-        }       
-        write_psoc1(printPortB,10);
-        
         side.d.rfStateCopy = 0;
     }
     ////////////// PRESET - BUSY ////////////////////////////////////
@@ -3647,92 +4138,18 @@ void pollingRFD_Tx(){
         side.d.rfState = RF_DELIVERING;     
         side.d.RFstateReport = 0;
         bufferAreadyD     = 1;
-        FlagTotalD        = 0;
+        //side.d.FlagTotal  = 0;
       
     }            
     ////////////// END SALE - CASH ////////////////////////////////////
     if(bufferDisplay4.flagEndSale && side.d.RFstateReport == 1) //if((side.a.pumpState == PUMP_PEOT || side.a.pumpState == PUMP_FEOT) && side.a.RFstateReport == 1)
     {        
-        for(x = 0; x < 255; x++)
-        {
-            buffer_D[x] = 0x00;
-        }
-        
-        buffer_D[0]  = 32;
-		buffer_D[1]  = 0xBC;
-        buffer_D[2]  = 0xCB;
-        buffer_D[3]  = 0xC8;
-        buffer_D[4]  = IDCast[0];
-        buffer_D[5]  = IDCast[1];
-        buffer_D[6]  = side.d.RF;
-        buffer_D[7]  = 0xA4;
-        buffer_D[8]  = RF_CASHSALEREPORT;
-        buffer_D[9]  = side.d.activeHose - 1;
-        
-        for(x = side.d.ppuSale[0]; x > 0 ; x--)
-        {						   							
-    		tempPPU[side.d.ppuSale[0] - x] = side.d.ppuSale[x];
-    	}
-        
-        for(x = 10; x <= 14; x++)
-        {
-            buffer_D[x] = tempPPU[x - 10]; 
-            if(buffer_D[x] == 0x00)
-                buffer_D[x] = 0x30;
-        } 
-        if(digits == 5 || digits == 6)
-        {
-            for(x = 1; x <= side.d.volumeSale[0]; x++)
-            {						   							
-                buffer_D[x + 14] = side.d.volumeSale[7 - x];                
-        	}
-        }else
-        {
-            for(x = 1; x <= side.d.volumeSale[0]; x++)
-            {						   							
-                buffer_D[x + 14] = side.d.volumeSale[9 - x];                
-        	}
-        }        
-        if(buffer_D[21] == 0x00)
-        {
-            buffer_D[21] = 0x30;
-            buffer_D[22] = 0x30;
-        }
-        if(digits == 5 || digits == 6)
-        {
-            for(x = 1; x <= side.d.moneySale[0]; x++)
-            {						   							
-        		buffer_D[x + 22] = side.d.moneySale[7 - x];                
-        	} 
-        }else
-        {
-            for(x = 1; x <= side.d.moneySale[0]; x++)
-            {						   							
-        		buffer_D[x + 22] = side.d.moneySale[9 - x];                
-        	}            
-        }
-        if(buffer_D[29] == 0x00)
-        {
-            buffer_D[29] = 0x30;
-            buffer_D[30] = 0x30;
-        }
-        buffer_D[31]                    = verificar_check(buffer_D,32);                          
-        side.d.pumpState                = PUMP_IDLE;
-        //side.a.rfState                  = RF_IDLE;        
+                                 
+        //side.d.pumpState                = RF_DELIVERING;       
         bufferDisplay4.flagEndSale      = false;
         side.d.RFstateReport            = 0;
         pollTotalsD                     = 1;
-        bufferAreadyD                   = 1;
-        FlagTotalD                      = 0;        
-        if(bufferDisplay4.flagPrint == 1)
-        {
-            bufferDisplay4.PrintFlagEOT     = 1;
-        }else
-        {
-            bufferDisplay4.PrintFlagEOT     = 0;
-            bufferDisplay4.flagActiveSale   = false;
-            flowDisplay4 = 0;
-        }
+        bufferAreadyD                   = 0;
         side.d.BusyChange = 0;
     }   
     
@@ -3927,7 +4344,7 @@ void pollingRFD_Tx(){
         buffer_D[36] = verificar_check(buffer_D,37);    
         side.d.RFstateReport = 0;
         bufferAreadyD = 2;
-        FlagTotal = 0;        
+        //side.a.FlagTotal = 0;        
         CreditAuth4 = 0;
         AckFlag = 0;
     }

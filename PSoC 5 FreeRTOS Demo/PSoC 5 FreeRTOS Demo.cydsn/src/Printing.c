@@ -1,37 +1,13 @@
-/*
-*********************************************************************************************************
-*                                           GRP500 CODE
-*
-*                             (c) Copyright 2013; Sistemas Insepet LTDA
-*
-*               All rights reserved.  Protected by international copyright laws.
-*               Knowledge of the source code may NOT be used to develop a similar product.
-*               Please help us continue to provide the Embedded community with the finest
-*               software available.  Your honesty is greatly appreciated.
-*********************************************************************************************************
-*/
-
-/*
-*********************************************************************************************************
-*
-*                                               GRP500 CODE
-*
-*                                             CYPRESS PSoC5LP
-*                                                with the
-*                                            CY8C5969AXI-LP035
-*
-* Filename      : Print.c
-* Version       : V1.00
-* Programmer(s) : 
-                  
-*********************************************************************************************************
-*/
-
-
-/*
-*********************************************************************************************************
-*                                             INCLUDE FILES
-*********************************************************************************************************
+/* ========================================
+ *
+ * Copyright SISTEMAS INSEPET, 2017
+ * All Rights Reserved
+ * UNPUBLISHED, LICENSED SOFTWARE.
+ *
+ * CONFIDENTIAL AND PROPRIETARY INFORMATION
+ * WHICH IS THE PROPERTY OF SISTEMAS INSEPET.
+ *
+ * ========================================
 */
 #include <device.h>
 #include <stdlib.h>
@@ -48,13 +24,6 @@
 *********************************************************************************************************
 */
 
-//uint8 title1[30]          = "     ESTACION DE SERVICIO     ";
-//uint8 title2[30]          = "       TERPEL LA CASONA       ";
-//uint8 title3[30]          = "         14.992.210-7         ";
-//uint8 title4[30]          = "           4226353            ";
-//uint8 title5[30]          = "             CALI             ";
-//uint8 footer1[30]         = "       EDS CERTIFICADA        ";
-//uint8 footer2[30]         = "    NO VALIDO COMO FACTURA    ";
 uint8 msn_fecha[13]       = "Fecha      : ";
 uint8 msn_hora[13]        = "Hora       : ";
 uint8 msn_placa[13]       = "Placa      : ";
@@ -363,7 +332,7 @@ void printLogoP(uint8 val, uint8 logo){
 
 void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
     uint8 x;        
-    if(pos == side.a.dir || pos == side.c.dir)
+    if(pos == side.a.RF || pos == side.c.RF)
     {
         if(PrinterType[1] == 1)
         {
@@ -372,7 +341,7 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             printLogoK(printPortB,logoPrint[1]);
         }
     }
-    if(pos == side.b.dir || pos == side.d.dir)
+    if(pos == side.b.RF || pos == side.d.RF)
     {
         if(PrinterType[1] == 1)
         {
@@ -471,26 +440,26 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
     {										    							
 		write_psoc1(val,msn_numero[x]);
 	}    	
-    if(pos == side.a.dir){
+    if(pos == side.a.RF){
         for(x=0;x < 10;x++){										    //NUMERO DE VENTA							
     		write_psoc1(val,side.a.saleNumber[x]);
     	}
     }
-    if(pos == side.b.dir)
+    if(pos == side.b.RF)
     {
         for(x = 0; x < 10; x++)                                         //NUMERO DE VENTA
         {										    							
     		write_psoc1(val,side.b.saleNumber[x]);
     	}
     }
-    if(pos == side.c.dir)
+    if(pos == side.c.RF)
     {
         for(x = 0; x < 10; x++)                                        //NUMERO DE VENTA
         {										    							
     		write_psoc1(val,side.c.saleNumber[x]);
     	}
     }
-    if(pos == side.d.dir)
+    if(pos == side.d.RF)
     {
         for(x = 0; x < 10; x++)                                       //NUMERO DE VENTA
         {										    							
@@ -499,7 +468,7 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
     }
     write_psoc1(val,10);
     ////////////// DATOS DE VENTA /////////////////////////////
-	if(pos == side.a.dir)
+	if(pos == side.a.RF)
     {
         bufferDisplay1.flagPrint = 0;
         for(x = 0; x < 13; x++)                                     //Mensaje Producto	
@@ -509,13 +478,23 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
         for(x = 0; x < 13; x++)                                     //Producto	
         {																
            write_psoc1(val,producto[side.a.GradesHose[side.a.hose] - 1][x]);
-    	}        
+    	}                          
+
         
         write_psoc1(val,10);
+        
         for(x = 0; x < 13; x++)                                     //PPU
         {																	
     		write_psoc1(val,msn_ppu[x]);
     	} 
+        write_psoc1(val,PRN_CURRENCY[0]);
+        write_psoc1(val,0x2F);
+        for(x = 0; x < 1; x++)                                      //Simbolos $/G
+        {																	
+    		write_psoc1(val,VolUnit[x]);
+    	}
+        write_psoc1(val,0x20);
+        
         if(digits >= 7)
         {
             if(side.a.ppuSale[2] == 0x30)
@@ -534,13 +513,14 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
         		write_psoc1(val,side.a.ppuSale[x]);
         	}
         }
-        write_psoc1(val,0x20);
-        write_psoc1(val,PRN_CURRENCY[0]);
-        write_psoc1(val,0x2F);
-        for(x = 0; x < 5; x++)                                      //Simbolos $/G
-        {																	
-    		write_psoc1(val,VolUnit[x]);
-    	}
+        
+
+
+
+
+
+
+
         write_psoc1(val,10);
         
         
@@ -548,6 +528,12 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
         {																	
     		write_psoc1(val,msn_vol[x]);
     	} 
+        
+        for(x = 0; x < 1; x++)                                      //Simbolos $/G
+        {																	
+    		write_psoc1(val,VolUnit[x]);
+    	}
+        write_psoc1(val,0x20);
         if (digits < 7){
             ///////////////////////////////////////////////////////////////
             if(side.a.volumeSale[1] == 0x30)
@@ -581,17 +567,21 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
                     write_psoc1(val,',');
         	}
         }
-        write_psoc1(val,0x20);
-        for(x = 0; x < 5; x++)                                      //Simbolos $/G
-        {																	
-    		write_psoc1(val,VolUnit[x]);
-    	}
+        
+
+
+
+
+
         write_psoc1(val,10);
        
         for(x = 0; x < 13; x++)                                     //Dinero
         {																	
     		write_psoc1(val,msn_din[x]);
     	}
+        
+        write_psoc1(val,PRN_CURRENCY[0]);
+        write_psoc1(val,0x20);
         if (digits < 7){
             /////////////////////////////////////////////////////////////
             if(side.a.moneySale[1] == 0x30)
@@ -626,22 +616,28 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
         	}
             
         }
-        write_psoc1(val,0x20);
-        write_psoc1(val,PRN_CURRENCY[0]);        
+                
+
+
         write_psoc1(val,10);
         
-        if(bufferDisplay1.saleType == 1)
+        if(bufferDisplay1.saleType == 1) //Venta en efectivo
         {
     		for(x = 0; x < 13; x++)
             {																		
     			write_psoc1(val, msn_placa[x]);                          //PLACA
     		} 
-    		for(x = 1; x <= bufferDisplay1.licenceSale[0]; x++)
+    		for(x = 1; x <= bufferDisplay1.PrintLicense[0]; x++)
             {
-    			write_psoc1(val,bufferDisplay1.licenceSale[x]);	
+    			write_psoc1(val,bufferDisplay1.PrintLicense[x]);	
     		}
+            
+            for(x = 0; x < 11; x++)
+            {
+    			bufferDisplay1.PrintLicense[x] = 0x00;	
+    		}            
             write_psoc1(val,10);
-          	if(KmCash[1] == 0x01){
+			if(KmCash[1] == 0x01){
                 for(x = 0; x < 13; x++)
                 {																		
     				write_psoc1(val,PRN_MILLEAGE[x]);    //Km opcional en efectivo
@@ -652,33 +648,38 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
     			}
                 write_psoc1(val,10);
             }
-            
+           
             for(x = 0; x < 13; x++)
             {																		
     			write_psoc1(val, PRN_PRESET[x]);                          //Preset
     		} 
             
+            write_psoc1(val,bufferDisplay1.PrintType);
+            write_psoc1(val,' ');
             if (digits < 7)
             {
                 if(bufferDisplay1.presetType[0] == 1)
                 {
-                    if(bufferDisplay1.presetValue[0][1] == 0x30)
-                        bufferDisplay1.presetValue[0][1] = 0x00;
-                    if(bufferDisplay1.presetValue[0][1] == 0x00 && bufferDisplay1.presetValue[0][2] == 0x30)
-                        bufferDisplay1.presetValue[0][2] = 0x00;
-                    if(ppux10 ==1){
-                        if(bufferDisplay1.presetValue[0][1] == 0x00 && bufferDisplay1.presetValue[0][2] == 0x00 && bufferDisplay1.presetValue[0][3] == 0x30)
-                            bufferDisplay1.presetValue[0][3] = 0x00;
-                    }
+                    if(bufferDisplay1.PrintPreset[0][1] == 0x30)
+                        bufferDisplay1.PrintPreset[0][1] = 0x00;
+                    if(bufferDisplay1.PrintPreset[0][1] == 0x00 && bufferDisplay1.PrintPreset[0][2] == 0x30)
+                        bufferDisplay1.PrintPreset[0][2] = 0x00;
+
+
+                        if(bufferDisplay1.PrintPreset[0][1] == 0x00 && bufferDisplay1.PrintPreset[0][2] == 0x00 && bufferDisplay1.PrintPreset[0][3] == 0x30)
+                            bufferDisplay1.PrintPreset[0][3] = 0x00;
+
+
                         ///////////////////////////////////////////////////////////////
-                    for(x = bufferDisplay1.presetValue[0][0]; x >= 1 ;x--)
+                    for(x = bufferDisplay1.PrintPreset[0][0]; x >= 1 ;x--)
                     {						   							
-                        write_psoc1(val,bufferDisplay1.presetValue[0][bufferDisplay1.presetValue[0][0]+ 1 - x]);
-                        if(ppux10 ==1){
+                        write_psoc1(val,bufferDisplay1.PrintPreset[0][bufferDisplay1.PrintPreset[0][0]+ 1 - x]);
+                        if(ppux10 == 1){
                             if(x == VolDec)
                                 write_psoc1(val,'.');
                         }else{
-                            if(x == VolDec + 1)
+                            if(x == VolDec)
+
                                 write_psoc1(val,'.');
                         }
                 	}                    
@@ -687,17 +688,18 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
                     ///////////////////////////////////////////////////////////////
                     for (x = 1; x < 5; x++ )
                     {
-                        if (bufferDisplay1.presetValue[0][x] != 0x30)
+                        if (bufferDisplay1.PrintPreset[0][x] != 0x30)
                             break;
-                        if (bufferDisplay1.presetValue[0][x] == 0x30)
+                        if (bufferDisplay1.PrintPreset[0][x] == 0x30)
                         {
-                            bufferDisplay1.presetValue[0][x] = 0x00;                   
+                            bufferDisplay1.PrintPreset[0][x] = 0x00;                   
+
                         }                
                     }
                     ///////////////////////////////////////////////////////////////
-                    for(x = bufferDisplay1.presetValue[0][0]; x >= 1 ;x--)
+                    for(x = bufferDisplay1.PrintPreset[0][0]; x >= 1 ;x--)
                     {						   							
-                        write_psoc1(val,bufferDisplay1.presetValue[0][bufferDisplay1.presetValue[0][0]+ 1 - x]);
+                        write_psoc1(val,bufferDisplay1.PrintPreset[0][bufferDisplay1.PrintPreset[0][0]+ 1 - x]);
                         if(x == VolDec+1)
                             write_psoc1(val,'.');
                 	}                    
@@ -706,33 +708,36 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             {
                 if(bufferDisplay1.presetType[0] == 1)
                 {
-                    if(bufferDisplay1.presetValue[1][1] == 0x00)
-                        bufferDisplay1.presetValue[1][1] = 0x30;
-                   // if(bufferDisplay1.presetValue[1][1] == 0x00 && bufferDisplay1.presetValue[1][2] == 0x30)
-                    //    bufferDisplay1.presetValue[1][2] = 0x00;
+                    if(bufferDisplay1.PrintPreset[1][1] == 0x00)
+                        bufferDisplay1.PrintPreset[1][1] = 0x30;
+                   // if(bufferDisplay1.PrintPreset[1][1] == 0x00 && bufferDisplay1.PrintPreset[1][2] == 0x30)
+                    //    bufferDisplay1.PrintPreset[1][2] = 0x00;
                     
                         ///////////////////////////////////////////////////////////////
-                    for(x = bufferDisplay1.presetValue[1][0]; x >= 1 ;x--)
+                    for(x = bufferDisplay1.PrintPreset[1][0]; x >= 1 ;x--)
                     {						   							
-                        write_psoc1(val,bufferDisplay1.presetValue[1][bufferDisplay1.presetValue[1][0]+ 1 - x]);
+                        write_psoc1(val,bufferDisplay1.PrintPreset[1][bufferDisplay1.PrintPreset[1][0]+ 1 - x]);
                         //if(x == VolDec + 1)
                            // write_psoc1(val,'.');
                 	}
                 }
                 else{                                        
                     ///////////////////////////////////////////////////////////////
-                    for(x = bufferDisplay1.presetValue[1][0]; x >= 1 ;x--)
+                    for(x = bufferDisplay1.PrintPreset[1][0]; x >= 1 ;x--)
                     {						   							
-                        write_psoc1(val, bufferDisplay1.presetValue[1][bufferDisplay1.presetValue[1][0]+ 1 - x]);
+                        write_psoc1(val, bufferDisplay1.PrintPreset[1][bufferDisplay1.PrintPreset[1][0]+ 1 - x]);
 
                 	}
                 }                                        
             }
-            write_psoc1(val,' ');
-            write_psoc1(val,bufferDisplay1.presetType[1]);
+            
+
+            
+
+
             write_psoc1(val,10);
         }                
-  	    if(bufferDisplay1.saleType == 2)
+  	    if(bufferDisplay1.saleType == 2) //Venta en credito
         {		
             for(x = 0; x < 13; x++)
             {																		
@@ -743,7 +748,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,bufferDisplay1.mileageSale[x]);	
 			}
             write_psoc1(val,10);
-            		
+            for(x = 0; x < 11; x++)
+            {
+				bufferDisplay1.mileageSale[x] = 0x00;	
+			}		
+
 			for(x= 0;x < 13;x++)
             {										//DATOS IBUTTON								
 				write_psoc1(val,PRN_SERIAL[x]);
@@ -752,20 +761,33 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             {
 				write_psoc1(val,bufferDisplay1.idSerial[x]);	
 			}			
-			write_psoc1(val,10);	
+			write_psoc1(val,10);
+            
+            for(x = 0; x < 25; x++)
+            {
+				bufferDisplay1.idSerial[x] = 0x00;
+			}
+            
 			for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val, msn_placa[x]);
-			} 
-            
+			}  
+
+
             
 			for(x = 0; x < 8; x++)
             {
 				write_psoc1(val, LicensePlate[x]);	// variable placa
 			}
-            
-            
+                     
             write_psoc1(val,10);
+            
+            for(x = 0; x < 8; x++)
+            {
+				LicensePlate[x] = 0x00;	// variable placa
+			}
+
+
             
             for(x = 0; x < 13; x++)
             {																		
@@ -777,6 +799,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			}
             write_psoc1(val,10);
             
+            for(x = 0; x < 10; x++)
+            {
+				BalanceA[x] = 0x00; // variable saldo	
+			}
+            
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_COMPANY[x]);
@@ -786,7 +813,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val, Company[x]);	//  variable compañia
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 20; x++)
+            {
+				Company[x] = 0x00;	//  variable compañia
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val, PRN_ACCOUNT[x]);
@@ -796,7 +827,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val, CountID[x]);	//variable cuenta
 			}
             write_psoc1(val,10);
-			
+			for(x = 0; x < 20; x++)
+            {
+				CountID[x] = 0x00;	//variable cuenta
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_VISITSDAY[x]);
@@ -804,6 +839,7 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			
 			write_psoc1(val, DayVisit);	
 			
+            DayVisit = 0x00;
             write_psoc1(val,10);
             
             for(x = 0; x < 13; x++)
@@ -813,7 +849,8 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			
 			write_psoc1(val,WeekVisit);				
             write_psoc1(val,10);
-            
+            WeekVisit = 0x00;
+
             for(x = 0;x < 13; x++)
             {																		
 				write_psoc1(val,PRN_VISITSMONTH[x]);
@@ -821,6 +858,8 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			
 			write_psoc1(val, MonthVisit);		
             write_psoc1(val,10);
+            
+            MonthVisit = 0x00;
             
             for(x = 0; x < 13; x++)
             {																		
@@ -831,7 +870,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,VolumeDay[x]);	
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 7; x++)
+            {
+				VolumeDay[x] = 0x00;	
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_MONEYWEEK[x]);
@@ -841,7 +884,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val, VolumeWeek[x]);	
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 7; x++)
+            {
+				VolumeWeek[x] = 0x00;	
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_MONEYMONTH[x]);
@@ -851,7 +898,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,VolumeMonth[x]);	
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 7; x++)
+            {
+				VolumeMonth[x] = 0x00;	
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val, PRN_ACCOUNTTYPE[x]);
@@ -862,6 +913,10 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			}
             write_psoc1(val,10);
             write_psoc1(val,10);
+            for(x = 0; x < 16; x++)
+            {
+				CountType[x] = 0x00;	
+			}
             for(x = 0;x < 13; x++)
             {																		
 				write_psoc1(val,PRN_SIGNATURE[x]);
@@ -880,7 +935,7 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 	    }
     }
     
-	if(pos == side.b.dir)
+	if(pos == side.b.RF)
     {
         for(x = 0; x < 13; x++)                                     //Mensaje Producto	
         {																
@@ -895,7 +950,17 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
         for(x = 0;x < 13;x++)
         {										//Ppu							
     		write_psoc1(val,msn_ppu[x]);
-    	}   
+    	}  
+        
+        write_psoc1(val,PRN_CURRENCY[0]);
+        write_psoc1(val,0x2F);
+        for(x = 0; x < 1; x++)
+        {										                    //Simbolos $/G							
+    		write_psoc1(val,VolUnit[x]);
+    	}
+        write_psoc1(val,0x20);
+        
+
         if(digits >= 7)
         {
             if(side.b.ppuSale[2] == 0x30)
@@ -914,19 +979,28 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
         		write_psoc1(val,side.b.ppuSale[x]);
         	}
         }
-        write_psoc1(val,0x20);
-        write_psoc1(val,PRN_CURRENCY[0]);
-        write_psoc1(val,0x2F);
-        for(x = 0; x < 5; x++)
-        {										                    //Simbolos $/G							
-    		write_psoc1(val,VolUnit[x]);
-    	}
+        
+
+
+
+
+
+
+
         write_psoc1(val,10);
         
         for(x = 0; x < 13; x++)
         {										                    //Volumen							
     		write_psoc1(val,msn_vol[x]);
     	} 
+        
+        
+        for(x = 0; x < 1; x++)
+        {										                    //Simbolos $/G							
+    		write_psoc1(val,VolUnit[x]);
+    	}
+        write_psoc1(val,0x20);
+        
          if (digits < 7){
             ///////////////////////////////////////////////////////////////
             if(side.b.volumeSale[1] == 0x30)
@@ -959,11 +1033,12 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
                     write_psoc1(val,',');
         	}
         }
-        write_psoc1(val,0x20);
-        for(x = 0; x < 5; x++)
-        {										                    //Simbolos $/G							
-    		write_psoc1(val,VolUnit[x]);
-    	}
+        
+
+
+
+
+
         write_psoc1(val,10);
         
         
@@ -971,6 +1046,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
         {										                    //Dinero							
     		write_psoc1(val,msn_din[x]);
     	}
+        
+        
+        write_psoc1(val,PRN_CURRENCY[0]);
+        write_psoc1(val,0x20);
+        
          if (digits < 7){
             /////////////////////////////////////////////////////////////
             if(side.b.moneySale[1] == 0x30)
@@ -1004,8 +1084,9 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
         	}
             
         }
-        write_psoc1(val,0x20);
-        write_psoc1(val,PRN_CURRENCY[0]);        
+                
+
+
         write_psoc1(val,10);
         
         if(bufferDisplay2.saleType == 1)
@@ -1014,13 +1095,18 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             {																		
     			write_psoc1(val,msn_placa[x]);                          //PLACA
     		} 
-    		for(x = 1; x <= bufferDisplay2.licenceSale[0]; x++)
+    		for(x = 1; x <= bufferDisplay2.PrintLicense[0]; x++)
             {
-    			write_psoc1(val,bufferDisplay2.licenceSale[x]);	
+    			write_psoc1(val,bufferDisplay2.PrintLicense[x]);	
     		}
+            
+            for(x = 0; x < 11; x++)
+            {
+    			bufferDisplay2.PrintLicense[x] = 0x00;	  //Borra placa
+    		}           
             write_psoc1(val,10);
             
-            if(KmCash[1] == 0x01){
+			if(KmCash[1] == 0x01){
                 for(x = 0; x < 13; x++)
                 {																		
     				write_psoc1(val,PRN_MILLEAGE[x]);    //Km opcional en efectivo
@@ -1031,32 +1117,39 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
     			}
                 write_psoc1(val,10);
             }
+
             for(x = 0; x < 13; x++)
             {																		
     			write_psoc1(val,PRN_PRESET[x]);                          //Preset
     		} 
+            
+            write_psoc1(val,bufferDisplay2.PrintType);
+            write_psoc1(val,' ');
     		if (digits < 7)
             {
                 if(bufferDisplay2.presetType[0] == 1)
                 {
-                    if(bufferDisplay2.presetValue[0][1] == 0x30)
-                        bufferDisplay2.presetValue[0][1] = 0x00;
-                    if(bufferDisplay2.presetValue[0][1] == 0x00 && bufferDisplay2.presetValue[0][2] == 0x30)
-                        bufferDisplay2.presetValue[0][2] = 0x00;
-                    if(ppux10 ==1){
-                        if(bufferDisplay2.presetValue[0][1] == 0x00 && bufferDisplay2.presetValue[0][2] == 0x00 && bufferDisplay2.presetValue[0][3] == 0x30)
-                            bufferDisplay2.presetValue[0][3] = 0x00;
-                    }
+                    if(bufferDisplay2.PrintPreset[0][1] == 0x30)
+                        bufferDisplay2.PrintPreset[0][1] = 0x00;
+                    if(bufferDisplay2.PrintPreset[0][1] == 0x00 && bufferDisplay2.PrintPreset[0][2] == 0x30)
+                        bufferDisplay2.PrintPreset[0][2] = 0x00;
+
+
+                        if(bufferDisplay2.PrintPreset[0][1] == 0x00 && bufferDisplay2.PrintPreset[0][2] == 0x00 && bufferDisplay2.PrintPreset[0][3] == 0x30)
+                            bufferDisplay2.PrintPreset[0][3] = 0x00;
+
+
                     
                         ///////////////////////////////////////////////////////////////
-                    for(x = bufferDisplay2.presetValue[0][0]; x >= 1 ;x--)
+                    for(x = bufferDisplay2.PrintPreset[0][0]; x >= 1 ;x--)
                     {						   							
-                        write_psoc1(val,bufferDisplay2.presetValue[0][bufferDisplay2.presetValue[0][0]+ 1 - x]);
+                        write_psoc1(val,bufferDisplay2.PrintPreset[0][bufferDisplay2.PrintPreset[0][0]+ 1 - x]);
                         if(ppux10 ==1){
                             if(x == VolDec)
                                 write_psoc1(val,'.');
                         }else{
-                            if(x == VolDec + 1)
+                            if(x == VolDec)
+
                                 write_psoc1(val,'.');
                         }
                 	}                    
@@ -1065,17 +1158,18 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
                     ///////////////////////////////////////////////////////////////
                     for (x = 1; x < 5; x++ )
                     {
-                        if (bufferDisplay2.presetValue[0][x] != 0x30)
+                        if (bufferDisplay2.PrintPreset[0][x] != 0x30)
                             break;
-                        if (bufferDisplay2.presetValue[0][x] == 0x30)
+                        if (bufferDisplay2.PrintPreset[0][x] == 0x30)
                         {
-                            bufferDisplay2.presetValue[0][x] = 0x00;                   
+                            bufferDisplay2.PrintPreset[0][x] = 0x00;                   
+
                         }                
                     }
                     ///////////////////////////////////////////////////////////////
-                    for(x = bufferDisplay2.presetValue[0][0]; x >= 1 ;x--)
+                    for(x = bufferDisplay2.PrintPreset[0][0]; x >= 1 ;x--)
                     {						   							
-                        write_psoc1(val,bufferDisplay2.presetValue[0][bufferDisplay2.presetValue[0][0]+ 1 - x]);
+                        write_psoc1(val,bufferDisplay2.PrintPreset[0][bufferDisplay2.PrintPreset[0][0]+ 1 - x]);
                         if(x == VolDec+1)
                             write_psoc1(val,'.');
                 	}                    
@@ -1084,31 +1178,34 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             {
                 if(bufferDisplay2.presetType[0] == 1)
                 {
-                    if(bufferDisplay2.presetValue[1][1] == 0x00)
-                        bufferDisplay2.presetValue[1][1] = 0x30;
-                   // if(bufferDisplay1.presetValue[1][1] == 0x00 && bufferDisplay1.presetValue[1][2] == 0x30)
-                    //    bufferDisplay1.presetValue[1][2] = 0x00;
-                    
-                        ///////////////////////////////////////////////////////////////
-                    for(x = bufferDisplay2.presetValue[1][0]; x >= 1 ;x--)
+                    if(bufferDisplay2.PrintPreset[1][1] == 0x00)
+                        bufferDisplay2.PrintPreset[1][1] = 0x30;
+
+
+
+
+
+                    for(x = bufferDisplay2.PrintPreset[1][0]; x >= 1 ;x--)
                     {						   							
-                        write_psoc1(val,bufferDisplay2.presetValue[1][bufferDisplay2.presetValue[1][0]+ 1 - x]);
-                        //if(x == VolDec + 1)
-                           // write_psoc1(val,'.');
+                        write_psoc1(val,bufferDisplay2.PrintPreset[1][bufferDisplay2.PrintPreset[1][0]+ 1 - x]);
+
+
                 	}
                 }
                 else{                                        
-                    ///////////////////////////////////////////////////////////////
-                    for(x = bufferDisplay2.presetValue[1][0]; x >= 1 ;x--)
+                  
+
+                    for(x = bufferDisplay2.PrintPreset[1][0]; x >= 1 ;x--)
                     {						   							
-                        write_psoc1(val, bufferDisplay2.presetValue[1][bufferDisplay2.presetValue[1][0]+ 1 - x]);
+                        write_psoc1(val, bufferDisplay2.PrintPreset[1][bufferDisplay2.PrintPreset[1][0]+ 1 - x]);
 
                 	}
                 }                                        
             }
-            write_psoc1(val,' ');
-            write_psoc1(val,bufferDisplay2.presetType[1]);
+
+
             write_psoc1(val,10);
+         
         }
                 
   	    if(bufferDisplay2.saleType == 2)
@@ -1117,12 +1214,18 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             {																		
 				write_psoc1(val,PRN_MILLEAGE[x]);
 			}	
-			for(x = 1; x <= bufferDisplay2.mileageSale[0]; x++)
+			for(x = 1; x <= bufferDisplay2.mileageSale[0]; x++)   // KM
             {
 				write_psoc1(val,bufferDisplay2.mileageSale[x]);	
 			}
             write_psoc1(val,10);
-            		
+            
+            for(x = 0; x < 11; x++)
+            {
+				bufferDisplay2.mileageSale[x] = 0x00;	
+			}
+            
+
 			for(x = 0;x < 13; x++)
             {										//DATOS IBUTTON								
 				write_psoc1(val,PRN_SERIAL[x]);
@@ -1132,6 +1235,10 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,bufferDisplay2.idSerial[x]);	
 			}			
 			write_psoc1(val,10);	
+            for(x = 0; x < 25; x++)
+            {
+				bufferDisplay2.idSerial[x] = 0x00;	
+			}
 			for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,msn_placa[x]);
@@ -1141,7 +1248,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val, LicensePlate2[x]);	// variable placa
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 8; x++)
+            {
+				LicensePlate2[x] = 0x00;	// variable placa
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_BALANCE[x]);
@@ -1151,7 +1262,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,BalanceB[x]); // variable saldo	
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 10; x++)
+            {
+				BalanceB[x] = 0x00; // variable saldo	
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_COMPANY[x]);
@@ -1161,7 +1276,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,CompanyB[x]);	//  variable compañia
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 20; x++)
+            {
+				CompanyB[x] = 0x00;	//  variable compañia
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_ACCOUNT[x]);
@@ -1171,14 +1290,19 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,CountIDB[x]);	//variable cuenta
 			}
             write_psoc1(val,10);
-			
+			for(x = 0; x < 20; x++)
+            {
+				CountIDB[x] = 0x00;	//variable cuenta
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_VISITSDAY[x]);
 			} 
 			
 			write_psoc1(val, DayVisitB);	
-			
+			DayVisitB = 0x00;
+
             write_psoc1(val,10);
             
             for(x = 0; x < 13; x++)
@@ -1188,7 +1312,8 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			
 			write_psoc1(val,WeekVisitB);				
             write_psoc1(val,10);
-            
+            WeekVisitB = 0x00;
+
             for(x = 0;x < 13; x++)
             {																		
 				write_psoc1(val,PRN_VISITSMONTH[x]);
@@ -1196,7 +1321,8 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			
 			write_psoc1(val, MonthVisitB);		
             write_psoc1(val,10);
-            
+            MonthVisitB = 0x00;
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_MONEYDAY[x]);
@@ -1207,6 +1333,10 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			}
             write_psoc1(val,10);
             
+            for(x = 0; x < 7; x++)
+            {
+				VolumeDayB[x] = 0x00;	
+			}
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_MONEYWEEK[x]);
@@ -1216,7 +1346,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val, VolumeWeekB[x]);	
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 7; x++)
+            {
+				VolumeWeekB[x] = 0x00;	
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_MONEYMONTH[x]);
@@ -1226,7 +1360,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,VolumeMonthB[x]);	
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 7; x++)
+            {
+				VolumeMonthB[x] = 0x00;	
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val, PRN_ACCOUNTTYPE[x]);
@@ -1237,6 +1375,12 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			}
             write_psoc1(val,10);
             write_psoc1(val,10);
+            
+            for(x = 0; x < 16; x++)
+            {
+				CountTypeB[x] = 0x00;	
+			}
+            
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_SIGNATURE[x]);
@@ -1255,7 +1399,7 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 	    }
     } 
     
-    if(pos == side.c.dir)
+    if(pos == side.c.RF)
     {
         for(x = 0; x < 13; x++)                                     //Mensaje Producto	
         {																
@@ -1270,7 +1414,16 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
         for(x = 0;x < 13;x++)
         {										//Ppu							
     		write_psoc1(val,msn_ppu[x]);
-    	}         
+    	}       
+        write_psoc1(val,PRN_CURRENCY[0]);
+        write_psoc1(val,0x2F);      
+        for(x = 0; x < 1; x++)
+        {										                    //Simbolos $/G							
+    		write_psoc1(val,VolUnit[x]);
+    	}
+        write_psoc1(val,0x20);
+        
+
         if(digits >= 7)
         {
             if(side.c.ppuSale[2] == 0x30)
@@ -1289,19 +1442,26 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
         		write_psoc1(val,side.c.ppuSale[x]);
         	}
         }
-        write_psoc1(val,0x20);
-        write_psoc1(val,PRN_CURRENCY[0]);
-        write_psoc1(val,0x2F);
-        for(x = 0; x < 5; x++)
-        {										                    //Simbolos $/G							
-    		write_psoc1(val,VolUnit[x]);
-    	}
+        
+
+
+
+
+
+
+
         write_psoc1(val,10);
         
         for(x = 0; x < 13; x++)
         {										                    //Volumen							
     		write_psoc1(val,msn_vol[x]);
     	} 
+        
+        for(x = 0; x < 1; x++)
+        {										                    //Simbolos $/G							
+    		write_psoc1(val,VolUnit[x]);
+    	}
+        write_psoc1(val,0x20);
         if (digits < 7){
             ///////////////////////////////////////////////////////////////
             if(side.c.volumeSale[1] == 0x30)
@@ -1335,11 +1495,12 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
                     write_psoc1(val,',');
         	}
         }
-        write_psoc1(val,0x20);
-        for(x = 0; x < 5; x++)
-        {										                    //Simbolos $/G							
-    		write_psoc1(val,VolUnit[x]);
-    	}
+        
+
+
+
+
+
         write_psoc1(val,10);
         
        
@@ -1347,6 +1508,9 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
         {										                    //Dinero							
     		write_psoc1(val,msn_din[x]);
     	}
+       
+        write_psoc1(val,PRN_CURRENCY[0]);
+        write_psoc1(val,0x20);
        if (digits < 7){
             /////////////////////////////////////////////////////////////
             if(side.c.moneySale[1] == 0x30)
@@ -1380,25 +1544,27 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
                     write_psoc1(val,',');
         	}
             
-        }
-        write_psoc1(val,0x20);
-        write_psoc1(val,PRN_CURRENCY[0]);        
-        write_psoc1(val,10);
-        
+        }                
+        write_psoc1(val,10);        
         if(bufferDisplay3.saleType == 1)
         {
     		for(x = 0; x < 13; x++)
             {																		
     			write_psoc1(val,msn_placa[x]);                          //PLACA
     		} 
-    		for(x = 1; x <= bufferDisplay3.licenceSale[0]; x++)
+    		for(x = 1; x <= bufferDisplay3.PrintLicense[0]; x++)
             {
-    			write_psoc1(val,bufferDisplay3.licenceSale[x]);	
+    			write_psoc1(val,bufferDisplay3.PrintLicense[x]);	
     		}
             write_psoc1(val,10);
             
-            if(KmCash[1] == 0x01){
+            for(x = 0; x < 11; x++)
+            {
+    			bufferDisplay3.PrintLicense[x] = 0x00;	
+    		}
+			if(KmCash[1] == 0x01){
                 for(x = 0; x < 13; x++)
+
                 {																		
     				write_psoc1(val,PRN_MILLEAGE[x]);    //Km opcional en efectivo
     			}	
@@ -1412,28 +1578,34 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             {																		
     			write_psoc1(val,PRN_PRESET[x]);                          //Preset
     		} 
+            
+            write_psoc1(val,bufferDisplay3.PrintType);
+            write_psoc1(val,' ');
     		if (digits < 7)
             {
                 if(bufferDisplay3.presetType[0] == 1)
                 {
-                    if(bufferDisplay3.presetValue[0][1] == 0x30)
-                        bufferDisplay3.presetValue[0][1] = 0x00;
-                    if(bufferDisplay3.presetValue[0][1] == 0x00 && bufferDisplay3.presetValue[0][2] == 0x30)
-                        bufferDisplay3.presetValue[0][2] = 0x00;
-                    if(ppux10 ==1){
-                        if(bufferDisplay3.presetValue[0][1] == 0x00 && bufferDisplay3.presetValue[0][2] == 0x00 && bufferDisplay3.presetValue[0][3] == 0x30)
-                            bufferDisplay3.presetValue[0][3] = 0x00;
-                    }
+                    if(bufferDisplay3.PrintPreset[0][1] == 0x30)
+                        bufferDisplay3.PrintPreset[0][1] = 0x00;
+                    if(bufferDisplay3.PrintPreset[0][1] == 0x00 && bufferDisplay3.PrintPreset[0][2] == 0x30)
+                        bufferDisplay3.PrintPreset[0][2] = 0x00;
+
+
+                        if(bufferDisplay3.PrintPreset[0][1] == 0x00 && bufferDisplay3.PrintPreset[0][2] == 0x00 && bufferDisplay3.PrintPreset[0][3] == 0x30)
+                            bufferDisplay3.PrintPreset[0][3] = 0x00;
+
+
                     
                         ///////////////////////////////////////////////////////////////
-                    for(x = bufferDisplay3.presetValue[0][0]; x >= 1 ;x--)
+                    for(x = bufferDisplay3.PrintPreset[0][0]; x >= 1 ;x--)
                     {						   							
-                        write_psoc1(val,bufferDisplay3.presetValue[0][bufferDisplay3.presetValue[0][0]+ 1 - x]);
+                        write_psoc1(val,bufferDisplay3.PrintPreset[0][bufferDisplay3.PrintPreset[0][0]+ 1 - x]);
                         if(ppux10 ==1){
                             if(x == VolDec)
                                 write_psoc1(val,'.');
                         }else{
-                            if(x == VolDec + 1)
+                            if(x == VolDec)
+
                                 write_psoc1(val,'.');
                         }
                 	}                    
@@ -1442,17 +1614,18 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
                     ///////////////////////////////////////////////////////////////
                     for (x = 1; x < 5; x++ )
                     {
-                        if (bufferDisplay3.presetValue[0][x] != 0x30)
+                        if (bufferDisplay3.PrintPreset[0][x] != 0x30)
                             break;
-                        if (bufferDisplay3.presetValue[0][x] == 0x30)
+                        if (bufferDisplay3.PrintPreset[0][x] == 0x30)
                         {
-                            bufferDisplay3.presetValue[0][x] = 0x00;                   
+                            bufferDisplay3.PrintPreset[0][x] = 0x00;                   
+
                         }                
                     }
                     ///////////////////////////////////////////////////////////////
-                    for(x = bufferDisplay3.presetValue[0][0]; x >= 1 ;x--)
+                    for(x = bufferDisplay3.PrintPreset[0][0]; x >= 1 ;x--)
                     {						   							
-                        write_psoc1(val,bufferDisplay3.presetValue[0][bufferDisplay3.presetValue[0][0]+ 1 - x]);
+                        write_psoc1(val,bufferDisplay3.PrintPreset[0][bufferDisplay3.PrintPreset[0][0]+ 1 - x]);
                         if(x == VolDec+1)
                             write_psoc1(val,'.');
                 	}                    
@@ -1461,30 +1634,33 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             {
                 if(bufferDisplay3.presetType[0] == 1)
                 {
-                    if(bufferDisplay3.presetValue[1][1] == 0x00)
-                        bufferDisplay3.presetValue[1][1] = 0x30;
-                   // if(bufferDisplay1.presetValue[1][1] == 0x00 && bufferDisplay1.presetValue[1][2] == 0x30)
-                    //    bufferDisplay1.presetValue[1][2] = 0x00;
-                    
-                        ///////////////////////////////////////////////////////////////
-                    for(x = bufferDisplay3.presetValue[1][0]; x >= 1 ;x--)
+                    if(bufferDisplay3.PrintPreset[1][1] == 0x00)
+                        bufferDisplay3.PrintPreset[1][1] = 0x30;
+
+
+
+
+
+                    for(x = bufferDisplay3.PrintPreset[1][0]; x >= 1 ;x--)
                     {						   							
-                        write_psoc1(val,bufferDisplay3.presetValue[1][bufferDisplay3.presetValue[1][0]+ 1 - x]);
-                        //if(x == VolDec + 1)
-                           // write_psoc1(val,'.');
+                        write_psoc1(val,bufferDisplay3.PrintPreset[1][bufferDisplay3.PrintPreset[1][0]+ 1 - x]);
+
+
+
                 	}
                 }
                 else{                                        
                     ///////////////////////////////////////////////////////////////
-                    for(x = bufferDisplay3.presetValue[1][0]; x >= 1 ;x--)
+                    for(x = bufferDisplay3.PrintPreset[1][0]; x >= 1 ;x--)
                     {						   							
-                        write_psoc1(val, bufferDisplay3.presetValue[1][bufferDisplay3.presetValue[1][0]+ 1 - x]);
+                        write_psoc1(val, bufferDisplay3.PrintPreset[1][bufferDisplay3.PrintPreset[1][0]+ 1 - x]);
 
                 	}
                 }                                        
             }
-            write_psoc1(val,' ');
-            write_psoc1(val,bufferDisplay3.presetType[1]);
+            
+
+
             write_psoc1(val,10);
         }
                 
@@ -1499,7 +1675,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,bufferDisplay3.mileageSale[x]);	
 			}
             write_psoc1(val,10);
-            		
+            for(x = 0; x < 11; x++)
+            {
+				bufferDisplay3.mileageSale[x] = 0x00;	
+			}		
+
 			for(x = 0;x < 13; x++)
             {										//DATOS IBUTTON								
 				write_psoc1(val,PRN_SERIAL[x]);
@@ -1508,7 +1688,13 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             {
 				write_psoc1(val,bufferDisplay3.idSerial[x]);	
 			}			
-			write_psoc1(val,10);	
+			write_psoc1(val,10);
+            for(x = 0; x < 25; x++)
+            {
+				bufferDisplay3.idSerial[x] = 0x00;	
+
+			}
+
 			for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,msn_placa[x]);
@@ -1517,7 +1703,12 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             {
 				write_psoc1(val, LicensePlate[x]);	// variable placa
 			}                        
-            write_psoc1(val,10);            
+            write_psoc1(val,10);
+            for(x = 0; x < 8; x++)
+            {
+				LicensePlate[x] = 0x00;	// variable placa
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val, PRN_BALANCE[x]);
@@ -1527,6 +1718,10 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val, BalanceA[x]); // variable saldo	
 			}
             write_psoc1(val,10);
+            for(x = 0; x < 10; x++)
+            {
+				BalanceA[x] = 0x00; // variable saldo	
+			}
             
             for(x = 0; x < 13; x++)
             {																		
@@ -1537,7 +1732,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val, Company[x]);	//  variable compañia
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 20; x++)
+            {
+				Company[x] = 0x00;	//  variable compañia
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val, PRN_ACCOUNT[x]);
@@ -1547,7 +1746,12 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val, CountID[x]);	//variable cuenta
 			}
             write_psoc1(val,10);
-			
+            
+			for(x = 0; x < 20; x++)
+            {
+				CountID[x] = 0x00;	//variable cuenta
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_VISITSDAY[x]);
@@ -1556,7 +1760,8 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			write_psoc1(val, DayVisit);	
 			
             write_psoc1(val,10);
-            
+            DayVisit = 0x00;
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_VISITSWEEK[x]);
@@ -1564,7 +1769,8 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			
 			write_psoc1(val,WeekVisit);				
             write_psoc1(val,10);
-            
+            WeekVisit = 0x00;
+
             for(x = 0;x < 13; x++)
             {																		
 				write_psoc1(val,PRN_VISITSMONTH[x]);
@@ -1572,7 +1778,8 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			
 			write_psoc1(val, MonthVisit);		
             write_psoc1(val,10);
-            
+            MonthVisit = 0x00;
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_MONEYDAY[x]);
@@ -1582,7 +1789,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,VolumeDay[x]);	
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 7; x++)
+            {
+				VolumeDay[x] = 0x00;	
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_MONEYWEEK[x]);
@@ -1592,7 +1803,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val, VolumeWeek[x]);	
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 7; x++)
+            {
+				VolumeWeek[x] = 0x00;	
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_MONEYMONTH[x]);
@@ -1602,7 +1817,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,VolumeMonth[x]);	
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 7; x++)
+            {
+				VolumeMonth[x] = 0x00;	
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val, PRN_ACCOUNTTYPE[x]);
@@ -1613,6 +1832,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			}
             write_psoc1(val,10);
             write_psoc1(val,10);
+            
+            for(x = 0; x < 16; x++)
+            {
+				CountType[x] = 0x00;	
+			}
             for(x = 0;x < 13; x++)
             {																		
 				write_psoc1(val,PRN_SIGNATURE[x]);
@@ -1631,7 +1855,7 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 	    }
     }
     
-    if(pos == side.d.dir)
+    if(pos == side.d.RF)
     {
         for(x = 0; x < 13; x++)                                     //Mensaje Producto	
         {																
@@ -1647,6 +1871,13 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
         {										//Ppu							
     		write_psoc1(val,msn_ppu[x]);
     	}   
+        write_psoc1(val,PRN_CURRENCY[0]);
+        write_psoc1(val,0x2F);
+        for(x = 0; x < 1; x++)
+        {										                    //Simbolos $/G							
+    		write_psoc1(val,VolUnit[x]);
+    	}
+        write_psoc1(val,0x20);
         if(digits >= 7)
         {
             if(side.d.ppuSale[2] == 0x30)
@@ -1665,19 +1896,17 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
         		write_psoc1(val,side.d.ppuSale[x]);
         	}
         }
-        write_psoc1(val,0x20);
-        write_psoc1(val,PRN_CURRENCY[0]);
-        write_psoc1(val,0x2F);
-        for(x = 0; x < 5; x++)
-        {										                    //Simbolos $/G							
-    		write_psoc1(val,VolUnit[x]);
-    	}
         write_psoc1(val,10);
         
         for(x = 0; x < 13; x++)
         {										                    //Volumen							
     		write_psoc1(val,msn_vol[x]);
     	} 
+        for(x = 0; x < 1; x++)
+        {										                    //Simbolos $/G							
+    		write_psoc1(val,VolUnit[x]);
+    	}
+        write_psoc1(val,0x20);
         if (digits < 7){
             ///////////////////////////////////////////////////////////////
             if(side.d.volumeSale[1] == 0x30)
@@ -1711,18 +1940,15 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
                     write_psoc1(val,',');
         	}
         }
-        write_psoc1(val,0x20);
-        for(x = 0; x < 5; x++)
-        {										                    //Simbolos $/G							
-    		write_psoc1(val,VolUnit[x]);
-    	}
-        write_psoc1(val,10);
-        
-       
+  
+        write_psoc1(val,10);        
         for(x = 0; x < 13; x++)
         {										                    //Dinero							
     		write_psoc1(val,msn_din[x]);
     	}
+        
+        write_psoc1(val,PRN_CURRENCY[0]);
+        write_psoc1(val,0x20);
         if (digits < 7){
             /////////////////////////////////////////////////////////////
             if(side.d.moneySale[1] == 0x30)
@@ -1756,8 +1982,6 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
                     write_psoc1(val,',');
         	}            
         }
-        write_psoc1(val,0x20);
-        write_psoc1(val,PRN_CURRENCY[0]);        
         write_psoc1(val,10);
         
         if(bufferDisplay4.saleType == 1)
@@ -1766,12 +1990,15 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             {																		
     			write_psoc1(val,msn_placa[x]);                          //PLACA
     		} 
-    		for(x = 1; x <= bufferDisplay4.licenceSale[0]; x++)
+    		for(x = 1; x <= bufferDisplay4.PrintLicense[0]; x++)
             {
-    			write_psoc1(val,bufferDisplay4.licenceSale[x]);	
+    			write_psoc1(val,bufferDisplay4.PrintLicense[x]);	
     		}
-            write_psoc1(val,10);
-            
+            write_psoc1(val,10);            
+            for(x = 0; x < 11; x++)
+            {
+    			bufferDisplay4.PrintLicense[x] = 0x00;	
+    		}
             if(KmCash[1] == 0x01){
                 for(x = 0; x < 13; x++)
                 {																		
@@ -1786,28 +2013,31 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             for(x = 0; x < 13; x++)
             {																		
     			write_psoc1(val,PRN_PRESET[x]);                          //Preset
-    		} 
+    		}             
+            write_psoc1(val,bufferDisplay4.PrintType);
+            write_psoc1(val,' ');
             if (digits < 7)
             {
                 if(bufferDisplay4.presetType[0] == 1)
                 {
-                    if(bufferDisplay4.presetValue[0][1] == 0x30)
-                        bufferDisplay4.presetValue[0][1] = 0x00;
-                    if(bufferDisplay4.presetValue[0][1] == 0x00 && bufferDisplay4.presetValue[0][2] == 0x30)
-                        bufferDisplay4.presetValue[0][2] = 0x00;
-                    if(ppux10 ==1){
-                        if(bufferDisplay4.presetValue[0][1] == 0x00 && bufferDisplay4.presetValue[0][2] == 0x00 && bufferDisplay4.presetValue[0][3] == 0x30)
-                            bufferDisplay4.presetValue[0][3] = 0x00;
-                    }
+                    if(bufferDisplay4.PrintPreset[0][1] == 0x30)
+                        bufferDisplay4.PrintPreset[0][1] = 0x00;
+                    if(bufferDisplay4.PrintPreset[0][1] == 0x00 && bufferDisplay4.PrintPreset[0][2] == 0x30)
+                        bufferDisplay4.PrintPreset[0][2] = 0x00;
+
+
+                        if(bufferDisplay4.PrintPreset[0][1] == 0x00 && bufferDisplay4.PrintPreset[0][2] == 0x00 && bufferDisplay4.PrintPreset[0][3] == 0x30)
+                            bufferDisplay4.PrintPreset[0][3] = 0x00;
                         ///////////////////////////////////////////////////////////////
-                    for(x = bufferDisplay4.presetValue[0][0]; x >= 1 ;x--)
+                    for(x = bufferDisplay4.PrintPreset[0][0]; x >= 1 ;x--)
                     {						   							
-                        write_psoc1(val,bufferDisplay4.presetValue[0][bufferDisplay4.presetValue[0][0]+ 1 - x]);
+                        write_psoc1(val,bufferDisplay4.PrintPreset[0][bufferDisplay4.PrintPreset[0][0]+ 1 - x]);
                         if(ppux10 ==1){
                             if(x == VolDec)
                                 write_psoc1(val,'.');
                         }else{
-                            if(x == VolDec + 1)
+                            if(x == VolDec)
+
                                 write_psoc1(val,'.');
                         }
                 	}                    
@@ -1816,17 +2046,18 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
                     ///////////////////////////////////////////////////////////////
                     for (x = 1; x < 5; x++ )
                     {
-                        if (bufferDisplay4.presetValue[0][x] != 0x30)
+                        if (bufferDisplay4.PrintPreset[0][x] != 0x30)
                             break;
-                        if (bufferDisplay4.presetValue[0][x] == 0x30)
+                        if (bufferDisplay4.PrintPreset[0][x] == 0x30)
                         {
-                            bufferDisplay4.presetValue[0][x] = 0x00;                   
+                            bufferDisplay4.PrintPreset[0][x] = 0x00;                   
+
                         }                
                     }
                     ///////////////////////////////////////////////////////////////
-                    for(x = bufferDisplay4.presetValue[0][0]; x >= 1 ;x--)
+                    for(x = bufferDisplay4.PrintPreset[0][0]; x >= 1 ;x--)
                     {						   							
-                        write_psoc1(val,bufferDisplay4.presetValue[0][bufferDisplay4.presetValue[0][0]+ 1 - x]);
+                        write_psoc1(val,bufferDisplay4.PrintPreset[0][bufferDisplay4.PrintPreset[0][0]+ 1 - x]);
                         if(x == VolDec+1)
                             write_psoc1(val,'.');
                 	}                    
@@ -1835,33 +2066,24 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             {
                 if(bufferDisplay4.presetType[0] == 1)
                 {
-                    if(bufferDisplay4.presetValue[1][1] == 0x00)
-                        bufferDisplay4.presetValue[1][1] = 0x30;
-                   // if(bufferDisplay1.presetValue[1][1] == 0x00 && bufferDisplay1.presetValue[1][2] == 0x30)
-                    //    bufferDisplay1.presetValue[1][2] = 0x00;
-                    
-                        ///////////////////////////////////////////////////////////////
-                    for(x = bufferDisplay4.presetValue[1][0]; x >= 1 ;x--)
+                    if(bufferDisplay4.PrintPreset[1][1] == 0x00)
+                        bufferDisplay4.PrintPreset[1][1] = 0x30;
+
+                    for(x = bufferDisplay4.PrintPreset[1][0]; x >= 1 ;x--)
                     {						   							
-                        write_psoc1(val,bufferDisplay4.presetValue[1][bufferDisplay4.presetValue[1][0]+ 1 - x]);
-                        //if(x == VolDec + 1)
-                           // write_psoc1(val,'.');
+                        write_psoc1(val,bufferDisplay4.PrintPreset[1][bufferDisplay4.PrintPreset[1][0]+ 1 - x]);
                 	}
                 }
                 else{                                        
                     ///////////////////////////////////////////////////////////////
-                    for(x = bufferDisplay4.presetValue[1][0]; x >= 1 ;x--)
+                    for(x = bufferDisplay4.PrintPreset[1][0]; x >= 1 ;x--)
                     {						   							
-                        write_psoc1(val, bufferDisplay4.presetValue[1][bufferDisplay4.presetValue[1][0]+ 1 - x]);
-
+                        write_psoc1(val, bufferDisplay4.PrintPreset[1][bufferDisplay4.PrintPreset[1][0]+ 1 - x]);
                 	}
                 }                                        
-            }
-            write_psoc1(val,' ');
-            write_psoc1(val,bufferDisplay4.presetType[1]);
+            }            
             write_psoc1(val,10);
-        }
-                
+        }                
   	    if(bufferDisplay4.saleType == 2)
         {		
             for(x = 0;x < 13;x++)
@@ -1873,7 +2095,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,bufferDisplay4.mileageSale[x]);	
 			}
             write_psoc1(val,10);
-            		
+            for(x = 0; x < 11; x++)
+            {
+				bufferDisplay4.mileageSale[x] = 0x00;	
+			}
+            
 			for(x = 0;x < 13; x++)
             {										//DATOS IBUTTON								
 				write_psoc1(val,PRN_SERIAL[x]);
@@ -1882,7 +2108,12 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             {
 				write_psoc1(val,bufferDisplay4.idSerial[x]);	
 			}			
-			write_psoc1(val,10);	
+			write_psoc1(val,10);
+            
+            for(x = 0; x < 25; x++)
+            {
+				bufferDisplay4.idSerial[x] = 0x00;	
+			}
 			for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,msn_placa[x]);
@@ -1892,7 +2123,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val, LicensePlate2[x]);	// variable placa
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 8; x++)
+            {
+				LicensePlate2[x] = 0x00;	// variable placa
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_BALANCE[x]);
@@ -1902,7 +2137,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,BalanceB[x]); // variable saldo	
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 10; x++)
+            {
+				BalanceB[x] = 0x00; // variable saldo	
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_COMPANY[x]);
@@ -1912,7 +2151,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,CompanyB[x]);	//  variable compañia
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 20; x++)
+            {
+				CompanyB[x] = 0x00;	//  variable compañia
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_ACCOUNT[x]);
@@ -1922,7 +2165,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,CountIDB[x]);	//variable cuenta
 			}
             write_psoc1(val,10);
-			
+			for(x = 0; x < 20; x++)
+            {
+				CountIDB[x] = 0x00;	//variable cuenta
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_VISITSDAY[x]);
@@ -1931,7 +2178,8 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			write_psoc1(val, DayVisitB);	
 			
             write_psoc1(val,10);
-            
+            DayVisitB = 0x00;
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_VISITSWEEK[x]);
@@ -1939,7 +2187,8 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			
 			write_psoc1(val,WeekVisitB);				
             write_psoc1(val,10);
-            
+            WeekVisitB = 0x00;
+
             for(x = 0;x < 13; x++)
             {																		
 				write_psoc1(val,PRN_VISITSMONTH[x]);
@@ -1947,7 +2196,8 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			
 			write_psoc1(val, MonthVisitB);		
             write_psoc1(val,10);
-            
+            MonthVisitB = 0x00;
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_MONEYDAY[x]);
@@ -1957,7 +2207,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,VolumeDayB[x]);	
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 7; x++)
+            {
+				VolumeDayB[x] = 0x00;	
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_MONEYWEEK[x]);
@@ -1967,7 +2221,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val, VolumeWeekB[x]);	
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 7; x++)
+            {
+				VolumeWeekB[x] = 0x00;	
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_MONEYMONTH[x]);
@@ -1977,7 +2235,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				write_psoc1(val,VolumeMonthB[x]);	
 			}
             write_psoc1(val,10);
-            
+            for(x = 0; x < 7; x++)
+            {
+				VolumeMonthB[x] = 0x00;	
+			}
+
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val, PRN_ACCOUNTTYPE[x]);
@@ -1988,6 +2250,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 			}
             write_psoc1(val,10);
             write_psoc1(val,10);
+            for(x = 0; x < 16; x++)
+            {
+				CountTypeB[x] = 0x00;	
+
+			}
             for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,PRN_SIGNATURE[x]);
@@ -2255,6 +2522,4 @@ void printBalance(uint8 val,uint8 pos){
 	write_psoc1(val,0x31);	
     
 }
-
-
 /* [] END OF FILE */

@@ -1,14 +1,15 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
+ * Copyright SISTEMAS INSEPET, 2017
  * All Rights Reserved
  * UNPUBLISHED, LICENSED SOFTWARE.
  *
  * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
+ * WHICH IS THE PROPERTY OF SISTEMAS INSEPET.
  *
  * ========================================
 */
+
 /*  INCLUDES  */
 /* Project and default includes */
 #include <project.h>
@@ -46,26 +47,23 @@ void PrinterTask(void *arg)
     {                                               
         if(bufferDisplay1.flagPrint == 1 && bufferDisplay1.PrintFlagEOT == 1)
         {    
-            //Retardo para espera de datos del tiquete desde el mux
-            vTaskDelay( 5000 / portTICK_PERIOD_MS );                
+                
             //Impresion
-            imprimir(printPortA, side.a.dir);
+            imprimir(printPortA, side.a.RF);
             bufferDisplay1.flagPrint = 0;            
             bufferDisplay1.PrintFlagEOT = 0;
             for(x = 0; x < 10; x++)                                         //NUMERO DE VENTA
             {   										    							
 		        side.a.saleNumber[x] = 0x00;
-	        } 
-            bufferDisplay1.flagActiveSale = false;
-            flowDisplay1 = 0;
-            //SetPicture(1, DISPLAY_INICIO0);
-        }
+	        }           
+            bufferDisplay1.flagActiveSale = false; 
+            bufferDisplay1.PrintEnd = 0;
+                
+        }      
         if(bufferDisplay2.flagPrint == 1 && bufferDisplay2.PrintFlagEOT == 1)
         {    
-            //Retardo para espera de datos del tiquete desde el mux
-            vTaskDelay( 5000 / portTICK_PERIOD_MS );
             //Impresion
-            imprimir(printPortB, side.b.dir);
+            imprimir(printPortB, side.b.RF);
             bufferDisplay2.flagPrint = 0;             
             bufferDisplay2.PrintFlagEOT = 0;            
             for(x = 0; x < 10; x++)                                         //NUMERO DE VENTA
@@ -73,15 +71,14 @@ void PrinterTask(void *arg)
 		        side.b.saleNumber[x] = 0x00;
 	        }
             bufferDisplay2.flagActiveSale = false;
-            flowDisplay2 = 0;
-            //SetPicture(2,DISPLAY_INICIO0);
-        }
+            bufferDisplay2.PrintEnd = 0;
+          
+        }       
         if(bufferDisplay3.flagPrint == 1 && bufferDisplay3.PrintFlagEOT == 1)
         {    
-            //Retardo para espera de datos del tiquete desde el mux
-            vTaskDelay( 5000 / portTICK_PERIOD_MS );                
+                
             //Impresion
-            imprimir(printPortA, side.c.dir);
+            imprimir(printPortA, side.c.RF);
             bufferDisplay3.flagPrint = 0;            
             bufferDisplay3.PrintFlagEOT = 0;
             for(x = 0; x < 10; x++)                                         //NUMERO DE VENTA
@@ -89,14 +86,13 @@ void PrinterTask(void *arg)
 		        side.c.saleNumber[x] = 0x00;
 	        }               
             bufferDisplay3.flagActiveSale = false;
-            flowDisplay3 = 0;
+            bufferDisplay3.PrintEnd = 0;
+
         }
         if(bufferDisplay4.flagPrint == 1 && bufferDisplay4.PrintFlagEOT == 1 )
-        {    
-            //Retardo para espera de datos del tiquete desde el mux
-            vTaskDelay( 5000 / portTICK_PERIOD_MS );                
+        {                    
             //Impresion
-            imprimir(printPortB, side.d.dir);
+            imprimir(printPortB, side.d.RF);
             bufferDisplay4.flagPrint = 0;
             bufferDisplay4.PrintFlagEOT = 0;                            
             for(x = 0; x < 10; x++)                                         //NUMERO DE VENTA
@@ -104,7 +100,7 @@ void PrinterTask(void *arg)
 		        side.d.saleNumber[x] = 0x00;
 	        }
             bufferDisplay4.flagActiveSale = false;
-            flowDisplay4 = 0;
+            bufferDisplay4.PrintEnd = 0;
         }                   
         vTaskDelayUntil(&xLastWakeTime, xFrequency);            
     }
