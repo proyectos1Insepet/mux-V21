@@ -1,36 +1,26 @@
-/*
-*********************************************************************************************************
-*                                         MUX ADVANCE CODE
-*
-*                             (c) Copyright 2016; Sistemas Insepet LTDA
-*
-*               All rights reserved.  Protected by international copyright laws.
-*               Knowledge of the source code may NOT be used to develop a similar product.
-*               Please help us continue to provide the Embedded community with the finest
-*               software available.  Your honesty is greatly appreciated.
-*********************************************************************************************************
+/* ========================================
+ *
+ * Copyright SISTEMAS INSEPET, 2017
+ * All Rights Reserved
+ * UNPUBLISHED, LICENSED SOFTWARE.
+ *
+ * CONFIDENTIAL AND PROPRIETARY INFORMATION
+ * WHICH IS THE PROPERTY OF SISTEMAS INSEPET.
+ *
+ * ========================================
+
+
 */
 
-/*
-*********************************************************************************************************
-*
-*                                             MUX ADVANCE CODE
-*
-*                                             CYPRESS PSoC5LP
-*                                                with the
-*                                            CY8C5969AXI-LP035
-*
-* Filename      : variables.h
-* Version       : V1.00
-* Programmer(s) : 
-                  
-*********************************************************************************************************
-*/
+/*  INCLUDES  */
 
 #ifndef VARIABLES_H
 #define VARIABLES_H
-#include <device.h>	
-    	
+#include <device.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
  
 /*
 *********************************************************************************************************
@@ -97,6 +87,8 @@
     volatile uint8 TempPos[4];
     volatile uint8 RFOnline;
     volatile uint8 OSonline;
+
+
   
     
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -142,10 +134,10 @@
     uint8 Product3[17];
     uint8 Product4[17];
     uint8 CopiasCredito;        
-    uint8 FlagTotal;
-    uint8 FlagTotalB;
-    uint8 FlagTotalC;
-    uint8 FlagTotalD;
+
+
+
+
     uint8 StatePosition[8];
     uint8 ActualState[20];
     uint8 InitState[4];
@@ -179,7 +171,7 @@
     uint8 ppuiButtonB[5];
     uint8 PPUAux;
     uint16 LongEsperada;
-    uint8 buffer_i2c[64];													//Buffer de lectura del i2c 
+    uint8 buffer_i2c[64]; //Buffer de lectura del i2c 
     uint8 LicensePlate[9];
     uint8 LicensePlate2[9];
     uint8 BalanceA[11];
@@ -226,6 +218,18 @@
     uint8 pollTotalsC;
     uint8 pollTotalsD;
     uint32 PositionGAP;
+    uint16 RfActive;
+    uint8 KmCash[2];
+
+
+
+
+
+
+
+
+
+
     
     
 /*
@@ -270,7 +274,7 @@ struct buffer{
     uint8 flagEndSale;              //Bandera que indica que la venta finalizo, se valida en introducir placa
     uint8 flagChangePPU;            //Bandera que habilita cambiar PPUs cuando los envie el beagle
     uint8 flagPrint;                //Bandera de impresion de recibo
-    uint8 flagActiveSale;           //Bandera de venta activa
+    bool flagActiveSale;           //Bandera de venta activa
     uint8 shiftId[11];
     uint8 shiftPassword[11];
     uint8 CreditpresetValue[2][10];
@@ -280,6 +284,15 @@ struct buffer{
     uint8 PresetTemp[10];
     uint8 PrintCopy;
     uint8 EndSaleReport;
+    uint8 LastFlowDisplay;
+    uint8 PrintPreset[2][10];
+    uint8 PrintLicense[11];
+    uint8 PrintType;
+    uint8 PrintEnd;
+    uint8 VarActual;
+    uint8 buffer_TX[100];
+
+
 
 };
 
@@ -318,6 +331,8 @@ struct position{
     uint8 GradesHose[5];
     uint8 BusyChange;
     uint8 RF;
+    uint8 TotalRequest;
+    uint8 FlagTotal;
 };
 
 struct pump{
@@ -354,6 +369,7 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_INICIO2,
 
     DISPLAY_FORMA_PAGO_DESEADA              = 0x04,
+
     DISPLAY_FORMA_PROGRAMACION              = 0x05,
     DISPLAY_INTRODUZCA_VALOR                = 0x06,
     DISPLAY_INTRODUZCA_VALOR2               = 0x0F,
@@ -375,6 +391,9 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_GRACIAS_VUELVA_PRONTO           = 0x0C,
 
     DISPLAY_ID_DIGITAL                      = 0x85,
+
+
+
     DISPLAY_ID_NO_RECONOCIDO                = 0x1C,//0x11,
     DISPLAY_ESPERANDO_ID                    = 0x12,
     DISPLAY_ID_RECONOCIDO                   = 0x13,
@@ -383,12 +402,17 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_INTRODUZCA_VOLUMEN              = 0x0D,
     DISPLAY_INTRODUZCA_KILOMETRAJE          = 0x0E,
     DISPLAY_OPERACIONES                     = 0x83, //antes 0x22
-    DISPLAY_CONFIGURACIONES                 = 0x5A,
+    DISPLAY_CONFIGURACIONES                 = 0x90,
+	DISPLAY_KM_EFECTIVO                     = 0x91,
+
+
+
     DISPLAY_COPIA_RECIBO                    = 0x31,
     DISPLAY_IMPRIMIENDO_RECIBO              = 0x35,
 
     DISPLAY_SELECCIONE_POSICION             = 0x2E,
     DISPLAY_OPERACION_CANCELADA             = 0x8C,
+
     DISPLAY_ESPERANDO_AUTORIZACION          = 0x96,
     DISPLAY_POR_FAVOR_ESPERE                = 0x39,
     DISPLAY_AUTORIZACION_ACEPTADA           = 0x97,
@@ -411,6 +435,7 @@ enum _AVAILABLE_DISPLAYS_
     
     DISPLAY_IDENTIFICADOR_ESTACION          = 0x64,
     DISPLAY_PRECIO_POR_UNIDAD               = 0x65,
+
     
     DISPLAY_DUMMY0                          = 0x99,
     DISPLAY_DUMMY1                          = 0x9A,
@@ -418,7 +443,10 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_DUMMY3                          = 0x9C,
     
     DISPLAY_SIDE_DUMMY_DISPLAY              = 0xFA,
-    DISPLAY_NULL                            = 0xFF
+    DISPLAY_NULL                            = 0xFF,
+    
+    DISPLAY_MESSAGE                         = 0X88
+
 };
 
 enum _PUMP_STATES_
@@ -442,8 +470,11 @@ enum _RF_STATES_
     RF_WORKSHIFTREQ     = 0x05,
     RF_CREDITSALEREPORT = 0x06,
     RF_ERROR            = 0x04,
+
+
     RF_COPY_RECEIPT     = 0x0B,
     RF_ZERO_SALE        = 0x0C
+
 };
 
 enum _AUTH_TYPE_
