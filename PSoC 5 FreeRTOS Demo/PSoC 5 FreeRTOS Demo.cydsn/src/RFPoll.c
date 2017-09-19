@@ -1110,6 +1110,26 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         side.b.rfState = RF_CREDITSALEAUTH;
                         return;
                     }
+                    // Authorization Request Terpel
+                    if(bufferAreadyB == 4)
+                    {                                                             
+                        for (x = 0; x < 39 + bufferDisplay2.idSerial[0]; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_B[x]);
+                        }
+                        bufferAreadyB = 0;
+                        AckFlag = 0;
+                    }
+                    // Balance Request Terpel
+                    if(bufferAreadyB == 5)
+                    {                                                             
+                        for (x = 0; x < 19 + bufferDisplay2.idSerial[0]; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_B[x]);
+                        }
+                        bufferAreadyB = 0;
+                        AckFlag = 0;                        
+                    }
                                                                                               
                     // Totales
                     if(bufferAreadyB == 0 && side.b.FlagTotal == 1)
@@ -1167,7 +1187,24 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         side.c.rfState = RF_CREDITSALEAUTH;
                         return;
                     }
-                    
+                    // Authorization Request Terpel
+                    if(bufferAreadyC == 4)
+                    {                                                             
+                        for (x = 0; x < 39 + bufferDisplay3.idSerial[0]; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_C[x]);
+                        }
+                        bufferAreadyC = 0;                       
+                    }
+                    // Balance Request Terpel
+                    if(bufferAreadyC == 5)
+                    {                                                             
+                        for (x = 0; x < 19 + bufferDisplay3.idSerial[0]; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_C[x]);
+                        }
+                        bufferAreadyC = 0;                                              
+                    }
                    
                     // Total
                     if(bufferAreadyC == 0 && side.c.FlagTotal == 1)
@@ -3488,7 +3525,173 @@ void pollingRFA_Tx(){
 }
 
 void pollingRFB_Tx(){   
-    uint16 x,y;      
+    uint16 x,y; 
+    uint8 decimal,DecimalFaltante;
+    /////////////// TERPEL ///////////////////////
+    if(side.b.pumpState == PUMP_CALLING && side.b.RFstateReport == 2 && CreditAuth2 == RF_CREDITSALEAUTH && bufferDisplay2.saleType == 2)
+    {
+        buffer_B[0]  = 0xBC;
+        buffer_B[1]  = 0xCB;
+        buffer_B[2]  = 0xC8;
+        buffer_B[3]  = IDCast[0];
+        buffer_B[4]  = IDCast[1];
+        buffer_B[5]  = side.b.RF;
+        buffer_B[6]  = 0xB1;
+        buffer_B[7]  = RF_CREDITSALEAUTH;
+        buffer_B[8]  = side.b.hose - 1;
+        
+        //Km (10 bytes)
+        for(y = 0; y < 10; y++)
+        {
+            buffer_B[9 + y] = 0x00;
+        }        
+        x = 0;                        
+        for(y = bufferDisplay2.mileageSale[0]; y >= 1; y--)
+        {           
+            buffer_B[9 + x] = bufferDisplay2.mileageSale[y]; 
+            x++;
+        }
+        buffer_B[19] =  bufferDisplay2.presetType[0];
+        
+        //Preset (8 bytes)    
+        for(y = 0; y < 8; y++)
+        {
+            buffer_B[20 + y] = 0x00;
+        }
+        x = 0;
+        if(bufferDisplay2.presetType[0] == 1)
+        {
+            for(x=0; x<8;x++)
+            {
+                tempPreset[x] = 0x30;
+            }
+
+            for(x = bufferDisplay2.presetValue[0][0] ; x > 0; x--)
+            {
+                 tempPreset[bufferDisplay2.presetValue[0][0] - x] = (bufferDisplay2.presetValue[0][x]); 
+            }         
+            decimal = 0;        
+            for(x = 0; x < 8; x++)
+            {
+                tempPreset2[x] = 0x30;
+            }        
+            for(decimal = 0; decimal <= 7; decimal++)
+            {
+                tempPreset2[x] = 0x30;
+                if (tempPreset[decimal] == ',')
+                {
+                    break;
+                }
+            }
+            if(decimal >= 7)
+            {
+                for(x = 0; x < 3; x++)
+                {
+                    tempPreset2[x] = 0x30;
+                }
+                for(x = 3; x < 8; x++)
+                {
+                    tempPreset2[x] = tempPreset[x - 3];
+                }        
+            }else{
+                DecimalFaltante = 3 - decimal;
+                for(x = 0; x < DecimalFaltante; x++)
+                {
+                    tempPreset2[x] = 0x30;
+                }
+                for(x = 0; x < decimal; x++)
+                {
+                    tempPreset2[x + DecimalFaltante] = tempPreset[x];
+                }
+                for(x = 3; x < 8; x++)
+                {                
+                    tempPreset2[x] = tempPreset[x - DecimalFaltante + 1];            
+                }
+            }
+            for(x = 20; x <= 27; x++)
+            {
+                buffer_B[x] = tempPreset2[x - 20];
+                
+                if(buffer_B[x]== 0x00)
+                {
+                    buffer_B[x] = 0x30;
+                }
+            }
+        }
+        if(bufferDisplay2.presetType[0] == 2)
+        {
+            for(x = 0; x < 8; x++)
+            {
+                tempPreset[x] = 0x30;
+            }
+            
+            for(x = bufferDisplay2.presetValue[0][0]; x > 0; x--)
+            {
+                tempPreset[bufferDisplay2.presetValue[0][0] - x] = (bufferDisplay2.presetValue[0][x]); 
+            }
+            for(x = 20; x <= 27; x++)
+            {
+                buffer_B[x] = tempPreset[x - 20];
+                
+                if(buffer_B[x]== 0x00)
+                {
+                    buffer_B[x] = 0x30;
+                }
+            }
+        }
+        buffer_B[28] = 0x03;  // TIPO IDENTIFICADOR 1 IBUTTON 2 t-INTELIGENTE 3-BANDA MAGNETICA     
+        for(y = 0; y < 8; y++)
+        {
+            buffer_B[29 + y] = 0x00;
+        }
+        for(y = 0; y < bufferDisplay2.passCard[0]; y++)
+        {
+            buffer_B[29 + y] = bufferDisplay2.passCard[bufferDisplay2.passCard[0]-y];
+        }
+        buffer_B[37] = bufferDisplay2.idSerial[0];        
+        for(y = 1; y <= bufferDisplay2.idSerial[0]; y++)
+        {
+            buffer_B[37 + y] = bufferDisplay2.idSerial[bufferDisplay2.idSerial[0]-(y-1)];
+        }
+        buffer_B[38+bufferDisplay2.idSerial[0]] = verificar_check(buffer_B,39+bufferDisplay2.idSerial[0]);
+        side.b.RFstateReport = 0;
+        bufferAreadyB = 4;             
+        CreditAuth2 = 0;
+        AckFlag = 0;       
+        side.b.rfState = RF_CREDITSALEAUTH; 
+    }
+    
+    if(side.b.pumpState == PUMP_IDLE && side.b.RFstateReport == 2)
+    {
+        buffer_B[0]  = 0xBC;
+        buffer_B[1]  = 0xCB;
+        buffer_B[2]  = 0xC8;
+        buffer_B[3]  = IDCast[0];
+        buffer_B[4]  = IDCast[1];
+        buffer_B[5]  = side.b.RF;
+        buffer_B[6]  = 0xB2;
+        buffer_B[7]  = RF_ASK_BALANCE;
+        buffer_B[8]  = bufferDisplay2.idType;
+                
+        for(y = 0; y < 8; y++)
+        {
+            buffer_B[9 + y] = 0x00;
+        }
+        for(y = 0; y < bufferDisplay2.passCard[0]; y++)
+        {
+            buffer_B[9 + y] = bufferDisplay2.passCard[bufferDisplay2.passCard[0]-y];
+        }
+        buffer_B[17] = bufferDisplay2.idSerial[0];        
+        for(y = 1; y <= bufferDisplay2.idSerial[0]; y++)
+        {
+            buffer_B[17 + y] = bufferDisplay2.idSerial[bufferDisplay2.idSerial[0]-(y-1)];
+        }
+        buffer_B[18+bufferDisplay2.idSerial[0]] = verificar_check(buffer_B,19+bufferDisplay2.idSerial[0]);
+        side.b.RFstateReport = 0;
+        bufferAreadyB = 5;           
+        CreditAuth2 = 0;        
+        side.b.rfState = RF_ASK_BALANCE; 
+    }
     /////////////// COPIA DE RECIBO //////////////////
     if(side.b.rfStateCopy == RF_COPY_RECEIPT && side.b.RFstateReport == 1){ 
         buffer_B[100]   = 10;
@@ -3769,6 +3972,172 @@ void pollingRFB_Tx(){
 
 void pollingRFC_Tx(){   
     uint16 x,y;
+    uint8 decimal,DecimalFaltante;
+    /////////////// TERPEL ///////////////////////
+    if(side.c.pumpState == PUMP_CALLING && side.c.RFstateReport == 2 && CreditAuth3 == RF_CREDITSALEAUTH && bufferDisplay3.saleType == 2)
+    {
+        buffer_C[0]  = 0xBC;
+        buffer_C[1]  = 0xCB;
+        buffer_C[2]  = 0xC8;
+        buffer_C[3]  = IDCast[0];
+        buffer_C[4]  = IDCast[1];
+        buffer_C[5]  = side.c.RF;
+        buffer_C[6]  = 0xB1;
+        buffer_C[7]  = RF_CREDITSALEAUTH;
+        buffer_C[8]  = side.c.hose - 1;
+        
+        //Km (10 bytes)
+        for(y = 0; y < 10; y++)
+        {
+            buffer_C[9 + y] = 0x00;
+        }        
+        x = 0;                        
+        for(y = bufferDisplay3.mileageSale[0]; y >= 1; y--)
+        {           
+            buffer_C[9 + x] = bufferDisplay3.mileageSale[y]; 
+            x++;
+        }
+        buffer_C[19] =  bufferDisplay3.presetType[0];
+        
+        //Preset (8 bytes)    
+        for(y = 0; y < 8; y++)
+        {
+            buffer_C[20 + y] = 0x00;
+        }
+        x = 0;
+        if(bufferDisplay3.presetType[0] == 1)
+        {
+            for(x=0; x<8;x++)
+            {
+                tempPreset[x] = 0x30;
+            }
+
+            for(x = bufferDisplay3.presetValue[0][0] ; x > 0; x--)
+            {
+                 tempPreset[bufferDisplay3.presetValue[0][0] - x] = (bufferDisplay3.presetValue[0][x]); 
+            }         
+            decimal = 0;        
+            for(x = 0; x < 8; x++)
+            {
+                tempPreset2[x] = 0x30;
+            }        
+            for(decimal = 0; decimal <= 7; decimal++)
+            {
+                tempPreset2[x] = 0x30;
+                if (tempPreset[decimal] == ',')
+                {
+                    break;
+                }
+            }
+            if(decimal >= 7)
+            {
+                for(x = 0; x < 3; x++)
+                {
+                    tempPreset2[x] = 0x30;
+                }
+                for(x = 3; x < 8; x++)
+                {
+                    tempPreset2[x] = tempPreset[x - 3];
+                }        
+            }else{
+                DecimalFaltante = 3 - decimal;
+                for(x = 0; x < DecimalFaltante; x++)
+                {
+                    tempPreset2[x] = 0x30;
+                }
+                for(x = 0; x < decimal; x++)
+                {
+                    tempPreset2[x + DecimalFaltante] = tempPreset[x];
+                }
+                for(x = 3; x < 8; x++)
+                {                
+                    tempPreset2[x] = tempPreset[x - DecimalFaltante + 1];            
+                }
+            }
+            for(x = 20; x <= 27; x++)
+            {
+                buffer_C[x] = tempPreset2[x - 20];
+                
+                if(buffer_C[x]== 0x00)
+                {
+                    buffer_C[x] = 0x30;
+                }
+            }
+        }
+        if(bufferDisplay3.presetType[0] == 2)
+        {
+            for(x = 0; x < 8; x++)
+            {
+                tempPreset[x] = 0x30;
+            }
+            
+            for(x = bufferDisplay3.presetValue[0][0]; x > 0; x--)
+            {
+                tempPreset[bufferDisplay3.presetValue[0][0] - x] = (bufferDisplay3.presetValue[0][x]); 
+            }
+            for(x = 20; x <= 27; x++)
+            {
+                buffer_C[x] = tempPreset[x - 20];
+                
+                if(buffer_C[x]== 0x00)
+                {
+                    buffer_C[x] = 0x30;
+                }
+            }
+        }
+        buffer_C[28] = 0x03;  // TIPO IDENTIFICADOR 1 IBUTTON 2 t-INTELIGENTE 3-BANDA MAGNETICA     
+        for(y = 0; y < 8; y++)
+        {
+            buffer_C[29 + y] = 0x00;
+        }
+        for(y = 0; y < bufferDisplay3.passCard[0]; y++)
+        {
+            buffer_C[29 + y] = bufferDisplay3.passCard[bufferDisplay3.passCard[0]-y];
+        }
+        buffer_C[37] = bufferDisplay3.idSerial[0];        
+        for(y = 1; y <= bufferDisplay3.idSerial[0]; y++)
+        {
+            buffer_C[37 + y] = bufferDisplay3.idSerial[bufferDisplay3.idSerial[0]-(y-1)];
+        }
+        buffer_C[38+bufferDisplay3.idSerial[0]] = verificar_check(buffer_C,39+bufferDisplay3.idSerial[0]);
+        side.c.RFstateReport = 0;
+        bufferAreadyC = 4;             
+        CreditAuth3 = 0;
+        AckFlag = 0;       
+        side.c.rfState = RF_CREDITSALEAUTH; 
+    }
+    
+    if(side.c.pumpState == PUMP_IDLE && side.c.RFstateReport == 2)
+    {
+        buffer_C[0]  = 0xBC;
+        buffer_C[1]  = 0xCB;
+        buffer_C[2]  = 0xC8;
+        buffer_C[3]  = IDCast[0];
+        buffer_C[4]  = IDCast[1];
+        buffer_C[5]  = side.c.RF;
+        buffer_C[6]  = 0xB2;
+        buffer_C[7]  = RF_ASK_BALANCE;
+        buffer_C[8]  = bufferDisplay3.idType;
+                
+        for(y = 0; y < 8; y++)
+        {
+            buffer_C[9 + y] = 0x00;
+        }
+        for(y = 0; y < bufferDisplay3.passCard[0]; y++)
+        {
+            buffer_C[9 + y] = bufferDisplay3.passCard[bufferDisplay3.passCard[0]-y];
+        }
+        buffer_C[17] = bufferDisplay3.idSerial[0];        
+        for(y = 1; y <= bufferDisplay3.idSerial[0]; y++)
+        {
+            buffer_C[17 + y] = bufferDisplay3.idSerial[bufferDisplay3.idSerial[0]-(y-1)];
+        }
+        buffer_C[18+bufferDisplay3.idSerial[0]] = verificar_check(buffer_C,19+bufferDisplay3.idSerial[0]);
+        side.c.RFstateReport = 0;
+        bufferAreadyC = 5;           
+        CreditAuth3 = 0;        
+        side.c.rfState = RF_ASK_BALANCE; 
+    }
     
     /////////////// TICKET COPY //////////////////
     if(side.c.rfStateCopy == RF_COPY_RECEIPT && side.c.RFstateReport == 1){ 
@@ -4062,7 +4431,172 @@ void pollingRFC_Tx(){
 
 void pollingRFD_Tx(){   
     uint16 x,y;
+    uint8 decimal,DecimalFaltante;
+    /////////////// TERPEL ///////////////////////
+    if(side.d.pumpState == PUMP_CALLING && side.d.RFstateReport == 2 && CreditAuth4 == RF_CREDITSALEAUTH && bufferDisplay4.saleType == 2)
+    {
+        buffer_D[0]  = 0xBC;
+        buffer_D[1]  = 0xCB;
+        buffer_D[2]  = 0xC8;
+        buffer_D[3]  = IDCast[0];
+        buffer_D[4]  = IDCast[1];
+        buffer_D[5]  = side.d.RF;
+        buffer_D[6]  = 0xB1;
+        buffer_D[7]  = RF_CREDITSALEAUTH;
+        buffer_D[8]  = side.d.hose - 1;
+        
+        //Km (10 bytes)
+        for(y = 0; y < 10; y++)
+        {
+            buffer_D[9 + y] = 0x00;
+        }        
+        x = 0;                        
+        for(y = bufferDisplay4.mileageSale[0]; y >= 1; y--)
+        {           
+            buffer_D[9 + x] = bufferDisplay4.mileageSale[y]; 
+            x++;
+        }
+        buffer_D[19] =  bufferDisplay4.presetType[0];
+        
+        //Preset (8 bytes)    
+        for(y = 0; y < 8; y++)
+        {
+            buffer_D[20 + y] = 0x00;
+        }
+        x = 0;
+        if(bufferDisplay4.presetType[0] == 1)
+        {
+            for(x=0; x<8;x++)
+            {
+                tempPreset[x] = 0x30;
+            }
+
+            for(x = bufferDisplay4.presetValue[0][0] ; x > 0; x--)
+            {
+                 tempPreset[bufferDisplay4.presetValue[0][0] - x] = (bufferDisplay4.presetValue[0][x]); 
+            }         
+            decimal = 0;        
+            for(x = 0; x < 8; x++)
+            {
+                tempPreset2[x] = 0x30;
+            }        
+            for(decimal = 0; decimal <= 7; decimal++)
+            {
+                tempPreset2[x] = 0x30;
+                if (tempPreset[decimal] == ',')
+                {
+                    break;
+                }
+            }
+            if(decimal >= 7)
+            {
+                for(x = 0; x < 3; x++)
+                {
+                    tempPreset2[x] = 0x30;
+                }
+                for(x = 3; x < 8; x++)
+                {
+                    tempPreset2[x] = tempPreset[x - 3];
+                }        
+            }else{
+                DecimalFaltante = 3 - decimal;
+                for(x = 0; x < DecimalFaltante; x++)
+                {
+                    tempPreset2[x] = 0x30;
+                }
+                for(x = 0; x < decimal; x++)
+                {
+                    tempPreset2[x + DecimalFaltante] = tempPreset[x];
+                }
+                for(x = 3; x < 8; x++)
+                {                
+                    tempPreset2[x] = tempPreset[x - DecimalFaltante + 1];            
+                }
+            }
+            for(x = 20; x <= 27; x++)
+            {
+                buffer_D[x] = tempPreset2[x - 20];
+                
+                if(buffer_D[x]== 0x00)
+                {
+                    buffer_D[x] = 0x30;
+                }
+            }
+        }
+        if(bufferDisplay4.presetType[0] == 2)
+        {
+            for(x = 0; x < 8; x++)
+            {
+                tempPreset[x] = 0x30;
+            }
+            
+            for(x = bufferDisplay4.presetValue[0][0]; x > 0; x--)
+            {
+                tempPreset[bufferDisplay4.presetValue[0][0] - x] = (bufferDisplay4.presetValue[0][x]); 
+            }
+            for(x = 20; x <= 27; x++)
+            {
+                buffer_D[x] = tempPreset[x - 20];
+                
+                if(buffer_D[x]== 0x00)
+                {
+                    buffer_D[x] = 0x30;
+                }
+            }
+        }
+        buffer_D[28] = 0x03;  // TIPO IDENTIFICADOR 1 IBUTTON 2 t-INTELIGENTE 3-BANDA MAGNETICA     
+        for(y = 0; y < 8; y++)
+        {
+            buffer_D[29 + y] = 0x00;
+        }
+        for(y = 0; y < bufferDisplay4.passCard[0]; y++)
+        {
+            buffer_D[29 + y] = bufferDisplay4.passCard[bufferDisplay4.passCard[0]-y];
+        }
+        buffer_D[37] = bufferDisplay4.idSerial[0];        
+        for(y = 1; y <= bufferDisplay3.idSerial[0]; y++)
+        {
+            buffer_D[37 + y] = bufferDisplay4.idSerial[bufferDisplay4.idSerial[0]-(y-1)];
+        }
+        buffer_D[38+bufferDisplay4.idSerial[0]] = verificar_check(buffer_D,39+bufferDisplay4.idSerial[0]);
+        side.d.RFstateReport = 0;
+        bufferAreadyD = 4;             
+        CreditAuth4 = 0;
+        AckFlag = 0;       
+        side.d.rfState = RF_CREDITSALEAUTH; 
+    }
     
+    if(side.d.pumpState == PUMP_IDLE && side.d.RFstateReport == 2)
+    {
+        buffer_D[0]  = 0xBC;
+        buffer_D[1]  = 0xCB;
+        buffer_D[2]  = 0xC8;
+        buffer_D[3]  = IDCast[0];
+        buffer_D[4]  = IDCast[1];
+        buffer_D[5]  = side.d.RF;
+        buffer_D[6]  = 0xB2;
+        buffer_D[7]  = RF_ASK_BALANCE;
+        buffer_D[8]  = bufferDisplay4.idType;
+                
+        for(y = 0; y < 8; y++)
+        {
+            buffer_D[9 + y] = 0x00;
+        }
+        for(y = 0; y < bufferDisplay4.passCard[0]; y++)
+        {
+            buffer_D[9 + y] = bufferDisplay4.passCard[bufferDisplay3.passCard[0]-y];
+        }
+        buffer_D[17] = bufferDisplay4.idSerial[0];        
+        for(y = 1; y <= bufferDisplay4.idSerial[0]; y++)
+        {
+            buffer_D[17 + y] = bufferDisplay4.idSerial[bufferDisplay4.idSerial[0]-(y-1)];
+        }
+        buffer_D[18+bufferDisplay4.idSerial[0]] = verificar_check(buffer_D,19+bufferDisplay4.idSerial[0]);
+        side.d.RFstateReport = 0;
+        bufferAreadyD = 5;           
+        CreditAuth4 = 0;        
+        side.d.rfState = RF_ASK_BALANCE; 
+    }
     /////////////// TICKET COPY //////////////////
     if(side.d.rfStateCopy == RF_COPY_RECEIPT && side.d.RFstateReport == 1){ 
         buffer_A[0]   = 10;

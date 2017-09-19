@@ -408,10 +408,10 @@ void PollingDisplay1(void){
                             }
                         break;
                         
-                        case 0x0F:
-                            flowDisplay1 = 33;                            
-                            SetPicture(1, DISPLAY_IDEN_FIDELIZACION);
-                        break;
+//                        case 0x0F: //Fidelizacion
+//                            flowDisplay1 = 33;                            
+//                            SetPicture(1, DISPLAY_IDEN_FIDELIZACION);
+//                        break;
                             
                         case 0x45:  //Pantalla otras opciones 
                             flowDisplay1 = 12;                            
