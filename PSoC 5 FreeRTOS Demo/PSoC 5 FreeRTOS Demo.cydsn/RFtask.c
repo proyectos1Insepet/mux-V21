@@ -206,12 +206,8 @@ void RF_Task(void *arg)
                 buffer_rf[6] = 0xFF;
                 RF_Connection_ClearRxBuffer();            
                 break;
-            }
-             
-            i++; 
-             
-            i++;    
-            
+            }             
+            i++;                                       
         }               
          
         if(RFOnline == 1)

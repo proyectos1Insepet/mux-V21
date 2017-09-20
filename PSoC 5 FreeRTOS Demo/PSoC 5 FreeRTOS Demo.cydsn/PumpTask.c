@@ -6841,9 +6841,9 @@ void PollingDisplay4(void){
                                 flowDisplay4 = 10;
                                 bufferDisplay4.saleType = 2;                                
                                 if(logoPrint[1]!= 11){
-                                    SetPicture(1, DISPLAY_ID_DIGITAL);
+                                    SetPicture(2, DISPLAY_ID_DIGITAL);
                                 }else{
-                                    SetPicture(1, DISPLAY_ID_TERPEL);
+                                    SetPicture(2, DISPLAY_ID_TERPEL);
                                 }
                                 AuthType4 = 1;
                                 Display2_ClearRxBuffer();
