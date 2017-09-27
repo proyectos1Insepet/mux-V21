@@ -226,6 +226,10 @@
     uint8 cardmessage2[25];
     uint8 cardmessage3[25];
     uint8 cardmessagedisplay;
+    uint8 validaclientefiel;
+    uint8 validaclientefiel2;
+    uint8 validaclientefiel3;
+    uint8 validaclientefiel4;
     uint8 KmCash[2];
     uint8 magneticReader[3];
     uint8 keysTerpel;
@@ -294,7 +298,7 @@ struct buffer{
     uint8 PrintEnd;
     uint8 VarActual;
     uint8 buffer_TX[100];
-
+    uint8 FidelConf;
 
 };
 
@@ -335,6 +339,7 @@ struct position{
     uint8 RF;
     uint8 TotalRequest;
     uint8 FlagTotal;
+    uint8 ActivoFideliza;    
 };
 
 struct pump{
@@ -409,6 +414,8 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_LECTORES_BANDA                  = 0x92,//Lectores banda
     DISPLAY_IDEN_FIDELIZACION               = 0x93,//Fidelizacion
     DISPLAY_CONF_USUARIO                    = 0x94,
+    DISPLAY_FIDELIZACION                    = 0x95,
+    DISPLAY_ID_LIFE_MILES                   = 0x96,
     DISPLAY_COPIA_RECIBO                    = 0x31,
     DISPLAY_IMPRIMIENDO_RECIBO              = 0x35,
 
@@ -475,6 +482,8 @@ enum _RF_STATES_
     RF_COPY_RECEIPT     = 0x0B,
     RF_ZERO_SALE        = 0x0C,
     RF_ASK_BALANCE      = 0x0D,
+    RF_FIDELITY         = 0x0F,
+    RF_FIDELITY_CONF    = 0x0A,
 };
 
 enum _AUTH_TYPE_
