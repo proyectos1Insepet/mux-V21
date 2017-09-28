@@ -2423,8 +2423,7 @@ void PollingDisplay1(void){
                             }                            
                             flowDisplay1 = 35;                                                                                      
                             SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
-                        break;
-                        
+                        break;                        
                     }                    
                     Display1_ClearRxBuffer();
                 break;
@@ -5800,15 +5799,8 @@ void PollingDisplay3(void){
                             {
                                 bufferDisplay3.licenceSale[x] = bufferDisplay3.valueKeys[x];
                             }
-//                            if(bufferDisplay3.flagEndSale)
-//                            {
-//                                bufferDisplay3.flagPrint = 1;
-//                                flowDisplay3 = 0;
-//                                SetPicture(1, DISPLAY_INICIO0); 
-//                            }else{
                             flowDisplay3 = 6;
                             SetPicture(1, DISPLAY_DESEA_IMPRIMIR_RECIBO);                                 
-//                            }
                             Display1_ClearRxBuffer();
                         break;
                         
