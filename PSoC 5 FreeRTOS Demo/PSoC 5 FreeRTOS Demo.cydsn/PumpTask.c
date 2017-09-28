@@ -2825,10 +2825,10 @@ void PollingDisplay2(void){
                                 bufferDisplay2.CreditpresetValue[1][x] = 0x00;                                
                             }                            
                             if(lockTurn == 1)
-                            {
-                                flowDisplay2 = 10;
+                            {                                
                                 bufferDisplay2.saleType = 2;                                
                                 if(logoPrint[1]!= 11){
+                                    flowDisplay2 = 10;
                                     SetPicture(2, DISPLAY_ID_DIGITAL);
                                 }else{
                                     flowDisplay2 = 37;
@@ -5221,10 +5221,10 @@ void PollingDisplay3(void){
                                 
                             }
                             if(lockTurn == 1)
-                            {
-                                flowDisplay3 = 10;
+                            {                                
                                 bufferDisplay3.saleType = 2;                                
                                 if(logoPrint[1]!= 11){
+                                    flowDisplay3 = 10;
                                     SetPicture(1, DISPLAY_ID_DIGITAL);
                                 }else{
                                     flowDisplay3 = 37;
@@ -7567,10 +7567,10 @@ void PollingDisplay4(void){
                                 
                             }                            
                             if(lockTurn == 1)
-                            {
-                                flowDisplay4 = 10;
+                            {                                
                                 bufferDisplay4.saleType = 2;                                
                                 if(logoPrint[1]!= 11){
+                                    flowDisplay4 = 10;
                                     SetPicture(2, DISPLAY_ID_DIGITAL);
                                 }else{
                                     flowDisplay4 = 37;
