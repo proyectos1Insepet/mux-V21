@@ -28,11 +28,6 @@
 #include <semphr.h>
 #include "os_resource.h"
 
-void nop(void)
-{
-    return;
-}
-
 /*
 *********************************************************************************************************
 *                             uint8 verificar_check(uint8 *datos, uint16 size)
@@ -142,6 +137,7 @@ void RFTotalA(void)
         }
         bufferDisplay1.buffer_TX[8] = y - 9;        
         side.a.FlagTotal = 0;
+		StopSendTotalA = 1;
         bufferDisplay1.buffer_TX[y] = verificar_check(bufferDisplay1.buffer_TX,y + 1);y++;                        
         for (x = 0; x < y; x++)
         {
@@ -366,6 +362,7 @@ void RFTotalB(void)
         }
         bufferDisplay2.buffer_TX[8] = y - 9;
         side.b.FlagTotal = 0;
+		StopSendTotalB = 1;
         bufferDisplay2.buffer_TX[y] = verificar_check(bufferDisplay2.buffer_TX,y + 1);y++;                 
     
         for (x = 0; x < y; x++)
@@ -506,6 +503,7 @@ void RFTotalB(void)
                         }                        
                     }
                     bufferDisplay2.buffer_TX[y] = verificar_check(bufferDisplay2.buffer_TX,y + 1);y++;                 
+					bufferDisplay2.VarActual = 0;
             }
             
             for (x = 0; x < 55; x++)
@@ -549,7 +547,7 @@ void RFTotalC(void)
         bufferDisplay3.buffer_TX[y] = 0xC8; y++;
         bufferDisplay3.buffer_TX[y] = IDCast[0]; y++;
         bufferDisplay3.buffer_TX[y] = IDCast[1]; y++;
-        bufferDisplay3.buffer_TX[5] = side.c.RF; y++;
+        bufferDisplay3.buffer_TX[y] = side.c.RF; y++;
         bufferDisplay3.buffer_TX[y] = 0xE8; y++;
         bufferDisplay3.buffer_TX[y] = side.c.rfState; y++;
         bufferDisplay3.buffer_TX[y] = 0x00; y++;
@@ -592,6 +590,7 @@ void RFTotalC(void)
         }
         bufferDisplay3.buffer_TX[8] = y - 9;
         side.c.FlagTotal = 0;
+		StopSendTotalC = 0;
         bufferDisplay3.buffer_TX[y] = verificar_check(bufferDisplay3.buffer_TX,y + 1);y++;                 
         for (x = 0; x < y; x++)
         {
@@ -728,6 +727,7 @@ void RFTotalC(void)
                     }                        
                 }
                 bufferDisplay3.buffer_TX[y] = verificar_check(bufferDisplay3.buffer_TX,y + 1);y++;  
+				bufferDisplay3.VarActual = 0;
             }
             
                 for (x = 0; x < 55; x++)
@@ -770,7 +770,7 @@ void RFTotalD(void)
         bufferDisplay4.buffer_TX[y] = 0xC8; y++;
         bufferDisplay4.buffer_TX[y] = IDCast[0]; y++;
         bufferDisplay4.buffer_TX[y] = IDCast[1]; y++;
-        bufferDisplay4.buffer_TX[5] = side.d.dir; y++;
+        bufferDisplay4.buffer_TX[y] = side.d.dir; y++;
         bufferDisplay4.buffer_TX[y] = 0xE8; y++;
         bufferDisplay4.buffer_TX[y] = side.d.rfState; y++;
         bufferDisplay4.buffer_TX[y] = 0x00; y++;
@@ -813,6 +813,7 @@ void RFTotalD(void)
         }
         bufferDisplay4.buffer_TX[8] = y - 9;
         side.d.FlagTotal = 0;
+		StopSendTotalD = 1;
         bufferDisplay4.buffer_TX[y] = verificar_check(bufferDisplay4.buffer_TX,y + 1);y++;                    
         for (x = 0; x < y; x++)
         {
@@ -949,6 +950,7 @@ void RFTotalD(void)
                     }                        
                 }
                 bufferDisplay4.buffer_TX[y] = verificar_check(bufferDisplay4.buffer_TX,y + 1);y++;
+				bufferDisplay4.VarActual = 0;
             }
                 for (x = 0; x < y; x++)
                 {
@@ -992,8 +994,11 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     if(bufferDisplay1.zeroSend  == 1)
                     {
                         side.a.rfState = RF_ZERO_SALE;
-                        bufferDisplay1.zeroSend = 0;
-                       
+                        bufferDisplay1.zeroSend = 0;                       
+                    }
+                    if(side.a.ActivoFideliza  == 1)
+                    {
+                        side.a.rfState = RF_FIDELITY;                                            
                     }
                     // Idle state 
                     if(bufferAready == 0 && side.a.FlagTotal == 0)
@@ -1035,12 +1040,58 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         side.a.rfState = RF_CREDITSALEAUTH;
                         return;
                     }
-                 
+                    // Authorization Request Terpel
+                    if(bufferAready == 4)
+                    {                                                             
+                        for (x = 0; x < 39 + bufferDisplay1.idSerial[0]; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_A[x]);
+                        }
+                        bufferAready = 0;
+                        AckFlag = 0;
+						side.a.rfState = RF_CREDITSALEAUTH;
+                    }
+                    // Balance Request Terpel
+                    if(bufferAready == 5)
+                    {                                                             
+                        for (x = 0; x < 19 + bufferDisplay1.idSerial[0]; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_A[x]);
+                        }
+                        bufferAready = 0;
+                        AckFlag = 0;                        
+                    }
+                    
+                    // Fidelity Request Terpel
+                    if(bufferAready == 6)
+                    {                                                             
+                        for (x = 0; x < 11 + bufferDisplay1.idTerpelFideliza[0]; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_A[x]);
+                        }
+                        bufferAready = 0;
+                        AckFlag = 0;                        
+                    }
+                    // Fidelity Confirmation
+                    if(bufferAready == 7)
+                    {                                                             
+                        for (x = 0; x < 10; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_A[x]);
+                        }
+                        bufferAready = 0;
+                        AckFlag = 0;                        
+                    }
                     // Total
                     if(bufferAready == 0 && side.a.FlagTotal == 1)
                     {    
                         RFTotalA();
                         pollTotals = 0;
+
+						if (StopSendTotalA == 1)
+						{
+							side.a.FlagTotal = 0;
+						}
                         return;
                     }      
                 }
@@ -1052,6 +1103,10 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         side.b.rfState = RF_ZERO_SALE;
                         bufferDisplay2.zeroSend = 0;
                        
+                    }
+                    if(side.b.ActivoFideliza  == 1)
+                    {
+                        side.b.rfState = RF_FIDELITY;                                            
                     }
                     if(bufferAreadyB == 0 && side.b.FlagTotal == 0)
                     {                        
@@ -1090,12 +1145,55 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         side.b.rfState = RF_CREDITSALEAUTH;
                         return;
                     }
+                    // Authorization Request Terpel
+                    if(bufferAreadyB == 4)
+                    {                                                             
+                        for (x = 0; x < 39 + bufferDisplay2.idSerial[0]; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_B[x]);
+                        }
+                        bufferAreadyB = 0;
+                        AckFlag = 0;
+						side.b.rfState = RF_CREDITSALEAUTH;
+                    }
+                    // Balance Request Terpel
+                    if(bufferAreadyB == 5)
+                    {                                                             
+                        for (x = 0; x < 19 + bufferDisplay2.idSerial[0]; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_B[x]);
+                        }
+                        bufferAreadyB = 0;
+                        AckFlag = 0;                        
+                    }
+                    // Fidelity Request Terpel
+                    if(bufferAreadyB == 6)
+                    {                                                             
+                        for (x = 0; x < 11 + bufferDisplay2.idTerpelFideliza[0]; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_B[x]);
+                        }
+                        bufferAreadyB = 0;                                               
+                    }
+                    // Fidelity Confirmation
+                    if(bufferAreadyB == 7)
+                    {                                                             
+                        for (x = 0; x < 10; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_B[x]);
+                        }
+                        bufferAreadyB = 0;                                              
+                    }
                                                                                               
                     // Totales
                     if(bufferAreadyB == 0 && side.b.FlagTotal == 1)
                     {                                           
                         RFTotalB(); 
                         pollTotalsB = 0;                      
+						if(StopSendTotalB == 1)
+						{
+							side.b.FlagTotal = 0;
+						}
                         return;
                     }           
                 }
@@ -1107,6 +1205,10 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         side.c.rfState = RF_ZERO_SALE;
                         bufferDisplay3.zeroSend = 0;
                      
+                    }
+                    if(side.c.ActivoFideliza  == 1)
+                    {
+                        side.c.rfState = RF_FIDELITY;                                            
                     }
                     // Idle state
                     if(bufferAreadyC == 0 && side.c.FlagTotal == 0)
@@ -1147,13 +1249,53 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         side.c.rfState = RF_CREDITSALEAUTH;
                         return;
                     }
-                    
+                    // Authorization Request Terpel
+                    if(bufferAreadyC == 4)
+                    {                                                             
+                        for (x = 0; x < 39 + bufferDisplay3.idSerial[0]; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_C[x]);
+                        }
+                        bufferAreadyC = 0;                       
+						side.c.rfState = RF_CREDITSALEAUTH;
+                    }
+                    // Balance Request Terpel
+                    if(bufferAreadyC == 5)
+                    {                                                             
+                        for (x = 0; x < 19 + bufferDisplay3.idSerial[0]; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_C[x]);
+                        }
+                        bufferAreadyC = 0;                                              
+                    }
+                    // Fidelity Request Terpel
+                    if(bufferAreadyC == 6)
+                    {                                                             
+                        for (x = 0; x < 11 + bufferDisplay3.idTerpelFideliza[0]; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_C[x]);
+                        }
+                        bufferAreadyC = 0;                                               
+                    }
+                    // Fidelity Confirmation
+                    if(bufferAreadyC == 7)
+                    {                                                             
+                        for (x = 0; x < 10; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_C[x]);
+                        }
+                        bufferAreadyC = 0;                                               
+                    }
                    
                     // Total
                     if(bufferAreadyC == 0 && side.c.FlagTotal == 1)
                     {                                           
                         RFTotalC();
                         pollTotalsC = 0;
+						if (StopSendTotalC == 1)
+						{
+							side.c.FlagTotal = 0;
+						}
                         return;
                     }      
                 }
@@ -1165,6 +1307,10 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         side.d.rfState = RF_ZERO_SALE;
                         bufferDisplay4.zeroSend = 0;
                         
+                    }
+                    if(side.d.ActivoFideliza  == 1)
+                    {
+                        side.d.rfState = RF_FIDELITY;                                            
                     }
                     // Idle state
                     if(bufferAreadyD == 0 && side.d.FlagTotal == 0)
@@ -1204,13 +1350,59 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         bufferAreadyD = 0;
                         side.d.rfState = RF_CREDITSALEAUTH;
                         return;
-                    }                                 
+                    }   
+
+					// Authorization Request Terpel
+					if (bufferAreadyD == 4)
+					{
+						for (x = 0; x < 39 + bufferDisplay4.idSerial[0]; x++)
+						{
+							RF_Connection_PutChar(buffer_D[x]);
+						}
+						bufferAreadyD = 0;
+						side.d.rfState = RF_CREDITSALEAUTH;
+					}
+					// Balance Request Terpel
+
+					if (bufferAreadyD == 5)
+					{
+						for (x = 0; x < 19 + bufferDisplay4.idSerial[0]; x++)
+						{
+							RF_Connection_PutChar(buffer_D[x]);
+						}
+						bufferAreadyD = 0;
+                        AckFlag = 0; 
+					}
+
+                    // Fidelity Request Terpel
+                    if(bufferAreadyD == 6)
+                    {                                                             
+                        for (x = 0; x < 11 + bufferDisplay4.idTerpelFideliza[0]; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_D[x]);
+                        }
+                        bufferAreadyD = 0;
+                        AckFlag = 0;                        
+                    }
+                    // Fidelity Confirmation
+                    if(bufferAreadyD == 7)
+                    {                                                             
+                        for (x = 0; x < 10; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_D[x]);
+                        }
+                        bufferAreadyD = 0;                                               
+                    }
                     
                     // Total
                     if(bufferAreadyD == 0 && side.d.FlagTotal == 1)
                     {                                           
                         RFTotalD();
                         pollTotalsD = 0;
+						if (StopSendTotalD == 1)
+						{
+							side.d.FlagTotal = 0;
+						}
                         return;
                     }      
                 }
@@ -1248,14 +1440,33 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                                     break;
                                 }
                             }
+							//Preset
+							if (digits == 6 && bufferDisplay1.CreditpresetValue[0][0] > 6)
+							{
+								for (x = 0; x < 3; x--)
+								{
+									bufferDisplay1.CreditpresetValue[0][x + 1] = 0x39;
+									bufferDisplay1.CreditpresetValue[1][x + 1] = 0x39;
+								}
+							}
+							else if (digits == 7 && bufferDisplay1.CreditpresetValue[0][0] > 7)
+							{
+								for (x = 0; x < 4; x--)
+								{
+									bufferDisplay1.CreditpresetValue[0][x + 1] = 0x39;
+									bufferDisplay1.CreditpresetValue[1][x + 1] = 0x39;
+								}
+							}
+							else
+							{
+								for (x = 0; x < bufferDisplay1.CreditpresetValue[0][0]; x++)
+								{
+									bufferDisplay1.CreditpresetValue[0][x + 1] = PRF_rxBuffer[(bufferDisplay1.CreditpresetValue[0][0] - x) + 8];
+									bufferDisplay1.CreditpresetValue[1][x + 1] = PRF_rxBuffer[(bufferDisplay1.CreditpresetValue[0][0] - x) + 8];
+								}
+							}
                             
-                            for(x = 0; x < bufferDisplay1.CreditpresetValue[0][0] ; x++)
-                            {
-                                bufferDisplay1.CreditpresetValue[0][x + 1] = PRF_rxBuffer[(bufferDisplay1.CreditpresetValue[0][0]-x)+8];
-                                bufferDisplay1.CreditpresetValue[1][x + 1] = PRF_rxBuffer[(bufferDisplay1.CreditpresetValue[0][0]-x)+8];                                
-                            }
-                            
-                           
+
                             //Grade
                             side.a.grade = PRF_rxBuffer[18];
                             
@@ -1340,11 +1551,32 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                                 }
                             }
                             
-                            for(x = 0; x < bufferDisplay2.CreditpresetValue[0][0] ; x++)
-                            {
-                                bufferDisplay2.CreditpresetValue[0][x + 1] = PRF_rxBuffer[(bufferDisplay2.CreditpresetValue[0][0]-x)+8];
-                                bufferDisplay2.CreditpresetValue[1][x + 1] = PRF_rxBuffer[(bufferDisplay2.CreditpresetValue[0][0]-x)+8];                                
-                            }
+							//Preset
+							if (digits == 6 && bufferDisplay2.CreditpresetValue[0][0] > 6)
+							{
+								for (x = 0; x < 3; x--)
+								{
+									bufferDisplay2.CreditpresetValue[0][x + 1] = 0x39;
+									bufferDisplay2.CreditpresetValue[1][x + 1] = 0x39;
+								}
+							}
+							else if (digits == 7 && bufferDisplay2.CreditpresetValue[0][0] > 7)
+							{
+								for (x = 0; x < 4; x--)
+								{
+									bufferDisplay2.CreditpresetValue[0][x + 1] = 0x39;
+									bufferDisplay2.CreditpresetValue[1][x + 1] = 0x39;
+								}
+							}
+							else
+							{
+								for (x = 0; x < bufferDisplay2.CreditpresetValue[0][0]; x++)
+								{
+									bufferDisplay2.CreditpresetValue[0][x + 1] = PRF_rxBuffer[(bufferDisplay2.CreditpresetValue[0][0] - x) + 8];
+									bufferDisplay2.CreditpresetValue[1][x + 1] = PRF_rxBuffer[(bufferDisplay2.CreditpresetValue[0][0] - x) + 8];
+								}
+							}
+
                             //Grade
                             side.b.grade = PRF_rxBuffer[18];
                             
@@ -1427,11 +1659,31 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                                 }
                             }
                             
-                            for(x = 0; x < bufferDisplay3.CreditpresetValue[0][0] ; x++)
-                            {
-                                bufferDisplay3.CreditpresetValue[0][x + 1] = PRF_rxBuffer[(bufferDisplay3.CreditpresetValue[0][0]-x)+8];
-                                bufferDisplay3.CreditpresetValue[1][x + 1] = PRF_rxBuffer[(bufferDisplay3.CreditpresetValue[0][0]-x)+8];                                
-                            }
+							//Preset
+							if (digits == 6 && bufferDisplay3.CreditpresetValue[0][0] > 6)
+							{
+								for (x = 0; x < 3; x--)
+								{
+									bufferDisplay3.CreditpresetValue[0][x + 1] = 0x39;
+									bufferDisplay3.CreditpresetValue[1][x + 1] = 0x39;
+								}
+							}
+							else if (digits == 7 && bufferDisplay3.CreditpresetValue[0][0] > 7)
+							{
+								for (x = 0; x < 4; x--)
+								{
+									bufferDisplay3.CreditpresetValue[0][x + 1] = 0x39;
+									bufferDisplay3.CreditpresetValue[1][x + 1] = 0x39;
+								}
+							}
+							else
+							{
+								for (x = 0; x < bufferDisplay3.CreditpresetValue[0][0]; x++)
+								{
+									bufferDisplay3.CreditpresetValue[0][x + 1] = PRF_rxBuffer[(bufferDisplay3.CreditpresetValue[0][0] - x) + 8];
+									bufferDisplay3.CreditpresetValue[1][x + 1] = PRF_rxBuffer[(bufferDisplay3.CreditpresetValue[0][0] - x) + 8];
+								}
+							}
                             
                            
                             //Grade
@@ -1442,7 +1694,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             buffer_C[2]  = 0xC8;
                             buffer_C[3]  = IDCast[0];
                             buffer_C[4]  = IDCast[1];
-                            buffer_C[5]  = side.d.RF;
+                            buffer_C[5]  = side.c.RF;
                             buffer_C[6]  = 0xA7;
                             buffer_C[7]  = RF_IDLE;
                             buffer_C[8]  = ACK;
@@ -1518,12 +1770,32 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                                     break;
                                 }
                             }
-                            
-                            for(x = 0; x < bufferDisplay4.CreditpresetValue[0][0] ; x++)
-                            {
-                                bufferDisplay4.CreditpresetValue[0][x + 1] = PRF_rxBuffer[(bufferDisplay4.CreditpresetValue[0][0]-x)+8];
-                                bufferDisplay4.CreditpresetValue[1][x + 1] = PRF_rxBuffer[(bufferDisplay4.CreditpresetValue[0][0]-x)+8];                                
-                            }
+
+							//Preset
+							if (digits == 6 && bufferDisplay4.CreditpresetValue[0][0] > 6)
+							{
+								for (x = 0; x < 3; x--)
+								{
+									bufferDisplay4.CreditpresetValue[0][x + 1] = 0x39;
+									bufferDisplay4.CreditpresetValue[1][x + 1] = 0x39;
+								}
+							}
+							else if (digits == 7 && bufferDisplay4.CreditpresetValue[0][0] > 7)
+							{
+								for (x = 0; x < 4; x--)
+								{
+									bufferDisplay4.CreditpresetValue[0][x + 1] = 0x39;
+									bufferDisplay4.CreditpresetValue[1][x + 1] = 0x39;
+								}
+							}
+							else
+							{
+								for(x = 0; x < bufferDisplay4.CreditpresetValue[0][0] ; x++)
+								{
+									bufferDisplay4.CreditpresetValue[0][x + 1] = PRF_rxBuffer[(bufferDisplay4.CreditpresetValue[0][0]-x)+8];
+									bufferDisplay4.CreditpresetValue[1][x + 1] = PRF_rxBuffer[(bufferDisplay4.CreditpresetValue[0][0]-x)+8];                                
+								}
+							}
                             //Grade
                             side.d.grade = PRF_rxBuffer[18];
                             
@@ -1594,7 +1866,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     {                      
                         if(PRF_rxBuffer[7] == ACK)
                         {
-                            side.b.FlagTotal = 0; 
+                            side.b.FlagTotal = 0;
+                            bufferDisplay2.VarActual = 1;
                         }
                         return;
                     }  
@@ -1602,7 +1875,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     {                      
                         if(PRF_rxBuffer[7] == ACK)
                         {
-                            side.c.FlagTotal = 0; 
+                            side.c.FlagTotal = 0;
+                            bufferDisplay3.VarActual = 1;
                         }
                         return;
                     }
@@ -1610,7 +1884,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     {                      
                         if(PRF_rxBuffer[7] == ACK)
                         {
-                            side.d.FlagTotal = 0; 
+                            side.d.FlagTotal = 0;
+                            bufferDisplay4.VarActual = 1;
                         }
                         return;
                     }
@@ -1853,10 +2128,12 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         
                         write_psoc1(printPortA, 0x0A);
                                                
-                        for (x = 0; x < 9; x++)
+                        for (x = 0; x < 10; x++)
                         {
                             RF_Connection_PutChar(buffer_tx[x]);
                         } 
+						flowDisplay1 = 0;
+						bufferDisplay1.PrintEnd = 0;
                         
                     }  
                     
@@ -1894,12 +2171,12 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         }
                         
                         write_psoc1(printPortB,0x0A);                      
-                        for (x = 0; x < 9; x++)
+                        for (x = 0; x < 10; x++)
                         {
                             RF_Connection_PutChar(buffer_tx[x]);
                         }
-                        
-                        
+						flowDisplay2 = 0;
+						bufferDisplay2.PrintEnd = 0;                                                
                     }
                     
                     if(PRF_rxBuffer[5] == side.c.RF)
@@ -1936,10 +2213,12 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         }
                         
                         write_psoc1(printPortA,0x0A);                      
-                        for (x = 0; x < 9; x++)
+                        for (x = 0; x < 10; x++)
                         {
                             RF_Connection_PutChar(buffer_tx[x]);
                         }
+						flowDisplay3 = 0;
+						bufferDisplay3.PrintEnd = 0;
                         
                     }
                     
@@ -1976,10 +2255,12 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         }
                         
                         write_psoc1(printPortB,0x0A);                      
-                        for (x = 0; x < 9; x++)
+                        for (x = 0; x < 10; x++)
                         {
                             RF_Connection_PutChar(buffer_tx[x]);
                         }
+						flowDisplay4 = 0;
+						bufferDisplay4.PrintEnd = 0;
                        
                     }
 
@@ -2095,6 +2376,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         
                         ControlType = PRF_rxBuffer[116];
                         bufferDisplay1.PrintFlagEOT = 1;
+                        bufferDisplay1.flagPrint =  1;
                         bufferDisplay1.PrintEnd = 0;
                         return;
 
@@ -2178,6 +2460,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         
                         ControlType = PRF_rxBuffer[116];
                         bufferDisplay2.PrintFlagEOT = 1;
+                        bufferDisplay2.flagPrint =  1;
                         bufferDisplay2.PrintEnd = 0;
                         return;
                     }
@@ -2289,6 +2572,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         
                         ControlType = PRF_rxBuffer[116];
                         bufferDisplay3.PrintFlagEOT = 1;
+                        bufferDisplay3.flagPrint =  1;
                         bufferDisplay3.PrintEnd = 0;
                         return;
 
@@ -2371,21 +2655,29 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         
                         ControlType = PRF_rxBuffer[116];
                         bufferDisplay4.PrintFlagEOT = 1;
+                        bufferDisplay4.flagPrint =  1;
                         bufferDisplay4.PrintEnd = 0;
                         return;
                     }
 
                 break;
 
-                case 0xA9:              // ID Transaction
-                   
+                case 0xA9:              // ID Transaction                   
                     if(PRF_rxBuffer[5] == side.a.RF)
                     {
                         for(x = 0; x < 10; x++)
                         {
                             side.a.saleNumber[x] = PRF_rxBuffer[x + 8];
                         } 
-                        bufferDisplay1.PrintFlagEOT = 1;
+                        if(bufferDisplay1.flagPrint == 1)
+                        {
+                            bufferDisplay1.PrintFlagEOT = 1;
+                        }
+                        else
+                        {
+                            bufferDisplay1.PrintFlagEOT = 0;
+                            bufferDisplay1.flagPrint = 0;
+                        }
                     }
                     
                     if(PRF_rxBuffer[5] == side.b.RF)
@@ -2394,7 +2686,15 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {
                             side.b.saleNumber[x] = PRF_rxBuffer[x + 8];
                         }  
-                        bufferDisplay2.PrintFlagEOT = 1;
+                        if(bufferDisplay2.flagPrint == 1)
+                        {
+                            bufferDisplay2.PrintFlagEOT = 1;
+                        }
+                        else
+                        {
+                            bufferDisplay2.PrintFlagEOT = 0;
+                            bufferDisplay2.flagPrint = 0;
+                        }
                     }
                     
                     if(PRF_rxBuffer[5] == side.c.RF)
@@ -2403,7 +2703,15 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {
                             side.c.saleNumber[x] = PRF_rxBuffer[x + 8];
                         }         
-                        bufferDisplay3.PrintFlagEOT = 1;
+                        if(bufferDisplay3.flagPrint == 1)
+                        {
+                            bufferDisplay3.PrintFlagEOT = 1;
+                        }
+                        else
+                        {
+                            bufferDisplay3.PrintFlagEOT = 0;
+                            bufferDisplay3.flagPrint = 0;
+                        }
                                                
                     }
                     
@@ -2413,10 +2721,558 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {
                             side.d.saleNumber[x] = PRF_rxBuffer[x + 8];
                         }
-                        bufferDisplay4.PrintFlagEOT = 1;
+                        if(bufferDisplay4.flagPrint == 1)
+                        {
+                            bufferDisplay4.PrintFlagEOT = 1;
+                        }
+                        else
+                        {
+                            bufferDisplay4.PrintFlagEOT = 0;
+                            bufferDisplay4.flagPrint = 0;
+                        }
                     }
                     
                 break;
+                
+                case 0xB3:
+                    if(PRF_rxBuffer[5] == side.a.RF)
+                    {
+                        if(PRF_rxBuffer[7] == 0x01)
+                        {    
+                            cardmessagedisplay = 1;
+                            for(x = 0; x < 20; x++)
+                            {
+                                Company[x] = 0x00; 
+                            }   
+                            // Company
+                            for(x = 0; x < 20; x++)
+                            {
+                                Company[x] = PRF_rxBuffer[x + 9]; 
+                            }  
+                            for(x = 0; x < 8; x++)
+                            {
+                                LicensePlate[x] = 0x00; 
+                            }                        
+                            // Licese plate
+                            for(x = 0; x < 8; x++)
+                            {
+                                LicensePlate[x] = PRF_rxBuffer[x + 29]; 
+                            }                                                  
+                            for(x = 0; x < 3; x++)
+                            {
+                                cardNumberA[x] = PRF_rxBuffer[x + 37];
+                            }
+                            for(x = 0; x < 20; x++)
+                            {
+                                BalanceA[x] = 0x00; 
+                            }                            
+                            // Balance
+                            for(x = 0; x < 18; x++)
+                            {
+                                BalanceA[x] = PRF_rxBuffer[x + 40]; 
+                            }
+                            for(x = 0; x < 20; x++)
+                            {
+                                BalanceB[x] = 0x00; 
+                            }                            
+                            // Balance
+                            for(x = 0; x < 18; x++)
+                            {
+                                BalanceB[x] = PRF_rxBuffer[x + 58]; 
+                            }
+                            flowDisplay1 = 29;
+                            side.a.rfState = RF_IDLE;
+                            SetPicture(1, DISPLAY_RECIBO_SALDO); 
+                        }else{
+                            cardmessagedisplay = 2;
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage[x] = PRF_rxBuffer[x + 9]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage1[x] = PRF_rxBuffer[x + 34]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage2[x] = PRF_rxBuffer[x + 59]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage3[x] = PRF_rxBuffer[x + 84]; 
+                            }
+                            flowDisplay1 = 29;
+                            side.a.rfState = RF_IDLE;
+                            SetPicture(1, DISPLAY_RECIBO_SALDO);
+                        }
+                    }
+                    if(PRF_rxBuffer[5] == side.b.RF)
+                    {
+                        if(PRF_rxBuffer[7] == 0x01)
+                        {    
+                            cardmessagedisplay = 1;
+                            for(x = 0; x < 20; x++)
+                            {
+                                Company[x] = 0x00; 
+                            }   
+                            // Company
+                            for(x = 0; x < 20; x++)
+                            {
+                                Company[x] = PRF_rxBuffer[x + 9]; 
+                            }  
+                            for(x = 0; x < 8; x++)
+                            {
+                                LicensePlate[x] = 0x00; 
+                            }                        
+                            // Licese plate
+                            for(x = 0; x < 8; x++)
+                            {
+                                LicensePlate[x] = PRF_rxBuffer[x + 29]; 
+                            }                                                  
+                            for(x = 0; x < 3; x++)
+                            {
+                                cardNumberA[x] = PRF_rxBuffer[x + 37];
+                            }
+                            for(x = 0; x < 20; x++)
+                            {
+                                BalanceA[x] = 0x00; 
+                            }                            
+                            // Balance
+                            for(x = 0; x < 18; x++)
+                            {
+                                BalanceA[x] = PRF_rxBuffer[x + 40]; 
+                            }
+                            for(x = 0; x < 20; x++)
+                            {
+                                BalanceB[x] = 0x00; 
+                            }                            
+                            // Balance
+                            for(x = 0; x < 18; x++)
+                            {
+                                BalanceB[x] = PRF_rxBuffer[x + 58]; 
+                            }
+                            flowDisplay2 = 29;
+                            side.b.rfState = RF_IDLE;
+                            SetPicture(2, DISPLAY_RECIBO_SALDO); 
+                        }else{
+                            cardmessagedisplay = 2;
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage[x] = PRF_rxBuffer[x + 9]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage1[x] = PRF_rxBuffer[x + 34]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage2[x] = PRF_rxBuffer[x + 59]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage3[x] = PRF_rxBuffer[x + 84]; 
+                            }
+                            flowDisplay2 = 29;
+                            side.b.rfState = RF_IDLE;
+                            SetPicture(2, DISPLAY_RECIBO_SALDO);
+                        }
+                    }
+                    
+                    if(PRF_rxBuffer[5] == side.c.RF)
+                    {
+                        if(PRF_rxBuffer[7] == 0x01)
+                        {    
+                            cardmessagedisplay = 1;
+                            for(x = 0; x < 20; x++)
+                            {
+                                Company[x] = 0x00; 
+                            }   
+                            // Company
+                            for(x = 0; x < 20; x++)
+                            {
+                                Company[x] = PRF_rxBuffer[x + 9]; 
+                            }  
+                            for(x = 0; x < 8; x++)
+                            {
+                                LicensePlate[x] = 0x00; 
+                            }                        
+                            // Licese plate
+                            for(x = 0; x < 8; x++)
+                            {
+                                LicensePlate[x] = PRF_rxBuffer[x + 29]; 
+                            }                                                  
+                            for(x = 0; x < 3; x++)
+                            {
+                                cardNumberA[x] = PRF_rxBuffer[x + 37];
+                            }
+                            for(x = 0; x < 20; x++)
+                            {
+                                BalanceA[x] = 0x00; 
+                            }                            
+                            // Balance
+                            for(x = 0; x < 18; x++)
+                            {
+                                BalanceA[x] = PRF_rxBuffer[x + 40]; 
+                            }
+                            for(x = 0; x < 20; x++)
+                            {
+                                BalanceB[x] = 0x00; 
+                            }                            
+                            // Balance
+                            for(x = 0; x < 18; x++)
+                            {
+                                BalanceB[x] = PRF_rxBuffer[x + 58]; 
+                            }
+                            flowDisplay3 = 29;
+                            side.c.rfState = RF_IDLE;
+                            SetPicture(1, DISPLAY_RECIBO_SALDO); 
+                        }else{
+                            cardmessagedisplay = 2;
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage[x] = PRF_rxBuffer[x + 9]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage1[x] = PRF_rxBuffer[x + 34]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage2[x] = PRF_rxBuffer[x + 59]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage3[x] = PRF_rxBuffer[x + 84]; 
+                            }
+                            flowDisplay3 = 29;
+                            side.c.rfState = RF_IDLE;
+                            SetPicture(1, DISPLAY_RECIBO_SALDO);
+                        }
+                    }
+                    
+                    if(PRF_rxBuffer[5] == side.d.RF)
+                    {
+                        if(PRF_rxBuffer[7] == 0x01)
+                        {    
+                            cardmessagedisplay = 1;
+                            for(x = 0; x < 20; x++)
+                            {
+                                Company[x] = 0x00; 
+                            }   
+                            // Company
+                            for(x = 0; x < 20; x++)
+                            {
+                                Company[x] = PRF_rxBuffer[x + 9]; 
+                            }  
+                            for(x = 0; x < 8; x++)
+                            {
+                                LicensePlate[x] = 0x00; 
+                            }                        
+                            // Licese plate
+                            for(x = 0; x < 8; x++)
+                            {
+                                LicensePlate[x] = PRF_rxBuffer[x + 29]; 
+                            }                                                  
+                            for(x = 0; x < 3; x++)
+                            {
+                                cardNumberA[x] = PRF_rxBuffer[x + 37];
+                            }
+                            for(x = 0; x < 20; x++)
+                            {
+                                BalanceA[x] = 0x00; 
+                            }                            
+                            // Balance
+                            for(x = 0; x < 18; x++)
+                            {
+                                BalanceA[x] = PRF_rxBuffer[x + 40]; 
+                            }
+                            for(x = 0; x < 20; x++)
+                            {
+                                BalanceB[x] = 0x00; 
+                            }                            
+                            // Balance
+                            for(x = 0; x < 18; x++)
+                            {
+                                BalanceB[x] = PRF_rxBuffer[x + 58]; 
+                            }
+                            flowDisplay4 = 29;
+                            side.d.rfState = RF_IDLE;
+                            SetPicture(2, DISPLAY_RECIBO_SALDO); 
+                        }else{
+                            cardmessagedisplay = 2;
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage[x] = PRF_rxBuffer[x + 9]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage1[x] = PRF_rxBuffer[x + 34]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage2[x] = PRF_rxBuffer[x + 59]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage3[x] = PRF_rxBuffer[x + 84]; 
+                            }
+                            flowDisplay4 = 29;
+                            side.d.rfState = RF_IDLE;
+                            SetPicture(2, DISPLAY_RECIBO_SALDO);
+                        }
+                    }
+                    for(x = 0; x < 100; x++)
+                    {
+                        PRF_rxBuffer[x]=0x00; 
+                    }
+                break;
+                
+                case 0xB6:
+                    for(x = 0; x < 25; x++){
+                        cardmessage[x] = 0x00;
+                        cardmessage1[x] = 0x00;
+                        cardmessage2[x] = 0x00;
+                        cardmessage3[x] = 0x00;
+                        cardmessageB[x] = 0x00;
+                        cardmessage1B[x] = 0x00;
+                        cardmessage2B[x] = 0x00;
+                        cardmessage3B[x] = 0x00;
+                    }
+                    if(PRF_rxBuffer[5] == side.a.RF)
+                    {
+                        side.a.ActivoFideliza = 0;
+                        side.a.RFstateReport = 0;
+                        if(PRF_rxBuffer[8] == 0x01)
+                        {    
+                            validaclientefiel = 1;
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage[x] = PRF_rxBuffer[x + 9]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage1[x] = PRF_rxBuffer[x + 34]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage2[x] = PRF_rxBuffer[x + 59]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage3[x] = PRF_rxBuffer[x + 84]; 
+                            }
+                            flowDisplay1 = 36;
+                            side.a.rfState = RF_IDLE;
+                            SetPicture(1, DISPLAY_CONF_USUARIO);                                                         
+                        }else{
+                            validaclientefiel = 2;
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage[x] = PRF_rxBuffer[x + 9]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage1[x] = PRF_rxBuffer[x + 34]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage2[x] = PRF_rxBuffer[x + 59]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage3[x] = PRF_rxBuffer[x + 84]; 
+                            }
+                            flowDisplay1 = 36;
+                            side.a.rfState = RF_IDLE;
+                            SetPicture(1, DISPLAY_CONF_USUARIO);
+                        }
+                        buffer_tx[5] = side.a.RF;
+                        buffer_tx[6] = 0xB6;
+                        buffer_tx[7] = RF_FIDELITY;
+                        buffer_tx[8] = 0x03;
+                        buffer_tx[9] = verificar_check(buffer_tx, 10);                                                              
+                        for (x = 0; x < 10; x++)
+                        {                                              
+                            RF_Connection_PutChar(buffer_tx[x]);
+                        }
+                    }
+                    if(PRF_rxBuffer[5] == side.b.RF)
+                    {
+                        side.b.ActivoFideliza = 0;
+                        side.b.RFstateReport = 0;
+                        if(PRF_rxBuffer[8] == 0x01)
+                        {    
+                            validaclientefiel2 = 1;
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessageB[x] = PRF_rxBuffer[x + 9]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage1B[x] = PRF_rxBuffer[x + 34]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage2B[x] = PRF_rxBuffer[x + 59]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage3B[x] = PRF_rxBuffer[x + 84]; 
+                            }
+                            flowDisplay2 = 36;
+                            side.b.rfState = RF_IDLE;
+                            SetPicture(2, DISPLAY_CONF_USUARIO);                                                         
+                        }else{
+                            validaclientefiel2 = 2;
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessageB[x] = PRF_rxBuffer[x + 9]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage1B[x] = PRF_rxBuffer[x + 34]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage2B[x] = PRF_rxBuffer[x + 59]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage3B[x] = PRF_rxBuffer[x + 84]; 
+                            }
+                            flowDisplay2 = 36;
+                            side.b.rfState = RF_IDLE;
+                            SetPicture(2, DISPLAY_CONF_USUARIO);
+                        }
+                        buffer_tx[5] = side.b.RF;
+                        buffer_tx[6] = 0xB6;
+                        buffer_tx[7] = RF_FIDELITY;
+                        buffer_tx[8] = 0x03;
+                        buffer_tx[9] = verificar_check(buffer_tx, 10);                                                              
+                        for (x = 0; x < 10; x++)
+                        {                                              
+                            RF_Connection_PutChar(buffer_tx[x]);
+                        }
+                    }
+                    if(PRF_rxBuffer[5] == side.c.RF)
+                    {
+                        side.c.ActivoFideliza = 0;
+                        side.c.RFstateReport = 0;
+                        if(PRF_rxBuffer[8] == 0x01)
+                        {    
+                            validaclientefiel3 = 1;
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage[x] = PRF_rxBuffer[x + 9]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage1[x] = PRF_rxBuffer[x + 34]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage2[x] = PRF_rxBuffer[x + 59]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage3[x] = PRF_rxBuffer[x + 84]; 
+                            }
+                            flowDisplay3 = 36;
+                            side.c.rfState = RF_IDLE;
+                            SetPicture(1, DISPLAY_CONF_USUARIO);                                                         
+                        }else{
+                            validaclientefiel3 = 2;
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage[x] = PRF_rxBuffer[x + 9]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage1[x] = PRF_rxBuffer[x + 34]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage2[x] = PRF_rxBuffer[x + 59]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage3[x] = PRF_rxBuffer[x + 84]; 
+                            }
+                            flowDisplay3 = 36;
+                            side.c.rfState = RF_IDLE;
+                            SetPicture(1, DISPLAY_CONF_USUARIO);
+                        }
+                        buffer_tx[5] = side.c.RF;
+                        buffer_tx[6] = 0xB6;
+                        buffer_tx[7] = RF_FIDELITY;
+                        buffer_tx[8] = 0x03;
+                        buffer_tx[9] = verificar_check(buffer_tx, 10);                                                              
+                        for (x = 0; x < 10; x++)
+                        {                                              
+                            RF_Connection_PutChar(buffer_tx[x]);
+                        }
+                    }
+                    if(PRF_rxBuffer[5] == side.d.RF)
+                    {
+                        side.d.ActivoFideliza = 0;
+                        side.d.RFstateReport = 0;
+                        if(PRF_rxBuffer[8] == 0x01)
+                        {    
+                            validaclientefiel4 = 1;
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessageB[x] = PRF_rxBuffer[x + 9]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage1B[x] = PRF_rxBuffer[x + 34]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage2B[x] = PRF_rxBuffer[x + 59]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage3B[x] = PRF_rxBuffer[x + 84]; 
+                            }
+                            flowDisplay4 = 36;
+                            side.d.rfState = RF_IDLE;
+                            SetPicture(2, DISPLAY_CONF_USUARIO);                                                         
+                        }else{
+                            validaclientefiel4 = 2;
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessageB[x] = PRF_rxBuffer[x + 9]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage1B[x] = PRF_rxBuffer[x + 34]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage2B[x] = PRF_rxBuffer[x + 59]; 
+                            }
+                            for(x = 0; x < 25; x++)
+                            {
+                                cardmessage3B[x] = PRF_rxBuffer[x + 84]; 
+                            }
+                            flowDisplay4 = 36;
+                            side.d.rfState = RF_IDLE;
+                            SetPicture(2, DISPLAY_CONF_USUARIO);
+                        }
+                        buffer_tx[5] = side.d.RF;
+                        buffer_tx[6] = 0xB6;
+                        buffer_tx[7] = RF_FIDELITY;
+                        buffer_tx[8] = 0x03;
+                        buffer_tx[9] = verificar_check(buffer_tx, 10);                                                              
+                        for (x = 0; x < 10; x++)
+                        {                                              
+                            RF_Connection_PutChar(buffer_tx[x]);
+                        }
+                    }
+                break;
+                case 0xB7:
+                    break;
                              
                 case 0xE1:               //Configuracion de la estacion
                     
@@ -2691,12 +3547,6 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             }else{
                                 SetPicture(2, DISPLAY_SELECCIONE_POSICION);
                             }
-//                            side.d.RFstateReport = 0;
-//                            //side.d.rfState = RF_IDLE;
-//                            bufferDisplay4.flagPrint =  0;
-//                            PresetFlag4 = 0;
-//                            iButtonFlag4 = 0;
-//                            AuthType4 = 0;
                             return;
                         }
                     }
@@ -2710,6 +3560,213 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
 
 void pollingRFA_Tx(){   
     uint16 x,y;
+    uint8 decimal,DecimalFaltante;
+     /////////////// TERPEL ///////////////////////
+    if(side.a.pumpState == PUMP_CALLING && side.a.RFstateReport == 2 && CreditAuth == RF_CREDITSALEAUTH && bufferDisplay1.saleType == 2)
+    {
+        buffer_A[0]  = 0xBC;
+        buffer_A[1]  = 0xCB;
+        buffer_A[2]  = 0xC8;
+        buffer_A[3]  = IDCast[0];
+        buffer_A[4]  = IDCast[1];
+        buffer_A[5]  = side.a.RF;
+        buffer_A[6]  = 0xB1;
+        buffer_A[7]  = RF_CREDITSALEAUTH;
+        buffer_A[8]  = side.a.hose - 1;
+        
+        //Km (10 bytes)
+        for(y = 0; y < 10; y++)
+        {
+            buffer_A[9 + y] = 0x00;
+        }        
+        x = 0;                        
+        for(y = bufferDisplay1.mileageSale[0]; y >= 1; y--)
+        {           
+            buffer_A[9 + x] = bufferDisplay1.mileageSale[y]; 
+            x++;
+        }
+        buffer_A[19] =  bufferDisplay1.presetType[0];
+        
+        //Preset (8 bytes)    
+        for(y = 0; y < 8; y++)
+        {
+            buffer_A[20 + y] = 0x00;
+        }
+        x = 0;
+        if(bufferDisplay1.presetType[0] == 1)
+        {
+            for(x=0; x<8;x++)
+            {
+                tempPreset[x] = 0x30;
+            }
+
+            for(x = bufferDisplay1.presetValue[0][0] ; x > 0; x--)
+            {
+                 tempPreset[bufferDisplay1.presetValue[0][0] - x] = (bufferDisplay1.presetValue[0][x]); 
+            }         
+            decimal = 0;        
+            for(x = 0; x < 8; x++)
+            {
+                tempPreset2[x] = 0x30;
+            }        
+            for(decimal = 0; decimal <= 7; decimal++)
+            {
+                tempPreset2[x] = 0x30;
+                if (tempPreset[decimal] == ',')
+                {
+                    break;
+                }
+            }
+            if(decimal >= 7)
+            {
+                for(x = 0; x < 3; x++)
+                {
+                    tempPreset2[x] = 0x30;
+                }
+                for(x = 3; x < 8; x++)
+                {
+                    tempPreset2[x] = tempPreset[x - 3];
+                }        
+            }else{
+                DecimalFaltante = 3 - decimal;
+                for(x = 0; x < DecimalFaltante; x++)
+                {
+                    tempPreset2[x] = 0x30;
+                }
+                for(x = 0; x < decimal; x++)
+                {
+                    tempPreset2[x + DecimalFaltante] = tempPreset[x];
+                }
+                for(x = 3; x < 8; x++)
+                {                
+                    tempPreset2[x] = tempPreset[x - DecimalFaltante + 1];            
+                }
+            }
+            for(x = 20; x <= 27; x++)
+            {
+                buffer_A[x] = tempPreset2[x - 20];
+                
+                if(buffer_A[x]== 0x00)
+                {
+                    buffer_A[x] = 0x30;
+                }
+            }
+        }
+        if(bufferDisplay1.presetType[0] == 2)
+        {
+            for(x = 0; x < 8; x++)
+            {
+                tempPreset[x] = 0x30;
+            }
+            
+            for(x = bufferDisplay1.presetValue[0][0]; x > 0; x--)
+            {
+                tempPreset[bufferDisplay1.presetValue[0][0] - x] = (bufferDisplay1.presetValue[0][x]); 
+            }
+            for(x = 20; x <= 27; x++)
+            {
+                buffer_A[x] = tempPreset[x - 20];
+                
+                if(buffer_A[x]== 0x00)
+                {
+                    buffer_A[x] = 0x30;
+                }
+            }
+        }
+        buffer_A[28] = 0x03;  // TIPO IDENTIFICADOR 1 IBUTTON 2 t-INTELIGENTE 3-BANDA MAGNETICA     
+        for(y = 0; y < 8; y++)
+        {
+            buffer_A[29 + y] = 0x00;
+        }
+        for(y = 0; y < bufferDisplay1.passCard[0]; y++)
+        {
+            buffer_A[29 + y] = bufferDisplay1.passCard[bufferDisplay1.passCard[0]-y];
+        }
+        buffer_A[37] = bufferDisplay1.idSerial[0];        
+        for(y = 1; y <= bufferDisplay1.idSerial[0]; y++)
+        {
+            buffer_A[37 + y] = bufferDisplay1.idSerial[bufferDisplay1.idSerial[0]-(y-1)];
+        }
+        buffer_A[38+bufferDisplay1.idSerial[0]] = verificar_check(buffer_A,39+bufferDisplay1.idSerial[0]);
+        side.a.RFstateReport = 0;
+        bufferAready = 4;             
+        CreditAuth = 0;
+        AckFlag = 0;       
+        //side.a.rfState = RF_CREDITSALEAUTH; 
+    }
+    
+    if(side.a.pumpState == PUMP_IDLE && side.a.RFstateReport == 2 && side.a.ActivoFideliza ==0)  //Saldo
+    {
+        buffer_A[0]  = 0xBC;
+        buffer_A[1]  = 0xCB;
+        buffer_A[2]  = 0xC8;
+        buffer_A[3]  = IDCast[0];
+        buffer_A[4]  = IDCast[1];
+        buffer_A[5]  = side.a.RF;
+        buffer_A[6]  = 0xB2;
+        buffer_A[7]  = RF_ASK_BALANCE;
+        buffer_A[8]  = bufferDisplay1.idType;
+                
+        for(y = 0; y < 8; y++)
+        {
+            buffer_A[9 + y] = 0x00;
+        }
+        for(y = 0; y < bufferDisplay1.passCard[0]; y++)
+        {
+            buffer_A[9 + y] = bufferDisplay1.passCard[bufferDisplay1.passCard[0]-y];
+        }
+        buffer_A[17] = bufferDisplay1.idSerial[0];        
+        for(y = 1; y <= bufferDisplay1.idSerial[0]; y++)
+        {
+            buffer_A[17 + y] = bufferDisplay1.idSerial[bufferDisplay1.idSerial[0]-(y-1)];
+        }
+        buffer_A[18+bufferDisplay1.idSerial[0]] = verificar_check(buffer_A,19+bufferDisplay1.idSerial[0]);
+        side.a.RFstateReport = 0;
+        bufferAready = 5;           
+        CreditAuth = 0;
+        AckFlag = 0;       
+        side.a.rfState = RF_ASK_BALANCE; 
+    }
+    
+    if((side.a.pumpState == PUMP_IDLE || side.a.pumpState == PUMP_CALLING ) && side.a.RFstateReport == 2 && side.a.ActivoFideliza ==2) //Fideliza
+    {
+        buffer_A[0]  = 0xBC;
+        buffer_A[1]  = 0xCB;
+        buffer_A[2]  = 0xC8;
+        buffer_A[3]  = IDCast[0];
+        buffer_A[4]  = IDCast[1];
+        buffer_A[5]  = side.a.RF;
+        buffer_A[6]  = 0xB5;
+        buffer_A[7]  = RF_FIDELITY;
+        buffer_A[8]  = bufferDisplay1.idType;                        
+        buffer_A[9] = bufferDisplay1.idTerpelFideliza[0]; 
+        
+        for(y = 1; y <= bufferDisplay1.idTerpelFideliza[0]; y++)
+        {
+            buffer_A[9 + y] = bufferDisplay1.idTerpelFideliza[bufferDisplay1.idTerpelFideliza[0]-(y-1)];
+        }
+        buffer_A[10+bufferDisplay1.idTerpelFideliza[0]] = verificar_check(buffer_A,11+bufferDisplay1.idTerpelFideliza[0]);
+        side.a.RFstateReport = 0;
+        bufferAready = 6;           
+        CreditAuth = 0;
+        AckFlag = 0;               
+        side.a.ActivoFideliza = 1;
+    }
+    if((side.a.pumpState == PUMP_IDLE || side.a.pumpState == PUMP_CALLING ) && side.a.RFstateReport == 3 && side.a.ActivoFideliza ==3) //Fideliza
+    {
+        buffer_A[0]  = 0xBC;
+        buffer_A[1]  = 0xCB;
+        buffer_A[2]  = 0xC8;
+        buffer_A[3]  = IDCast[0];
+        buffer_A[4]  = IDCast[1];
+        buffer_A[5]  = side.a.RF;
+        buffer_A[6]  = 0xB7;
+        buffer_A[7]  = RF_FIDELITY_CONF;
+        buffer_A[8]  = bufferDisplay1.FidelConf;  
+        buffer_A[9]  = verificar_check(buffer_A,10);
+        side.a.ActivoFideliza = 0;
+        bufferAready = 7; 
+    }
     
     /////////////// TICKET COPY //////////////////
     if(side.a.rfStateCopy == RF_COPY_RECEIPT && side.a.RFstateReport == 1){ 
@@ -2849,8 +3906,7 @@ void pollingRFA_Tx(){
         {
             buffer_A[x] = 0x00;
         }
-        
-        uint8 decimal,DecimalFaltante;
+                
 		buffer_A[0]  = 0xBC;
         buffer_A[1]  = 0xCB;
         buffer_A[2]  = 0xC8;
@@ -3009,7 +4065,215 @@ void pollingRFA_Tx(){
 }
 
 void pollingRFB_Tx(){   
-    uint16 x,y;      
+    uint16 x,y; 
+    uint8 decimal,DecimalFaltante;
+    /////////////// TERPEL ///////////////////////
+    if(side.b.pumpState == PUMP_CALLING && side.b.RFstateReport == 2 && CreditAuth2 == RF_CREDITSALEAUTH && bufferDisplay2.saleType == 2)
+    {
+        buffer_B[0]  = 0xBC;
+        buffer_B[1]  = 0xCB;
+        buffer_B[2]  = 0xC8;
+        buffer_B[3]  = IDCast[0];
+        buffer_B[4]  = IDCast[1];
+        buffer_B[5]  = side.b.RF;
+        buffer_B[6]  = 0xB1;
+        buffer_B[7]  = RF_CREDITSALEAUTH;
+        buffer_B[8]  = side.b.hose - 1;
+        
+        //Km (10 bytes)
+        for(y = 0; y < 10; y++)
+        {
+            buffer_B[9 + y] = 0x00;
+        }        
+        x = 0;                        
+        for(y = bufferDisplay2.mileageSale[0]; y >= 1; y--)
+        {           
+            buffer_B[9 + x] = bufferDisplay2.mileageSale[y]; 
+            x++;
+        }
+        buffer_B[19] =  bufferDisplay2.presetType[0];
+        
+        //Preset (8 bytes)    
+        for(y = 0; y < 8; y++)
+        {
+            buffer_B[20 + y] = 0x00;
+        }
+        x = 0;
+        if(bufferDisplay2.presetType[0] == 1)
+        {
+            for(x=0; x<8;x++)
+            {
+                tempPreset[x] = 0x30;
+            }
+
+            for(x = bufferDisplay2.presetValue[0][0] ; x > 0; x--)
+            {
+                 tempPreset[bufferDisplay2.presetValue[0][0] - x] = (bufferDisplay2.presetValue[0][x]); 
+            }         
+            decimal = 0;        
+            for(x = 0; x < 8; x++)
+            {
+                tempPreset2[x] = 0x30;
+            }        
+            for(decimal = 0; decimal <= 7; decimal++)
+            {
+                tempPreset2[x] = 0x30;
+                if (tempPreset[decimal] == ',')
+                {
+                    break;
+                }
+            }
+            if(decimal >= 7)
+            {
+                for(x = 0; x < 3; x++)
+                {
+                    tempPreset2[x] = 0x30;
+                }
+                for(x = 3; x < 8; x++)
+                {
+                    tempPreset2[x] = tempPreset[x - 3];
+                }        
+            }else{
+                DecimalFaltante = 3 - decimal;
+                for(x = 0; x < DecimalFaltante; x++)
+                {
+                    tempPreset2[x] = 0x30;
+                }
+                for(x = 0; x < decimal; x++)
+                {
+                    tempPreset2[x + DecimalFaltante] = tempPreset[x];
+                }
+                for(x = 3; x < 8; x++)
+                {                
+                    tempPreset2[x] = tempPreset[x - DecimalFaltante + 1];            
+                }
+            }
+            for(x = 20; x <= 27; x++)
+            {
+                buffer_B[x] = tempPreset2[x - 20];
+                
+                if(buffer_B[x]== 0x00)
+                {
+                    buffer_B[x] = 0x30;
+                }
+            }
+        }
+        if(bufferDisplay2.presetType[0] == 2)
+        {
+            for(x = 0; x < 8; x++)
+            {
+                tempPreset[x] = 0x30;
+            }
+            
+            for(x = bufferDisplay2.presetValue[0][0]; x > 0; x--)
+            {
+                tempPreset[bufferDisplay2.presetValue[0][0] - x] = (bufferDisplay2.presetValue[0][x]); 
+            }
+            for(x = 20; x <= 27; x++)
+            {
+                buffer_B[x] = tempPreset[x - 20];
+                
+                if(buffer_B[x]== 0x00)
+                {
+                    buffer_B[x] = 0x30;
+                }
+            }
+        }
+        buffer_B[28] = 0x03;  // TIPO IDENTIFICADOR 1 IBUTTON 2 t-INTELIGENTE 3-BANDA MAGNETICA     
+        for(y = 0; y < 8; y++)
+        {
+            buffer_B[29 + y] = 0x00;
+        }
+        for(y = 0; y < bufferDisplay2.passCard[0]; y++)
+        {
+            buffer_B[29 + y] = bufferDisplay2.passCard[bufferDisplay2.passCard[0]-y];
+        }
+        buffer_B[37] = bufferDisplay2.idSerial[0];        
+        for(y = 1; y <= bufferDisplay2.idSerial[0]; y++)
+        {
+            buffer_B[37 + y] = bufferDisplay2.idSerial[bufferDisplay2.idSerial[0]-(y-1)];
+        }
+        buffer_B[38+bufferDisplay2.idSerial[0]] = verificar_check(buffer_B,39+bufferDisplay2.idSerial[0]);
+        side.b.RFstateReport = 0;
+        bufferAreadyB = 4;             
+        CreditAuth2 = 0;
+        AckFlag = 0;       
+        //side.b.rfState = RF_CREDITSALEAUTH; 
+    }
+    
+    if(side.b.pumpState == PUMP_IDLE && side.b.RFstateReport == 2 && side.b.ActivoFideliza ==0)  //Saldo
+    {
+        buffer_B[0]  = 0xBC;
+        buffer_B[1]  = 0xCB;
+        buffer_B[2]  = 0xC8;
+        buffer_B[3]  = IDCast[0];
+        buffer_B[4]  = IDCast[1];
+        buffer_B[5]  = side.b.RF;
+        buffer_B[6]  = 0xB2;
+        buffer_B[7]  = RF_ASK_BALANCE;
+        buffer_B[8]  = bufferDisplay2.idType;
+                
+        for(y = 0; y < 8; y++)
+        {
+            buffer_B[9 + y] = 0x00;
+        }
+        for(y = 0; y < bufferDisplay2.passCard[0]; y++)
+        {
+            buffer_B[9 + y] = bufferDisplay2.passCard[bufferDisplay2.passCard[0]-y];
+        }
+        buffer_B[17] = bufferDisplay2.idSerial[0];        
+        for(y = 1; y <= bufferDisplay2.idSerial[0]; y++)
+        {
+            buffer_B[17 + y] = bufferDisplay2.idSerial[bufferDisplay2.idSerial[0]-(y-1)];
+        }
+        buffer_B[18+bufferDisplay2.idSerial[0]] = verificar_check(buffer_B,19+bufferDisplay2.idSerial[0]);
+        side.b.RFstateReport = 0;
+        bufferAreadyB = 5;           
+        CreditAuth2 = 0;
+        AckFlag = 0;       
+        side.b.rfState = RF_ASK_BALANCE; 
+    }
+    
+    if((side.b.pumpState == PUMP_IDLE || side.b.pumpState == PUMP_CALLING ) && side.b.RFstateReport == 2 && side.b.ActivoFideliza == 2) //Fideliza
+    {
+        buffer_B[0]  = 0xBC;
+        buffer_B[1]  = 0xCB;
+        buffer_B[2]  = 0xC8;
+        buffer_B[3]  = IDCast[0];
+        buffer_B[4]  = IDCast[1];
+        buffer_B[5]  = side.b.RF;
+        buffer_B[6]  = 0xB5;
+        buffer_B[7]  = RF_FIDELITY;
+        buffer_B[8]  = bufferDisplay2.idType;                        
+        buffer_B[9] = bufferDisplay2.idTerpelFideliza[0]; 
+        
+        for(y = 1; y <= bufferDisplay2.idTerpelFideliza[0]; y++)
+        {
+            buffer_B[9 + y] = bufferDisplay2.idTerpelFideliza[bufferDisplay2.idTerpelFideliza[0]-(y-1)];
+        }
+        buffer_B[10+bufferDisplay2.idTerpelFideliza[0]] = verificar_check(buffer_B,11+bufferDisplay2.idTerpelFideliza[0]);
+        side.b.RFstateReport = 0;
+        bufferAreadyB = 6;           
+        CreditAuth2 = 0;
+        AckFlag = 0;       
+        side.b.rfState = RF_FIDELITY; 
+        side.b.ActivoFideliza = 1;
+    }
+    if((side.b.pumpState == PUMP_IDLE || side.b.pumpState == PUMP_CALLING ) && side.b.RFstateReport == 3 && side.b.ActivoFideliza ==3) //Fideliza
+    {
+        buffer_B[0]  = 0xBC;
+        buffer_B[1]  = 0xCB;
+        buffer_B[2]  = 0xC8;
+        buffer_B[3]  = IDCast[0];
+        buffer_B[4]  = IDCast[1];
+        buffer_B[5]  = side.b.RF;
+        buffer_B[6]  = 0xB7;
+        buffer_B[7]  = RF_FIDELITY_CONF;
+        buffer_B[8]  = bufferDisplay2.FidelConf;  
+        buffer_B[9]  = verificar_check(buffer_B,10);
+        side.b.ActivoFideliza = 0;
+        bufferAreadyB = 7; 
+    }
     /////////////// COPIA DE RECIBO //////////////////
     if(side.b.rfStateCopy == RF_COPY_RECEIPT && side.b.RFstateReport == 1){ 
         buffer_B[100]   = 10;
@@ -3290,6 +4554,213 @@ void pollingRFB_Tx(){
 
 void pollingRFC_Tx(){   
     uint16 x,y;
+    uint8 decimal,DecimalFaltante;
+    /////////////// TERPEL ///////////////////////
+    if(side.c.pumpState == PUMP_CALLING && side.c.RFstateReport == 2 && CreditAuth3 == RF_CREDITSALEAUTH && bufferDisplay3.saleType == 2)
+    {
+        buffer_C[0]  = 0xBC;
+        buffer_C[1]  = 0xCB;
+        buffer_C[2]  = 0xC8;
+        buffer_C[3]  = IDCast[0];
+        buffer_C[4]  = IDCast[1];
+        buffer_C[5]  = side.c.RF;
+        buffer_C[6]  = 0xB1;
+        buffer_C[7]  = RF_CREDITSALEAUTH;
+        buffer_C[8]  = side.c.hose - 1;
+        
+        //Km (10 bytes)
+        for(y = 0; y < 10; y++)
+        {
+            buffer_C[9 + y] = 0x00;
+        }        
+        x = 0;                        
+        for(y = bufferDisplay3.mileageSale[0]; y >= 1; y--)
+        {           
+            buffer_C[9 + x] = bufferDisplay3.mileageSale[y]; 
+            x++;
+        }
+        buffer_C[19] =  bufferDisplay3.presetType[0];
+        
+        //Preset (8 bytes)    
+        for(y = 0; y < 8; y++)
+        {
+            buffer_C[20 + y] = 0x00;
+        }
+        x = 0;
+        if(bufferDisplay3.presetType[0] == 1)
+        {
+            for(x=0; x<8;x++)
+            {
+                tempPreset[x] = 0x30;
+            }
+
+            for(x = bufferDisplay3.presetValue[0][0] ; x > 0; x--)
+            {
+                 tempPreset[bufferDisplay3.presetValue[0][0] - x] = (bufferDisplay3.presetValue[0][x]); 
+            }         
+            decimal = 0;        
+            for(x = 0; x < 8; x++)
+            {
+                tempPreset2[x] = 0x30;
+            }        
+            for(decimal = 0; decimal <= 7; decimal++)
+            {
+                tempPreset2[x] = 0x30;
+                if (tempPreset[decimal] == ',')
+                {
+                    break;
+                }
+            }
+            if(decimal >= 7)
+            {
+                for(x = 0; x < 3; x++)
+                {
+                    tempPreset2[x] = 0x30;
+                }
+                for(x = 3; x < 8; x++)
+                {
+                    tempPreset2[x] = tempPreset[x - 3];
+                }        
+            }else{
+                DecimalFaltante = 3 - decimal;
+                for(x = 0; x < DecimalFaltante; x++)
+                {
+                    tempPreset2[x] = 0x30;
+                }
+                for(x = 0; x < decimal; x++)
+                {
+                    tempPreset2[x + DecimalFaltante] = tempPreset[x];
+                }
+                for(x = 3; x < 8; x++)
+                {                
+                    tempPreset2[x] = tempPreset[x - DecimalFaltante + 1];            
+                }
+            }
+            for(x = 20; x <= 27; x++)
+            {
+                buffer_C[x] = tempPreset2[x - 20];
+                
+                if(buffer_C[x]== 0x00)
+                {
+                    buffer_C[x] = 0x30;
+                }
+            }
+        }
+        if(bufferDisplay3.presetType[0] == 2)
+        {
+            for(x = 0; x < 8; x++)
+            {
+                tempPreset[x] = 0x30;
+            }
+            
+            for(x = bufferDisplay3.presetValue[0][0]; x > 0; x--)
+            {
+                tempPreset[bufferDisplay3.presetValue[0][0] - x] = (bufferDisplay3.presetValue[0][x]); 
+            }
+            for(x = 20; x <= 27; x++)
+            {
+                buffer_C[x] = tempPreset[x - 20];
+                
+                if(buffer_C[x]== 0x00)
+                {
+                    buffer_C[x] = 0x30;
+                }
+            }
+        }
+        buffer_C[28] = 0x03;  // TIPO IDENTIFICADOR 1 IBUTTON 2 t-INTELIGENTE 3-BANDA MAGNETICA     
+        for(y = 0; y < 8; y++)
+        {
+            buffer_C[29 + y] = 0x00;
+        }
+        for(y = 0; y < bufferDisplay3.passCard[0]; y++)
+        {
+            buffer_C[29 + y] = bufferDisplay3.passCard[bufferDisplay3.passCard[0]-y];
+        }
+        buffer_C[37] = bufferDisplay3.idSerial[0];        
+        for(y = 1; y <= bufferDisplay3.idSerial[0]; y++)
+        {
+            buffer_C[37 + y] = bufferDisplay3.idSerial[bufferDisplay3.idSerial[0]-(y-1)];
+        }
+        buffer_C[38+bufferDisplay3.idSerial[0]] = verificar_check(buffer_C,39+bufferDisplay3.idSerial[0]);
+        side.c.RFstateReport = 0;
+        bufferAreadyC = 4;             
+        CreditAuth3 = 0;
+        AckFlag = 0;       
+        //side.c.rfState = RF_CREDITSALEAUTH; 
+    }
+    
+    if((side.c.pumpState == PUMP_IDLE || side.c.pumpState == PUMP_CALLING ) && side.c.RFstateReport == 2 && side.c.ActivoFideliza ==0)  //Saldo
+    {
+        buffer_C[0]  = 0xBC;
+        buffer_C[1]  = 0xCB;
+        buffer_C[2]  = 0xC8;
+        buffer_C[3]  = IDCast[0];
+        buffer_C[4]  = IDCast[1];
+        buffer_C[5]  = side.c.RF;
+        buffer_C[6]  = 0xB2;
+        buffer_C[7]  = RF_ASK_BALANCE;
+        buffer_C[8]  = bufferDisplay3.idType;                
+        for(y = 0; y < 8; y++)
+        {
+            buffer_C[9 + y] = 0x00;
+        }
+        for(y = 0; y < bufferDisplay3.passCard[0]; y++)
+        {
+            buffer_C[9 + y] = bufferDisplay3.passCard[bufferDisplay3.passCard[0]-y];
+        }
+        buffer_C[17] = bufferDisplay3.idSerial[0];        
+        for(y = 1; y <= bufferDisplay3.idSerial[0]; y++)
+        {
+            buffer_C[17 + y] = bufferDisplay3.idSerial[bufferDisplay3.idSerial[0]-(y-1)];
+        }
+        buffer_C[18+bufferDisplay3.idSerial[0]] = verificar_check(buffer_C,19+bufferDisplay3.idSerial[0]);
+        side.c.RFstateReport = 0;
+        bufferAreadyC = 5;           
+        CreditAuth3 = 0;
+        AckFlag = 0;       
+        side.c.rfState = RF_ASK_BALANCE; 
+    }
+    
+    if((side.c.pumpState == PUMP_IDLE || side.c.pumpState == PUMP_CALLING ) && side.c.RFstateReport == 2 && side.c.ActivoFideliza ==2) //Fideliza
+    {
+        buffer_C[0]  = 0xBC;
+        buffer_C[1]  = 0xCB;
+        buffer_C[2]  = 0xC8;
+        buffer_C[3]  = IDCast[0];
+        buffer_C[4]  = IDCast[1];
+        buffer_C[5]  = side.c.RF;
+        buffer_C[6]  = 0xB5;
+        buffer_C[7]  = RF_FIDELITY;
+        buffer_C[8]  = bufferDisplay3.idType;                        
+        buffer_C[9]  = bufferDisplay3.idTerpelFideliza[0]; 
+        
+        for(y = 1; y <= bufferDisplay3.idTerpelFideliza[0]; y++)
+        {
+            buffer_C[9 + y] = bufferDisplay3.idTerpelFideliza[bufferDisplay3.idTerpelFideliza[0]-(y-1)];
+        }
+        buffer_C[10+bufferDisplay3.idTerpelFideliza[0]] = verificar_check(buffer_C,11+bufferDisplay3.idTerpelFideliza[0]);
+        side.c.RFstateReport = 0;
+        bufferAreadyC = 6;           
+        CreditAuth3 = 0;
+        AckFlag = 0;       
+        side.c.rfState = RF_FIDELITY; 
+        side.c.ActivoFideliza = 1;
+    }
+    if((side.c.pumpState == PUMP_IDLE || side.c.pumpState == PUMP_CALLING ) && side.c.RFstateReport == 3 && side.c.ActivoFideliza ==3) //Fideliza
+    {
+        buffer_C[0]  = 0xBC;
+        buffer_C[1]  = 0xCB;
+        buffer_C[2]  = 0xC8;
+        buffer_C[3]  = IDCast[0];
+        buffer_C[4]  = IDCast[1];
+        buffer_C[5]  = side.c.RF;
+        buffer_C[6]  = 0xB7;
+        buffer_C[7]  = RF_FIDELITY_CONF;
+        buffer_C[8]  = bufferDisplay3.FidelConf;  
+        buffer_C[9]  = verificar_check(buffer_C,10);
+        side.c.ActivoFideliza = 0;
+        bufferAreadyC = 7; 
+    }
     
     /////////////// TICKET COPY //////////////////
     if(side.c.rfStateCopy == RF_COPY_RECEIPT && side.c.RFstateReport == 1){ 
@@ -3583,10 +5054,217 @@ void pollingRFC_Tx(){
 
 void pollingRFD_Tx(){   
     uint16 x,y;
+    uint8 decimal,DecimalFaltante;
+    /////////////// TERPEL ///////////////////////
+    if(side.d.pumpState == PUMP_CALLING && side.d.RFstateReport == 2 && CreditAuth4 == RF_CREDITSALEAUTH && bufferDisplay4.saleType == 2)
+    {
+        buffer_D[0]  = 0xBC;
+        buffer_D[1]  = 0xCB;
+        buffer_D[2]  = 0xC8;
+        buffer_D[3]  = IDCast[0];
+        buffer_D[4]  = IDCast[1];
+        buffer_D[5]  = side.d.RF;
+        buffer_D[6]  = 0xB1;
+        buffer_D[7]  = RF_CREDITSALEAUTH;
+        buffer_D[8]  = side.d.hose - 1;
+        
+        //Km (10 bytes)
+        for(y = 0; y < 10; y++)
+        {
+            buffer_D[9 + y] = 0x00;
+        }        
+        x = 0;                        
+        for(y = bufferDisplay4.mileageSale[0]; y >= 1; y--)
+        {           
+            buffer_D[9 + x] = bufferDisplay4.mileageSale[y]; 
+            x++;
+        }
+        buffer_D[19] =  bufferDisplay4.presetType[0];
+        
+        //Preset (8 bytes)    
+        for(y = 0; y < 8; y++)
+        {
+            buffer_D[20 + y] = 0x00;
+        }
+        x = 0;
+        if(bufferDisplay4.presetType[0] == 1)
+        {
+            for(x=0; x<8;x++)
+            {
+                tempPreset[x] = 0x30;
+            }
+
+            for(x = bufferDisplay4.presetValue[0][0] ; x > 0; x--)
+            {
+                 tempPreset[bufferDisplay4.presetValue[0][0] - x] = (bufferDisplay4.presetValue[0][x]); 
+            }         
+            decimal = 0;        
+            for(x = 0; x < 8; x++)
+            {
+                tempPreset2[x] = 0x30;
+            }        
+            for(decimal = 0; decimal <= 7; decimal++)
+            {
+                tempPreset2[x] = 0x30;
+                if (tempPreset[decimal] == ',')
+                {
+                    break;
+                }
+            }
+            if(decimal >= 7)
+            {
+                for(x = 0; x < 3; x++)
+                {
+                    tempPreset2[x] = 0x30;
+                }
+                for(x = 3; x < 8; x++)
+                {
+                    tempPreset2[x] = tempPreset[x - 3];
+                }        
+            }else{
+                DecimalFaltante = 3 - decimal;
+                for(x = 0; x < DecimalFaltante; x++)
+                {
+                    tempPreset2[x] = 0x30;
+                }
+                for(x = 0; x < decimal; x++)
+                {
+                    tempPreset2[x + DecimalFaltante] = tempPreset[x];
+                }
+                for(x = 3; x < 8; x++)
+                {                
+                    tempPreset2[x] = tempPreset[x - DecimalFaltante + 1];            
+                }
+            }
+            for(x = 20; x <= 27; x++)
+            {
+                buffer_D[x] = tempPreset2[x - 20];
+                
+                if(buffer_D[x]== 0x00)
+                {
+                    buffer_D[x] = 0x30;
+                }
+            }
+        }
+        if(bufferDisplay4.presetType[0] == 2)
+        {
+            for(x = 0; x < 8; x++)
+            {
+                tempPreset[x] = 0x30;
+            }
+            
+            for(x = bufferDisplay4.presetValue[0][0]; x > 0; x--)
+            {
+                tempPreset[bufferDisplay4.presetValue[0][0] - x] = (bufferDisplay4.presetValue[0][x]); 
+            }
+            for(x = 20; x <= 27; x++)
+            {
+                buffer_D[x] = tempPreset[x - 20];
+                
+                if(buffer_D[x]== 0x00)
+                {
+                    buffer_D[x] = 0x30;
+                }
+            }
+        }
+        buffer_D[28] = 0x03;  // TIPO IDENTIFICADOR 1 IBUTTON 2 t-INTELIGENTE 3-BANDA MAGNETICA     
+        for(y = 0; y < 8; y++)
+        {
+            buffer_D[29 + y] = 0x00;
+        }
+        for(y = 0; y < bufferDisplay4.passCard[0]; y++)
+        {
+            buffer_D[29 + y] = bufferDisplay4.passCard[bufferDisplay4.passCard[0]-y];
+        }
+        buffer_D[37] = bufferDisplay4.idSerial[0];        
+        for(y = 1; y <= bufferDisplay4.idSerial[0]; y++)
+        {
+            buffer_D[37 + y] = bufferDisplay4.idSerial[bufferDisplay4.idSerial[0]-(y-1)];
+        }
+        buffer_D[38+bufferDisplay4.idSerial[0]] = verificar_check(buffer_D,39+bufferDisplay4.idSerial[0]);
+        side.d.RFstateReport = 0;
+        bufferAreadyD = 4;             
+        CreditAuth4 = 0;
+        AckFlag = 0;       
+        //side.d.rfState = RF_CREDITSALEAUTH; 
+    }
     
+   if(side.d.pumpState == PUMP_IDLE && side.d.RFstateReport == 2 && side.d.ActivoFideliza ==0)  //Saldo
+    {
+        buffer_D[0]  = 0xBC;
+        buffer_D[1]  = 0xCB;
+        buffer_D[2]  = 0xC8;
+        buffer_D[3]  = IDCast[0];
+        buffer_D[4]  = IDCast[1];
+        buffer_D[5]  = side.d.RF;
+        buffer_D[6]  = 0xB2;
+        buffer_D[7]  = RF_ASK_BALANCE;
+        buffer_D[8]  = bufferDisplay4.idType;
+                
+        for(y = 0; y < 8; y++)
+        {
+            buffer_D[9 + y] = 0x00;
+        }
+        for(y = 0; y < bufferDisplay4.passCard[0]; y++)
+        {
+            buffer_D[9 + y] = bufferDisplay4.passCard[bufferDisplay4.passCard[0]-y];
+        }
+        buffer_D[17] = bufferDisplay4.idSerial[0];        
+        for(y = 1; y <= bufferDisplay4.idSerial[0]; y++)
+        {
+            buffer_D[17 + y] = bufferDisplay4.idSerial[bufferDisplay4.idSerial[0]-(y-1)];
+        }
+        buffer_D[18+bufferDisplay4.idSerial[0]] = verificar_check(buffer_D,19+bufferDisplay4.idSerial[0]);
+        side.d.RFstateReport = 0;
+        bufferAreadyD = 5;           
+        CreditAuth4 = 0;
+        AckFlag = 0;       
+        side.d.rfState = RF_ASK_BALANCE; 
+    }
+    
+    if((side.d.pumpState == PUMP_IDLE || side.d.pumpState == PUMP_CALLING ) && side.d.RFstateReport == 2 && side.d.ActivoFideliza ==2) //Fideliza
+    {
+        buffer_D[0]  = 0xBC;
+        buffer_D[1]  = 0xCB;
+        buffer_D[2]  = 0xC8;
+        buffer_D[3]  = IDCast[0];
+        buffer_D[4]  = IDCast[1];
+        buffer_D[5]  = side.d.RF;
+        buffer_D[6]  = 0xB5;
+        buffer_D[7]  = RF_FIDELITY;
+        buffer_D[8]  = bufferDisplay4.idType;                        
+        buffer_D[9] = bufferDisplay4.idTerpelFideliza[0]; 
+        
+        for(y = 1; y <= bufferDisplay4.idTerpelFideliza[0]; y++)
+        {
+            buffer_D[9 + y] = bufferDisplay4.idTerpelFideliza[bufferDisplay4.idTerpelFideliza[0]-(y-1)];
+        }
+        buffer_D[10+bufferDisplay4.idTerpelFideliza[0]] = verificar_check(buffer_D,11+bufferDisplay4.idTerpelFideliza[0]);
+        side.d.RFstateReport = 0;
+        bufferAreadyD = 6;           
+        CreditAuth4 = 0;
+        AckFlag = 0;       
+        side.d.rfState = RF_FIDELITY; 
+        side.d.ActivoFideliza = 1;
+    }
+    if((side.d.pumpState == PUMP_IDLE || side.d.pumpState == PUMP_CALLING ) && side.d.RFstateReport == 3 && side.d.ActivoFideliza ==3) //Fideliza
+    {
+        buffer_D[0]  = 0xBC;
+        buffer_D[1]  = 0xCB;
+        buffer_D[2]  = 0xC8;
+        buffer_D[3]  = IDCast[0];
+        buffer_D[4]  = IDCast[1];
+        buffer_D[5]  = side.d.RF;
+        buffer_D[6]  = 0xB7;
+        buffer_D[7]  = RF_FIDELITY_CONF;
+        buffer_D[8]  = bufferDisplay4.FidelConf;  
+        buffer_D[9]  = verificar_check(buffer_D,10);
+        side.d.ActivoFideliza = 0;
+        bufferAreadyD = 7; 
+    }
     /////////////// TICKET COPY //////////////////
     if(side.d.rfStateCopy == RF_COPY_RECEIPT && side.d.RFstateReport == 1){ 
-        buffer_A[0]   = 10;
+        buffer_D[0]   = 10;
 		buffer_D[1]   = 0xBC;                                 // Encabezado byte 1
         buffer_D[2]   = 0xCB;                                 // Encabezado byte 2
         buffer_D[3]   = 0xC8;                                 // Encabezado byte 3

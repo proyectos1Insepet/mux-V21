@@ -380,8 +380,10 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
     }
     write_psoc1(val,10);
     
+    LeerEeprom(200,31);
     for(x = 1; x <= 30; x++)
     {
+        Encabezado5[x] = buffer_i2c[x];
         write_psoc1(val,Encabezado5[x]);
         //write_psoc1(val,title5[x]);
     }
@@ -514,13 +516,6 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
         	}
         }
         
-
-
-
-
-
-
-
         write_psoc1(val,10);
         
         
@@ -635,8 +630,7 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             for(x = 0; x < 11; x++)
             {
     			bufferDisplay1.PrintLicense[x] = 0x00;	
-    		}
-            
+    		}            
             write_psoc1(val,10);
 			if(KmCash[1] == 0x01){
                 for(x = 0; x < 13; x++)
@@ -1545,12 +1539,8 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
                     write_psoc1(val,',');
         	}
             
-        }
-                
-
-
-        write_psoc1(val,10);
-        
+        }                
+        write_psoc1(val,10);        
         if(bufferDisplay3.saleType == 1)
         {
     		for(x = 0; x < 13; x++)
@@ -1563,16 +1553,12 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
     		}
             write_psoc1(val,10);
             
-
             for(x = 0; x < 11; x++)
             {
     			bufferDisplay3.PrintLicense[x] = 0x00;	
     		}
-
 			if(KmCash[1] == 0x01){
                 for(x = 0; x < 13; x++)
-
-
 
                 {																		
     				write_psoc1(val,PRN_MILLEAGE[x]);    //Km opcional en efectivo
@@ -1583,13 +1569,6 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
     			}
                 write_psoc1(val,10);
             }
-
-
-
-
-
-
-
             for(x = 0; x < 13; x++)
             {																		
     			write_psoc1(val,PRN_PRESET[x]);                          //Preset
@@ -1912,14 +1891,6 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
         		write_psoc1(val,side.d.ppuSale[x]);
         	}
         }
-                
-
-
-
-
-
-
-
         write_psoc1(val,10);
         
         for(x = 0; x < 13; x++)
@@ -1966,13 +1937,6 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
         }
   
         write_psoc1(val,10);        
-
-
-
-
-
-
-       
         for(x = 0; x < 13; x++)
         {										                    //Dinero							
     		write_psoc1(val,msn_din[x]);
@@ -2013,9 +1977,6 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
                     write_psoc1(val,',');
         	}            
         }
-                
-
-
         write_psoc1(val,10);
         
         if(bufferDisplay4.saleType == 1)
@@ -2028,19 +1989,13 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             {
     			write_psoc1(val,bufferDisplay4.PrintLicense[x]);	
     		}
-            write_psoc1(val,10);
-            
-
+            write_psoc1(val,10);            
             for(x = 0; x < 11; x++)
             {
     			bufferDisplay4.PrintLicense[x] = 0x00;	
     		}
             if(KmCash[1] == 0x01){
                 for(x = 0; x < 13; x++)
-
-
-
-
                 {																		
     				write_psoc1(val,PRN_MILLEAGE[x]);    //Km opcional en efectivo
     			}	
@@ -2050,12 +2005,10 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
     			}
                 write_psoc1(val,10);
             }
-
             for(x = 0; x < 13; x++)
             {																		
     			write_psoc1(val,PRN_PRESET[x]);                          //Preset
-    		} 
-            
+    		}             
             write_psoc1(val,bufferDisplay4.PrintType);
             write_psoc1(val,' ');
             if (digits < 7)
@@ -2070,8 +2023,6 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 
                         if(bufferDisplay4.PrintPreset[0][1] == 0x00 && bufferDisplay4.PrintPreset[0][2] == 0x00 && bufferDisplay4.PrintPreset[0][3] == 0x30)
                             bufferDisplay4.PrintPreset[0][3] = 0x00;
-
-
                         ///////////////////////////////////////////////////////////////
                     for(x = bufferDisplay4.PrintPreset[0][0]; x >= 1 ;x--)
                     {						   							
@@ -2113,16 +2064,9 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
                     if(bufferDisplay4.PrintPreset[1][1] == 0x00)
                         bufferDisplay4.PrintPreset[1][1] = 0x30;
 
-
-
-
-
                     for(x = bufferDisplay4.PrintPreset[1][0]; x >= 1 ;x--)
                     {						   							
                         write_psoc1(val,bufferDisplay4.PrintPreset[1][bufferDisplay4.PrintPreset[1][0]+ 1 - x]);
-
-
-
                 	}
                 }
                 else{                                        
@@ -2130,16 +2074,11 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
                     for(x = bufferDisplay4.PrintPreset[1][0]; x >= 1 ;x--)
                     {						   							
                         write_psoc1(val, bufferDisplay4.PrintPreset[1][bufferDisplay4.PrintPreset[1][0]+ 1 - x]);
-
                 	}
                 }                                        
-            }
-            
-
-
+            }            
             write_psoc1(val,10);
-        }
-                
+        }                
   	    if(bufferDisplay4.saleType == 2)
         {		
             for(x = 0;x < 13;x++)
@@ -2156,7 +2095,6 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
 				bufferDisplay4.mileageSale[x] = 0x00;	
 			}
             
-
 			for(x = 0;x < 13; x++)
             {										//DATOS IBUTTON								
 				write_psoc1(val,PRN_SERIAL[x]);
@@ -2170,9 +2108,7 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             for(x = 0; x < 25; x++)
             {
 				bufferDisplay4.idSerial[x] = 0x00;	
-
 			}
-
 			for(x = 0; x < 13; x++)
             {																		
 				write_psoc1(val,msn_placa[x]);
@@ -2366,222 +2302,220 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
     
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void printBalance(uint8 val,uint8 pos){
+    uint8 x;
+    uint8 nombre[8]  = {"NOMBRE :"};
+    uint8 placa[8]   = {"PLACA  :"};
+    uint8 tarjeta[8] = {"TARJETA:"};
+    uint8 saldo_d[21]  = {"SALDO DISPONIBLE:    "};
+    uint8 saldo_a[21]  = {"SALDO EN APROBACION: "};
+    
+    if(pos == side.a.dir || pos == side.c.dir)
+    {
+        if(PrinterType[1] == 1)
+        {
+            printLogoP(printPortA,logoPrint[1]);    
+        }else{
+            printLogoK(printPortB,logoPrint[1]);
+        }
+    }
+    if(pos == side.b.dir || pos == side.d.dir)
+    {
+        if(PrinterType[1] == 1)
+        {
+            printLogoP(printPortB,logoPrint[1]);    
+        }else{
+            printLogoK(printPortB,logoPrint[1]);
+        }
+    }
+    write_psoc1(val,10);
+    for(x = 1; x <= 30; x++)
+    {
+        write_psoc1(val,Encabezado1[x]);
+        //write_psoc1(val,title1[x]);
+    }
+    write_psoc1(val,10);
+    
+    for(x = 1; x <= 30; x++)
+    {
+        write_psoc1(val,Encabezado2[x]);
+        //write_psoc1(val,title2[x]);
+    }
+    write_psoc1(val,10);
+    
+    for(x = 1; x <= 30; x++)
+    {
+        write_psoc1(val,Encabezado3[x]);
+        //write_psoc1(val,title3[x]);
+    }
+    write_psoc1(val,10);
+    
+    for(x = 1; x <= 30; x++)
+    {
+        write_psoc1(val,Encabezado4[x]);
+        //write_psoc1(val,title4[x]);
+    }
+    write_psoc1(val,10);
+    LeerEeprom(200,31);
+    for(x = 1; x <= 30; x++)
+    {
+        Encabezado5[x] = buffer_i2c[x];
+        write_psoc1(val,Encabezado5[x]);
+        //write_psoc1(val,title5[x]);
+    }
+    write_psoc1(val,10);
+    
+    for(x = 0; x < 30; x++)
+    {
+        write_psoc1(val,SEPARATOR[x]);
+    }
+    write_psoc1(val,10);
+    for(x = 0; x < 13; x++)
+    {										//FECHA								
+		write_psoc1(val,msn_fecha[x]);
+	}
+    if(leer_fecha() == 1)
+    {
+		write_psoc1(val,(((dateDownHandle[0] & 0x30) >> 4) + 48));
+		write_psoc1(val,((dateDownHandle[0] & 0x0F) + 48));
+		write_psoc1(val,'/');
+		write_psoc1(val,(((dateDownHandle[1] & 0x10) >> 4) + 48));
+		write_psoc1(val,((dateDownHandle[1] & 0x0F) + 48));	
+		write_psoc1(val,'/');
+		write_psoc1(val,(((dateDownHandle[2] & 0xF0) >> 4) + 48));
+		write_psoc1(val,((dateDownHandle[2] & 0x0F) + 48));			
+	}		
+    write_psoc1(val,10);
+    for(x = 0;x < 13; x++)
+    {										//HORA								
+		write_psoc1(val,msn_hora[x]);
+	}
+    if(leer_hora() == 1)
+    {										//HORA
+		write_psoc1(val,(((timeDownHandle[1] & 0x10) >> 4) + 48));
+		write_psoc1(val,((timeDownHandle[1] & 0x0F) + 48));
+		write_psoc1(val,':');
+		write_psoc1(val,(((timeDownHandle[0] & 0xF0) >> 4) + 48));
+		write_psoc1(val,((timeDownHandle[0] & 0x0F) + 48));		
+	}
+    write_psoc1(val,10);
+    for(x = 0; x < 30; x++)
+    {
+        write_psoc1(val,SEPARATOR[x]);
+    }
+    write_psoc1(val,10);
+    if(cardmessagedisplay== 1){
+    //////DATOS DE SALDO //////
+        for(x = 0; x < 8; x++)
+        {
+            write_psoc1(val,nombre[x]);
+        }
+        for(x = 0; x < 20; x++)
+        {
+            write_psoc1(val,Company[x]);
+        }
+        write_psoc1(val,10);
+        
+        for(x = 0; x < 8; x++)
+        {
+            write_psoc1(val,placa[x]);
+        }
+        for(x = 0; x < 8; x++)
+        {
+            write_psoc1(val,LicensePlate[x]);
+        }
+        write_psoc1(val,10);
+        
+        for(x = 0; x < 8; x++)
+        {
+            write_psoc1(val,tarjeta[x]);
+        }
+        for(x = 0; x < 5; x++)
+        {
+            write_psoc1(val,'*');
+        }
+        for(x = 0; x < 3; x++)
+        {
+            write_psoc1(val,cardNumberA[x]);
+        }
+        write_psoc1(val,10);
+        
+        for(x = 0; x < 21; x++)
+        {
+            write_psoc1(val,saldo_d[x]);
+        }
+        write_psoc1(val,10);
+        for(x = 0; x < 18; x++)
+        {
+            write_psoc1(val,BalanceA[x]);
+        }
+        write_psoc1(val,10);
+        
+        for(x = 0; x < 21; x++)
+        {
+            write_psoc1(val,saldo_a[x]);
+        }
+        write_psoc1(val,10);
+        for(x = 0; x < 18; x++)
+        {
+            write_psoc1(val,BalanceB[x]);
+        }
+        write_psoc1(val,10);
+    }
+    if(cardmessagedisplay == 2){
+        for(x = 0; x < 25; x++)
+        {
+            write_psoc1(val,cardmessage[x]);
+        }        
+        write_psoc1(val,10);
+        for(x = 0; x < 25; x++)
+        {
+            write_psoc1(val,cardmessage1[x]);
+        }        
+        write_psoc1(val,10);
+        for(x = 0; x < 25; x++)
+        {
+            write_psoc1(val,cardmessage2[x]);
+        }        
+        write_psoc1(val,10);
+        for(x = 0; x < 25; x++)
+        {
+            write_psoc1(val,cardmessage3[x]);
+        }        
+        write_psoc1(val,10);
+        
+    }
+     ////////////////  PIE DE PÁGINA /////////////////////////
+    for(x = 0; x < 30; x++)
+    {
+        write_psoc1(val,SEPARATOR[x]);
+    }
+    write_psoc1(val,10);
+    for(x = 1; x <= 30; x++)
+    {
+        write_psoc1(val,Pie1[x]);
+        //write_psoc1(val,footer1[x]);
+    }
+    write_psoc1(val,10); 
+    for(x = 1; x <= 30; x++)
+    {
+        write_psoc1(val,Pie2[x]);
+        //write_psoc1(val,footer2[x]);
+    }    
+    write_psoc1(val,10); 
+    for(x = 1; x <= 30; x++)
+    {
+        write_psoc1(val,Pie3[x]);
+        //write_psoc1(val,footer2[x]);
+    }   
+    write_psoc1(val,10); 
+    write_psoc1(val,10);
+    write_psoc1(val,10);
+	write_psoc1(val,10);
+    write_psoc1(val,10);
+	write_psoc1(val,0x1D);
+	write_psoc1(val,0x56);
+	write_psoc1(val,0x31);	
+    
+}
 /* [] END OF FILE */

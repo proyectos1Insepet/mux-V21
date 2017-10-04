@@ -63,7 +63,7 @@
     volatile uint8 IDCast[2];
     volatile uint8 ActiveRF;
     volatile uint8 counterRF;
-    volatile uint8 temporal[30];
+    volatile uint8 temporal[200];
     volatile uint8 tempPreset[8];
     volatile uint8 tempPreset2[8];
     volatile uint8 tempPPU[5];
@@ -87,7 +87,8 @@
     volatile uint8 TempPos[4];
     volatile uint8 RFOnline;
     volatile uint8 OSonline;
-
+    volatile uint8 cardNumberA[3];
+    volatile uint8 cardNumberB[3];
 
   
     
@@ -174,8 +175,8 @@
     uint8 buffer_i2c[64]; //Buffer de lectura del i2c 
     uint8 LicensePlate[9];
     uint8 LicensePlate2[9];
-    uint8 BalanceA[11];
-    uint8 BalanceB[11];
+    uint8 BalanceA[21];
+    uint8 BalanceB[21];
     uint8 Company[21];
     uint8 CompanyB[21];
     uint8 CountID[21];
@@ -218,18 +219,31 @@
     uint8 pollTotalsC;
     uint8 pollTotalsD;
     uint32 PositionGAP;
+    uint8 buffer_RX[500];
+    uint8 buffer_TX[25];
+    uint8 cardmessage[25];
+    uint8 cardmessage1[25];
+    uint8 cardmessage2[25];
+    uint8 cardmessage3[25];
+    uint8 cardmessageB[25];
+    uint8 cardmessage1B[25];
+    uint8 cardmessage2B[25];
+    uint8 cardmessage3B[25];
+    
+    uint8 cardmessagedisplay;
+    uint8 validaclientefiel;
+    uint8 validaclientefiel2;
+    uint8 validaclientefiel3;
+    uint8 validaclientefiel4;
+    uint8 KmCash[2];
+    uint8 magneticReader[3];
+    uint8 keysTerpel;
     uint16 RfActive;
     uint8 KmCash[2];
-
-
-
-
-
-
-
-
-
-
+	uint8 StopSendTotalA;
+	uint8 StopSendTotalB;
+	uint8 StopSendTotalC;
+	uint8 StopSendTotalD;
     
     
 /*
@@ -284,6 +298,8 @@ struct buffer{
     uint8 PresetTemp[10];
     uint8 PrintCopy;
     uint8 EndSaleReport;
+    uint8 passCard[8];
+    uint8 idTerpelFideliza[150];
     uint8 LastFlowDisplay;
     uint8 PrintPreset[2][10];
     uint8 PrintLicense[11];
@@ -291,8 +307,7 @@ struct buffer{
     uint8 PrintEnd;
     uint8 VarActual;
     uint8 buffer_TX[100];
-
-
+    uint8 FidelConf;
 
 };
 
@@ -333,6 +348,7 @@ struct position{
     uint8 RF;
     uint8 TotalRequest;
     uint8 FlagTotal;
+    uint8 ActivoFideliza;    
 };
 
 struct pump{
@@ -369,7 +385,7 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_INICIO2,
 
     DISPLAY_FORMA_PAGO_DESEADA              = 0x04,
-
+    DISPLAY_FORMA_PAGO_DESEADA_TERPEL       = 0x8D,
     DISPLAY_FORMA_PROGRAMACION              = 0x05,
     DISPLAY_INTRODUZCA_VALOR                = 0x06,
     DISPLAY_INTRODUZCA_VALOR2               = 0x0F,
@@ -386,13 +402,13 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_PASSWORD_INVALIDO               = 0x27,
     DISPLAY_NUEVO_PASSWORD                  = 0x2F,
     
-    DISPLAY_TIEMPO_EXPIRADO                 = 0x2C,
-    
+    DISPLAY_TIEMPO_EXPIRADO                 = 0x2C,    
     DISPLAY_GRACIAS_VUELVA_PRONTO           = 0x0C,
 
     DISPLAY_ID_DIGITAL                      = 0x85,
-
-
+    DISPLAY_ID_TERPEL                       = 0x8B,
+    DISPLAY_ESPERANDO_ID_TERPEL             = 0x8E,
+    DISPLAY_SELECCIONE_OP_TERPEL            = 0x8F,
 
     DISPLAY_ID_NO_RECONOCIDO                = 0x1C,//0x11,
     DISPLAY_ESPERANDO_ID                    = 0x12,
@@ -402,17 +418,20 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_INTRODUZCA_VOLUMEN              = 0x0D,
     DISPLAY_INTRODUZCA_KILOMETRAJE          = 0x0E,
     DISPLAY_OPERACIONES                     = 0x83, //antes 0x22
-    DISPLAY_CONFIGURACIONES                 = 0x90,
-	DISPLAY_KM_EFECTIVO                     = 0x91,
-
-
-
+    DISPLAY_CONFIGURACIONES                 = 0x90, //antes 0x5A
+    DISPLAY_KM_EFECTIVO                     = 0x91,
+    DISPLAY_LECTORES_BANDA                  = 0x92,//Lectores banda
+    DISPLAY_IDEN_FIDELIZACION               = 0x93,//Fidelizacion
+    DISPLAY_CONF_USUARIO                    = 0x94,
+    DISPLAY_FIDELIZACION                    = 0x95,
+    DISPLAY_ID_LIFE_MILES                   = 0x96,
     DISPLAY_COPIA_RECIBO                    = 0x31,
     DISPLAY_IMPRIMIENDO_RECIBO              = 0x35,
 
     DISPLAY_SELECCIONE_POSICION             = 0x2E,
-    DISPLAY_OPERACION_CANCELADA             = 0x8C,
+    DISPLAY_RECIBO_SALDO                    = 0x8C,
 
+    DISPLAY_OPERACION_CANCELADA             = 0x8C,
     DISPLAY_ESPERANDO_AUTORIZACION          = 0x96,
     DISPLAY_POR_FAVOR_ESPERE                = 0x39,
     DISPLAY_AUTORIZACION_ACEPTADA           = 0x97,
@@ -435,8 +454,7 @@ enum _AVAILABLE_DISPLAYS_
     
     DISPLAY_IDENTIFICADOR_ESTACION          = 0x64,
     DISPLAY_PRECIO_POR_UNIDAD               = 0x65,
-
-    
+    DISPLAY_PASAPORTE                       = 0x6F,    
     DISPLAY_DUMMY0                          = 0x99,
     DISPLAY_DUMMY1                          = 0x9A,
     DISPLAY_DUMMY2                          = 0x9B,
@@ -445,7 +463,7 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_SIDE_DUMMY_DISPLAY              = 0xFA,
     DISPLAY_NULL                            = 0xFF,
     
-    DISPLAY_MESSAGE                         = 0X88
+    DISPLAY_MESSAGE                         = 0x88
 
 };
 
@@ -467,14 +485,14 @@ enum _RF_STATES_
     RF_DELIVERING       = 0x01,
     RF_CASHSALEREPORT   = 0x02,
     RF_CREDITSALEAUTH   = 0x03,
-    RF_WORKSHIFTREQ     = 0x05,
-    RF_CREDITSALEREPORT = 0x06,
     RF_ERROR            = 0x04,
-
-
+    RF_WORKSHIFTREQ     = 0x05,
+    RF_CREDITSALEREPORT = 0x06,    
     RF_COPY_RECEIPT     = 0x0B,
-    RF_ZERO_SALE        = 0x0C
-
+    RF_ZERO_SALE        = 0x0C,
+    RF_ASK_BALANCE      = 0x0D,
+    RF_FIDELITY         = 0x0F,
+    RF_FIDELITY_CONF    = 0x0A,
 };
 
 enum _AUTH_TYPE_

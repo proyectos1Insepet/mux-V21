@@ -38,8 +38,11 @@ void RF_Task(void *arg)
     const TickType_t xFrequency = 10;
     xLastWakeTime = xTaskGetTickCount();
     uint16 i = 0; 
+    uint8 x;
     static uint16 cnt = 0;  
     uint8 FlagRF;
+    uint8 FlagRecv = 0;
+    uint8 HeaderRF = 0;
     uint8 buffer_rfTMP;
     uint8 GeneralConfig;
 
@@ -77,7 +80,8 @@ void RF_Task(void *arg)
         bufferDisplay3.VarActual = 1;
         bufferDisplay4.VarActual = 1;
     }
- 
+    LongEsperada = 0;
+    HeaderRF = 1;
     while(1) 
     {       
         while(RF_Connection_GetRxBufferSize() > 0)  
@@ -86,11 +90,14 @@ void RF_Task(void *arg)
             buffer_rfTMP  = RF_Connection_ReadRxData();
             GeneralConfig = 0;
             FlagRF = 1;
-            if (buffer_rfTMP == 0xBC)
-            {
+            
+            if (buffer_rfTMP == 0xBC && HeaderRF == 1)
+            { 
                 i = 0;
+                HeaderRF = 0;
+                //LongEsperada = 0;
             }
-
+                                 
             // Status
             if( buffer_rf[6] == 0xA1)
             {
@@ -140,6 +147,29 @@ void RF_Task(void *arg)
                 LongEsperada = 19;
             }
             
+            else if ( buffer_rf[6] == 0xB3)
+            {
+                if(buffer_rf[7]== 0x01)
+                {                    
+					if(buffer_rf[8] != 0x00)
+					{
+						LongEsperada = buffer_rf[8] + 9;
+					}
+                }else{
+					if(buffer_rf[8] != 0x00)
+					{
+						LongEsperada = buffer_rf[8] + 9;
+					}
+                }
+            }
+            else if ( buffer_rf[6] == 0xB6)
+            {
+                LongEsperada   = 102;                
+            }
+            else if ( buffer_rf[6] == 0xB7)
+            {
+                LongEsperada = 9;
+            }
             // big config
             else if ( buffer_rf[6] == 0xE1)
             {
@@ -161,7 +191,7 @@ void RF_Task(void *arg)
             {
                 LongEsperada = 117;
             }
-                                
+             
             buffer_rf[i] = buffer_rfTMP;         
             
             if (i == LongEsperada - 1)
@@ -174,10 +204,24 @@ void RF_Task(void *arg)
                     {
                        pollingRF_Rx(buffer_rf);
                        RFOnline = 1; 
+                       HeaderRF = 1;
+                       i = 0;
+                       LongEsperada = 0;
+					   for(x = 0; x < 100; x++)
+					   {
+						   buffer_rf[x] = 0x00;
+					   }
                     }
                     else
                     {
                        RFOnline = 0;
+                       HeaderRF = 1;
+//                       i = 0;
+//                       LongEsperada = 0;
+//                       for(x = 0; x < 100; x++)
+//					   {
+//						   buffer_rf[x] = 0x00;
+//					   }
                     }  
                 }
                 else
@@ -187,18 +231,26 @@ void RF_Task(void *arg)
                         
                        pollingRF_Rx(buffer_rf);
                        RFOnline = 1; 
+                       HeaderRF = 1;
+                       i = 0;
+                       LongEsperada = 0;
+                       for(x = 0; x < 100; x++)
+					   {
+						   buffer_rf[x] = 0x00;
+					   }
                     }
                     else
                     {
                        RFOnline = 0;
+                       HeaderRF = 1;
                     }
                 }
                 buffer_rf[6] = 0xFF;
                 RF_Connection_ClearRxBuffer();            
                 break;
-            }
-             
-            i++;    
+            }  
+            i++;
+            
             
         }               
          

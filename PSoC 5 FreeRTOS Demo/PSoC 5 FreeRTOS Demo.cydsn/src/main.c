@@ -41,7 +41,7 @@
 
 xSemaphoreHandle g_pUARTSemaphore;
       
-char Version[] = "MUX Version 22.0";
+char Version[] = "MUX Version 25.0";
 
 /*
  * Inicializa los perifiericos del sistema
@@ -167,10 +167,14 @@ void loadConfiguration(){
     for(x=0;x<=buffer_i2c[0];x++){
 		KmCash[x]=buffer_i2c[x];
 	}
+    LeerEeprom(503,3);
+    for(x=0;x<=buffer_i2c[0];x++){
+		magneticReader[x]=buffer_i2c[x];
+	}
 
 	for(x=1;x<=30;x++){
 		Pie1[x]=EEPROM_1_ReadByte(100+x);
-	}
+	}    
     LeerEeprom(600,31);
 	for(x=0;x<=buffer_i2c[0];x++){
 		Pie2[x]=buffer_i2c[x];
@@ -314,6 +318,8 @@ void InitPump(){
    Main: Initialize and start Kernel
 *---------------------------------------------------------------------------*/
 int main()
+
+
 {	  
 
     /* Drivers                                                                          */
@@ -365,8 +371,8 @@ int main()
     prvHardwareSetup();                     /* FreeRTOS setup                           */
 	vTaskStartScheduler();                  /* Start the scheduler                      */
 
-	//return 1;
-    for(;;);
+	return 1;
+    //for(;;);
 }
 
 int osInit(void)

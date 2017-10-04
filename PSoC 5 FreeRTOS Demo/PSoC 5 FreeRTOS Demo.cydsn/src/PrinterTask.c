@@ -47,7 +47,10 @@ void PrinterTask(void *arg)
     {                                               
         if(bufferDisplay1.flagPrint == 1 && bufferDisplay1.PrintFlagEOT == 1)
         {    
-                
+            LeerEeprom(0,2);
+        	for(x=0;x<=buffer_i2c[0];x++){
+        		logoPrint[x]=buffer_i2c[x];
+        	}    
             //Impresion
             imprimir(printPortA, side.a.RF);
             bufferDisplay1.flagPrint = 0;            
