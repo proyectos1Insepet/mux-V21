@@ -466,6 +466,8 @@
 <OpenDocs>
 <name v=".\PSoC 5 FreeRTOS Demo.cydsn\PumpTask.c" />
 <name v=".\PSoC 5 FreeRTOS Demo.cydsn\src\RFPoll.c" />
+<name v=".\PSoC 5 FreeRTOS Demo.cydsn\src\PrinterTask.c" />
+<name v=".\PSoC 5 FreeRTOS Demo.cydsn\src\main.c" />
 </OpenDocs>
 <config v="" />
 <AutoUpdate v="true" />
