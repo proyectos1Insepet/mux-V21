@@ -88,7 +88,7 @@ void loadConfiguration(){
     /// Leer desde eeprom externa ///
     LeerEeprom(0,2);
 	for(x=0;x<=buffer_i2c[0];x++){
-		logoPrint[x]=buffer_i2c[x];
+		//logoPrint[x]=buffer_i2c[x];
 	}
     LeerEeprom(2,2);
 	for(x=0;x<=buffer_i2c[0];x++){
@@ -192,14 +192,15 @@ void loadConfiguration(){
     digits     = EEPROM_1_ReadByte(6);  //Digitos
     lockTurn   = EEPROM_1_ReadByte(7);  
     //lockTurn   = 1;                   //Fijo turno abierto para pruebas
-    printPortA = EEPROM_1_ReadByte(8);  //Puertos de impresion
-    printPortB = EEPROM_1_ReadByte(9);  //Puertos de impresion
-    IDCast[0]  = EEPROM_1_ReadByte(10); //ID Estacion1
-    IDCast[1]  = EEPROM_1_ReadByte(11); //ID Estacion2  
-    side.a.dir = EEPROM_1_ReadByte(12); //Primera posicion
-    side.b.dir = EEPROM_1_ReadByte(13); //Segunda posicion
-    side.c.dir = EEPROM_1_ReadByte(14); //Tercera posicion
-    side.d.dir = EEPROM_1_ReadByte(15); //Cuarta posicion
+    printPortA   = EEPROM_1_ReadByte(8);  //Puertos de impresion
+    printPortB   = EEPROM_1_ReadByte(9);  //Puertos de impresion
+    IDCast[0]    = EEPROM_1_ReadByte(10); //ID Estacion1
+    IDCast[1]    = EEPROM_1_ReadByte(11); //ID Estacion2  
+    side.a.dir   = EEPROM_1_ReadByte(12); //Primera posicion
+    side.b.dir   = EEPROM_1_ReadByte(13); //Segunda posicion
+    side.c.dir   = EEPROM_1_ReadByte(14); //Tercera posicion
+    side.d.dir   = EEPROM_1_ReadByte(15); //Cuarta posicion
+    logoPrint[1] = EEPROM_1_ReadByte(110);  //Logo de estación
 }
 
 /* 

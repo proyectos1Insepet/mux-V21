@@ -3348,7 +3348,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     write_fecha(); 
                     logoPrint[0] = 0x01;
                     logoPrint[1] = PRF_rxBuffer[15];
-                    WriteEeprom(0,logoPrint);
+                    EEPROM_1_WriteByte(logoPrint[1],110);
                     WriteEeprom(30,Encabezado1);
                     WriteEeprom(65,Encabezado2);
                     WriteEeprom(100,Encabezado3);
