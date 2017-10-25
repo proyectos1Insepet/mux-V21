@@ -2517,7 +2517,7 @@ void PollingDisplay1(void){
                             vTaskDelay( 200 / portTICK_PERIOD_MS );
                             writevalue = atoi(bufferDisplay1.MoneyPay);
                             res =(atoi(bufferDisplay1.saleValue)-atoi(bufferDisplay1.MoneyPayed));
-                            if( res > writevalue )
+                            if( abs(res) > writevalue )
                             {
                                 for(x = 0; x < keysTerpel + 1; x++)
                                 {
