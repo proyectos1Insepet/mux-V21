@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#define logoPrint 11
 
  
 /*
@@ -209,7 +210,7 @@
     uint32 CounterB;
     uint32 CounterC;
     uint32 CounterD;
-    uint8 logoPrint[2];
+    //uint8 logoPrint[2];
     uint8 DeliveryStateA;
     uint8 DeliveryStateB;
     uint8 DeliveryStateC;
@@ -255,7 +256,7 @@
 */
 struct buffer{
     uint8 idType;                   //Tipo de metodo de Identificacion 
-    uint8 idSerial[25];             //Serial del metodo de identificacion
+    uint8 idSerial[150];             //Serial del metodo de identificacion
     uint8 wayToPay;                 //Forma de pago seleccionada
     uint8 flagWayToPayMixed;        //Bandera para indicar forma de pago mixta
     uint8 selectedSale[10];         //N° de Venta seleccionada a discriminar para forma de pago
@@ -298,8 +299,9 @@ struct buffer{
     uint8 PresetTemp[10];
     uint8 PrintCopy;
     uint8 EndSaleReport;
-    uint8 passCard[8];
+    uint8 passCard[20];
     uint8 idTerpelFideliza[150];
+    uint8 idFormaPago[150];
     uint8 LastFlowDisplay;
     uint8 PrintPreset[2][10];
     uint8 PrintLicense[11];
@@ -308,6 +310,13 @@ struct buffer{
     uint8 VarActual;
     uint8 buffer_TX[100];
     uint8 FidelConf;
+    bool  lastSale;
+    uint8 saleNumber[10];
+    char8 saleValue[8];
+    uint8 pinVoucher[10];
+    char8 MoneyPay[8];
+    uint8 PaymentNumber[10];
+    char8 MoneyPayed[10];
 
 };
 
@@ -348,7 +357,8 @@ struct position{
     uint8 RF;
     uint8 TotalRequest;
     uint8 FlagTotal;
-    uint8 ActivoFideliza;    
+    uint8 ActivoFideliza;  
+    uint8 ActivoRedencion;
 };
 
 struct pump{
@@ -434,7 +444,7 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_OPERACION_CANCELADA             = 0x8C,
     DISPLAY_ESPERANDO_AUTORIZACION          = 0x96,
     DISPLAY_POR_FAVOR_ESPERE                = 0x39,
-    DISPLAY_AUTORIZACION_ACEPTADA           = 0x97,
+    DISPLAY_FORMA_DE_PAGO_TERPEL            = 0x97,
     DISPLAY_AUTORIZACION_RECHAZADA          = 0x98,
     
     DISPLAY_CONFIGURAR_FECHA_HORA           = 0x3E,
@@ -445,6 +455,7 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_ABRIR_TURNO                     = 0x23,
     DISPLAY_CERRAR_TURNO                    = 0x2A,
     DISPLAY_CANCELADO_X_PC                  = 0x2B,
+    DISPLAY_SELECCION_VENTA                 = 0x2D,
     
     DISPLAY_USUARIO_VALIDO                  = 0x3C,
     DISPLAY_USUARIO_INVALIDO                = 0x41,
@@ -488,11 +499,14 @@ enum _RF_STATES_
     RF_ERROR            = 0x04,
     RF_WORKSHIFTREQ     = 0x05,
     RF_CREDITSALEREPORT = 0x06,    
+    RF_FIDELITY_CONF    = 0x0A,
     RF_COPY_RECEIPT     = 0x0B,
     RF_ZERO_SALE        = 0x0C,
     RF_ASK_BALANCE      = 0x0D,
+    RF_REDEEM           = 0x0E,
     RF_FIDELITY         = 0x0F,
-    RF_FIDELITY_CONF    = 0x0A,
+    RF_REDEEM_WNUMBER   = 0x11,
+    RF_PAYCONFIRMATION  = 0x12,
 };
 
 enum _AUTH_TYPE_

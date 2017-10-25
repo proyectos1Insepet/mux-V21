@@ -91,11 +91,17 @@ void RF_Task(void *arg)
             GeneralConfig = 0;
             FlagRF = 1;
             
-            if (buffer_rfTMP == 0xBC && HeaderRF == 1)
+//            if (buffer_rfTMP == 0xBC && HeaderRF == 1)
+//            { 
+//                i = 0;
+//                HeaderRF = 0;
+//                //LongEsperada = 0;
+//            }
+            if (buffer_rfTMP == 0xBC)
             { 
                 i = 0;
                 HeaderRF = 0;
-                //LongEsperada = 0;
+                LongEsperada = 0;
             }
                                  
             // Status
@@ -162,6 +168,10 @@ void RF_Task(void *arg)
 					}
                 }
             }
+            else if ( buffer_rf[6] == 0xB4)
+            {
+                LongEsperada   = 42;                
+            }
             else if ( buffer_rf[6] == 0xB6)
             {
                 LongEsperada   = 102;                
@@ -169,6 +179,14 @@ void RF_Task(void *arg)
             else if ( buffer_rf[6] == 0xB7)
             {
                 LongEsperada = 9;
+            }
+            else if ( buffer_rf[6] == 0xB8)
+            {
+                LongEsperada = 35;
+            }
+            else if ( buffer_rf[6] == 0xB9)
+            {
+                LongEsperada = 107;
             }
             // big config
             else if ( buffer_rf[6] == 0xE1)
@@ -205,8 +223,8 @@ void RF_Task(void *arg)
                        pollingRF_Rx(buffer_rf);
                        RFOnline = 1; 
                        HeaderRF = 1;
-                       i = 0;
-                       LongEsperada = 0;
+//                       i = 0;
+//                       LongEsperada = 0;
 					   for(x = 0; x < 100; x++)
 					   {
 						   buffer_rf[x] = 0x00;
@@ -232,8 +250,8 @@ void RF_Task(void *arg)
                        pollingRF_Rx(buffer_rf);
                        RFOnline = 1; 
                        HeaderRF = 1;
-                       i = 0;
-                       LongEsperada = 0;
+//                       i = 0;
+//                       LongEsperada = 0;
                        for(x = 0; x < 100; x++)
 					   {
 						   buffer_rf[x] = 0x00;

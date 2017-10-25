@@ -41,7 +41,7 @@
 
 xSemaphoreHandle g_pUARTSemaphore;
       
-char Version[] = "MUX Version 25.0";
+char Version[] = "MUX Version 25.1";
 
 /*
  * Inicializa los perifiericos del sistema
@@ -200,7 +200,7 @@ void loadConfiguration(){
     side.b.dir   = EEPROM_1_ReadByte(13); //Segunda posicion
     side.c.dir   = EEPROM_1_ReadByte(14); //Tercera posicion
     side.d.dir   = EEPROM_1_ReadByte(15); //Cuarta posicion
-    logoPrint[1] = EEPROM_1_ReadByte(110);  //Logo de estación
+    //logoPrint = EEPROM_1_ReadByte(110);  //Logo de estación
 }
 
 /* 
@@ -369,11 +369,16 @@ int main()
     
     /* OS Init                                                                          */
     osInit();                               /* Initialize all thread related tasks      */ 
-    prvHardwareSetup();                     /* FreeRTOS setup                           */
+    prvHardwareSetup();                     /* FreeRTOS setup                           */   
+    vTaskSuspend( Pump_Task );              /* Suspend Pump task                        */
+    vTaskSuspend( Display_Task );           /* Suspend Display task                     */
 	vTaskStartScheduler();                  /* Start the scheduler                      */
+    CyDelay(10);
+    vTaskResume( Pump_Task );               /* Resume Pump task                         */
+    CyDelay(10);
+    vTaskResume( Display_Task );            /* Resume Display task                      */
 
 	return 1;
-    //for(;;);
 }
 
 int osInit(void)

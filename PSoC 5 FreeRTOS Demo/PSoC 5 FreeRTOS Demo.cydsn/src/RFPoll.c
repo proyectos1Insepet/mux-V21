@@ -1000,6 +1000,10 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     {
                         side.a.rfState = RF_FIDELITY;                                            
                     }
+                    if(side.a.ActivoRedencion  == 2)
+                    {
+                        side.a.rfState = RF_PAYCONFIRMATION;                                            
+                    }                    
                     // Idle state 
                     if(bufferAready == 0 && side.a.FlagTotal == 0)
                     {                          
@@ -1013,9 +1017,9 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {
                             RF_Connection_PutChar(buffer_tx[x]);
                         }
+                        
                         return;
-                    }
-                    
+                    }                    
                     // Preset 
                     if(bufferAready == 1)
                     {                                                                    
@@ -1069,8 +1073,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         { 
                             RF_Connection_PutChar(buffer_A[x]);
                         }
-                        bufferAready = 0;
-                        AckFlag = 0;                        
+                        bufferAready = 0;                                                
                     }
                     // Fidelity Confirmation
                     if(bufferAready == 7)
@@ -1079,8 +1082,33 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         { 
                             RF_Connection_PutChar(buffer_A[x]);
                         }
-                        bufferAready = 0;
-                        AckFlag = 0;                        
+                        bufferAready = 0;                                               
+                    }
+                    // Redeem request
+                    if(bufferAready == 8)
+                    {     
+                        if(bufferDisplay1.lastSale == true){
+                            for (x = 0; x < 10; x++)
+                            { 
+                                RF_Connection_PutChar(buffer_A[x]);
+                            }
+                        }
+                        if(bufferDisplay1.lastSale == false){
+                            for (x = 0; x < 20; x++)
+                            { 
+                                RF_Connection_PutChar(buffer_A[x]);
+                            }
+                        }
+                        bufferAready = 0;                                               
+                    }
+                    // Payment confirmation
+                    if(bufferAready == 9)
+                    {                                                             
+                        for (x = 0; x <= 39 + bufferDisplay1.idFormaPago[0]; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_A[x]);
+                        }
+                        bufferAready = 0;                                             
                     }
                     // Total
                     if(bufferAready == 0 && side.a.FlagTotal == 1)
@@ -1118,6 +1146,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {
                             RF_Connection_PutChar(buffer_tx[x]);
                         }
+                        
                         return;
                     }
                     
@@ -2106,11 +2135,11 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {    
                             if(PrinterType[1] == 1)
                             {
-                                printLogoP(printPortA,logoPrint[1]);    
+                                printLogoP(printPortA,logoPrint);    
                             }
                             else
                             {
-                                printLogoK(printPortA,logoPrint[1]);
+                                printLogoK(printPortA,logoPrint);
                             }
                             write_psoc1(printPortA,10);
                         }
@@ -2150,11 +2179,11 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {
                             if(PrinterType[1] == 1)
                             {
-                                printLogoP(printPortB,logoPrint[1]);    
+                                printLogoP(printPortB,logoPrint);    
                             }
                             else
                             {
-                                printLogoK(printPortB,logoPrint[1]);
+                                printLogoK(printPortB,logoPrint);
                             }
                             write_psoc1(printPortB,10);
                         }
@@ -2190,11 +2219,11 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {
                             if(PrinterType[1] == 1)
                             {
-                                printLogoP(printPortA,logoPrint[1]);    
+                                printLogoP(printPortA,logoPrint);    
                             }
                             else
                             {
-                                printLogoK(printPortA,logoPrint[1]);
+                                printLogoK(printPortA,logoPrint);
                             }
                             
                             write_psoc1(printPortA,10);
@@ -2234,11 +2263,11 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {
                             if(PrinterType[1] == 1)
                             {
-                                printLogoP(printPortB,logoPrint[1]);    
+                                printLogoP(printPortB,logoPrint);    
                             }
                             else
                             {
-                                printLogoK(printPortB,logoPrint[1]);
+                                printLogoK(printPortB,logoPrint);
                             }
                             write_psoc1(printPortB,10);                           
                         }
@@ -3026,6 +3055,52 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         PRF_rxBuffer[x]=0x00; 
                     }
                 break;
+                    
+                case 0xB4:
+                    for(x = 0; x < 25; x++){
+                        cardmessage[x] = 0x00;
+                        cardmessage1[x] = 0x00;
+                        cardmessage2[x] = 0x00;
+                        cardmessage3[x] = 0x00;
+                        cardmessageB[x] = 0x00;
+                        cardmessage1B[x] = 0x00;
+                        cardmessage2B[x] = 0x00;
+                        cardmessage3B[x] = 0x00;
+                    }
+                    if(PRF_rxBuffer[5] == side.a.RF)
+                    {
+                        side.a.ActivoRedencion = 0;
+                        side.a.RFstateReport = 0;                                                        
+                        for(x = 0; x < 10; x++)
+                        {
+                            cardmessage[x] = PRF_rxBuffer[x + 8]; 
+                        }
+                        for(x = 0; x < 8; x++)
+                        {
+                            cardmessage1[x] = PRF_rxBuffer[x + 18]; 
+                        }
+                        for(x = 0; x < 8; x++)
+                        {
+                            bufferDisplay1.MoneyPay[x] = PRF_rxBuffer[x + 26]; 
+                        } 
+                        for(x = 0; x < 6; x++)
+                        {
+                            cardmessage3[x] = PRF_rxBuffer[x + 35]; 
+                        }
+                        flowDisplay1 = 41;
+                        SetPicture(1, DISPLAY_CONF_USUARIO);  
+                        side.a.rfState = RF_IDLE;                                                                                                       
+                        buffer_tx[5] = side.a.RF;
+                        buffer_tx[6] = 0xB8;
+                        buffer_tx[7] = RF_REDEEM;
+                        buffer_tx[8] = 0x03;
+                        buffer_tx[9] = verificar_check(buffer_tx, 10);                                                              
+                        for (x = 0; x < 10; x++)
+                        {                                              
+                            RF_Connection_PutChar(buffer_tx[x]);
+                        }                        
+                    }
+                break;
                 
                 case 0xB6:
                     for(x = 0; x < 25; x++){
@@ -3272,7 +3347,88 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     }
                 break;
                 case 0xB7:
-                    break;
+                break;
+                    
+                case 0xB8:
+                    for(x = 0; x < 25; x++){
+                        cardmessage[x] = 0x00;
+                        cardmessage1[x] = 0x00;
+                        cardmessage2[x] = 0x00;
+                        cardmessage3[x] = 0x00;
+                        cardmessageB[x] = 0x00;
+                        cardmessage1B[x] = 0x00;
+                        cardmessage2B[x] = 0x00;
+                        cardmessage3B[x] = 0x00;
+                    }
+                    if(PRF_rxBuffer[5] == side.a.RF)
+                    {
+                        side.a.ActivoRedencion = 0;
+                        side.a.RFstateReport = 0;                                                        
+                        for(x = 0; x < 10; x++)
+                        {
+                            cardmessage[x] = PRF_rxBuffer[x + 8]; 
+                        }
+                        for(x = 0; x < 8; x++)
+                        {
+                            bufferDisplay1.MoneyPay[x] = PRF_rxBuffer[x + 18]; 
+                            bufferDisplay1.saleValue[x]= PRF_rxBuffer[x + 18]; 
+                        }
+                        for(x = 0; x < 8; x++)
+                        {
+                            bufferDisplay1.MoneyPayed[x] = PRF_rxBuffer[x + 27]; 
+                        }                        
+                        cardmessage3[0] = PRF_rxBuffer[26]; //Producto                         
+                        flowDisplay1 = 41;
+                        SetPicture(1, DISPLAY_CONF_USUARIO);  
+                        side.a.rfState = RF_IDLE;                                                                                                       
+                        buffer_tx[5] = side.a.RF;
+                        buffer_tx[6] = 0xB8;
+                        buffer_tx[7] = RF_REDEEM;
+                        buffer_tx[8] = 0x03;
+                        buffer_tx[9] = verificar_check(buffer_tx, 10);                                                              
+                        for (x = 0; x < 10; x++)
+                        {                                              
+                            RF_Connection_PutChar(buffer_tx[x]);
+                        }                        
+                    }
+                break;
+                 
+                case 0xB9:
+                    for(x = 0; x < 25; x++){
+                        cardmessage[x] = 0x00;
+                        cardmessage1[x] = 0x00;
+                        cardmessage2[x] = 0x00;
+                        cardmessage3[x] = 0x00;
+                        cardmessageB[x] = 0x00;
+                        cardmessage1B[x] = 0x00;
+                        cardmessage2B[x] = 0x00;
+                        cardmessage3B[x] = 0x00;
+                    }
+                    if(PRF_rxBuffer[5] == side.a.RF)
+                    {
+                        side.a.ActivoRedencion = 0;
+                        side.a.RFstateReport = 0;                                                        
+                        for(x = 0; x < 25; x++)
+                        {
+                            cardmessage[x] = PRF_rxBuffer[x + 8]; 
+                        }
+                        for(x = 0; x < 25; x++)
+                        {
+                            cardmessage1[x] = PRF_rxBuffer[x + 18]; 
+                        }
+                        for(x = 0; x < 25; x++)
+                        {
+                            cardmessage1[x] = PRF_rxBuffer[x + 26]; 
+                        } 
+                        for(x = 0; x < 25; x++)
+                        {
+                            cardmessage3[x] = PRF_rxBuffer[x + 35]; 
+                        }
+                        flowDisplay1 = 44;
+                        SetPicture(1, DISPLAY_RECIBO_SALDO);  
+                        side.a.rfState = RF_IDLE;                                                                                                                              
+                    }
+                break;
                              
                 case 0xE1:               //Configuracion de la estacion
                     
@@ -3346,9 +3502,9 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     CopiasCredito = PRF_rxBuffer[16];
                     write_hora();
                     write_fecha(); 
-                    logoPrint[0] = 0x01;
-                    logoPrint[1] = PRF_rxBuffer[15];
-                    EEPROM_1_WriteByte(logoPrint[1],110);
+                    //logoPrint[0] = 0x01;
+                    //logoPrint = PRF_rxBuffer[15];
+                    //EEPROM_1_WriteByte(logoPrint,110);
                     WriteEeprom(30,Encabezado1);
                     WriteEeprom(65,Encabezado2);
                     WriteEeprom(100,Encabezado3);
@@ -3766,6 +3922,86 @@ void pollingRFA_Tx(){
         buffer_A[9]  = verificar_check(buffer_A,10);
         side.a.ActivoFideliza = 0;
         bufferAready = 7; 
+    }
+    //Redencion
+    if((side.a.pumpState == PUMP_IDLE || side.a.pumpState == PUMP_CALLING ) && side.a.RFstateReport == 4 && side.a.ActivoRedencion ==1) //Forma Pago
+    {
+        if(bufferDisplay1.lastSale == true){
+            buffer_A[0]  = 0xBC;
+            buffer_A[1]  = 0xCB;
+            buffer_A[2]  = 0xC8;
+            buffer_A[3]  = IDCast[0];
+            buffer_A[4]  = IDCast[1];
+            buffer_A[5]  = side.a.RF;
+            buffer_A[6]  = 0xB4;
+            buffer_A[7]  = RF_REDEEM;             
+            buffer_A[8]  = bufferDisplay1.idType;  
+            buffer_A[9]  = verificar_check(buffer_A,10);
+            side.a.ActivoRedencion = 0;
+            bufferAready = 8; 
+        }
+        if(bufferDisplay1.lastSale == false){
+            buffer_A[0]  = 0xBC;
+            buffer_A[1]  = 0xCB;
+            buffer_A[2]  = 0xC8;
+            buffer_A[3]  = IDCast[0];
+            buffer_A[4]  = IDCast[1];
+            buffer_A[5]  = side.a.RF;
+            buffer_A[6]  = 0xB8;
+            buffer_A[7]  = RF_REDEEM_WNUMBER;              
+            buffer_A[8]  = bufferDisplay1.idType;  
+            for(y = 1; y <= bufferDisplay1.saleNumber[0]; y++)
+            {
+                buffer_A[8 + y] = bufferDisplay1.saleNumber[bufferDisplay1.saleNumber[0]-(y-1)];
+            }
+            if(y < 10){
+                for(x = y;  x<=10 ; x++)
+                {
+                    buffer_A[8 + x] = 0x00;
+                }                
+            }
+            buffer_A[19]  = verificar_check(buffer_A,20);
+            side.a.ActivoRedencion = 0;
+            bufferAready = 8; 
+        }
+    }
+            
+    if((side.a.pumpState == PUMP_IDLE || side.a.pumpState == PUMP_CALLING ) && side.a.RFstateReport == 5 ) //Confirma Pago
+    {
+        for(y = 0; y < 50; y++)
+        {
+            buffer_A[y] = 0x00;
+        }
+        buffer_A[0]  = 0xBC;
+        buffer_A[1]  = 0xCB;
+        buffer_A[2]  = 0xC8;
+        buffer_A[3]  = IDCast[0];
+        buffer_A[4]  = IDCast[1];
+        buffer_A[5]  = side.a.RF;
+        buffer_A[6]  = 0xB9;
+        buffer_A[7]  = RF_PAYCONFIRMATION;
+        for(x = 0; x < 8; x++)
+        {
+            buffer_A[x + 8] = bufferDisplay1.MoneyPay[x];            
+        }
+        for(x = 0; x < 10; x++)
+        {
+            buffer_A[x+16] = bufferDisplay1.PaymentNumber[x];
+        }
+        for(x = 1; x < 13; x++)
+        {
+            buffer_A[x + 25] = bufferDisplay1.passCard[x];
+        }
+        buffer_A[38] = bufferDisplay1.idFormaPago[0];
+        for(x = 1; x <= bufferDisplay1.idFormaPago[0]; x++)
+        {
+            buffer_A[x + 38] = bufferDisplay1.idFormaPago[x];
+        }
+        buffer_A[39+bufferDisplay1.idFormaPago[0]] = verificar_check(buffer_A,40+bufferDisplay1.idFormaPago[0]);
+        side.a.RFstateReport = 0;
+        bufferAready = 9;               
+        side.a.rfState = RF_PAYCONFIRMATION; 
+        side.a.ActivoRedencion = 2;
     }
     
     /////////////// TICKET COPY //////////////////
