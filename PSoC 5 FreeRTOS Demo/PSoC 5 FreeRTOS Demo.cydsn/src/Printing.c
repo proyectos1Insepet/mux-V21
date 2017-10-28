@@ -2565,7 +2565,7 @@ void printPayment(uint8 val,uint8 pos){
         {
             printLogoP(printPortA,logoPrint);    
         }else{
-            printLogoK(printPortB,logoPrint);
+            printLogoK(printPortA,logoPrint);
         }
     }
     if(pos == side.b.dir || pos == side.d.dir)
@@ -2653,87 +2653,33 @@ void printPayment(uint8 val,uint8 pos){
         write_psoc1(val,SEPARATOR[x]);
     }
     write_psoc1(val,10);
-    if(cardmessagedisplay== 1){
-    //////DATOS DE SALDO //////
-        for(x = 0; x < 8; x++)
-        {
-            write_psoc1(val,nombre[x]);
-        }
-        for(x = 0; x < 20; x++)
-        {
-            write_psoc1(val,Company[x]);
-        }
-        write_psoc1(val,10);
-        
-        for(x = 0; x < 8; x++)
-        {
-            write_psoc1(val,placa[x]);
-        }
-        for(x = 0; x < 8; x++)
-        {
-            write_psoc1(val,LicensePlate[x]);
-        }
-        write_psoc1(val,10);
-        
-        for(x = 0; x < 8; x++)
-        {
-            write_psoc1(val,tarjeta[x]);
-        }
-        for(x = 0; x < 5; x++)
-        {
-            write_psoc1(val,'*');
-        }
-        for(x = 0; x < 3; x++)
-        {
-            write_psoc1(val,cardNumberA[x]);
-        }
-        write_psoc1(val,10);
-        
-        for(x = 0; x < 21; x++)
-        {
-            write_psoc1(val,saldo_d[x]);
-        }
-        write_psoc1(val,10);
-        for(x = 0; x < 18; x++)
-        {
-            write_psoc1(val,BalanceA[x]);
-        }
-        write_psoc1(val,10);
-        
-        for(x = 0; x < 21; x++)
-        {
-            write_psoc1(val,saldo_a[x]);
-        }
-        write_psoc1(val,10);
-        for(x = 0; x < 18; x++)
-        {
-            write_psoc1(val,BalanceB[x]);
-        }
-        write_psoc1(val,10);
+    for(x = 0; x <= 24; x++)
+    {
+        write_psoc1(val,cardmessage[x]);
+        //write_psoc1(val,title1[x]);
     }
-    if(cardmessagedisplay == 2){
-        for(x = 0; x < 25; x++)
-        {
-            write_psoc1(val,cardmessage[x]);
-        }        
-        write_psoc1(val,10);
-        for(x = 0; x < 25; x++)
-        {
-            write_psoc1(val,cardmessage1[x]);
-        }        
-        write_psoc1(val,10);
-        for(x = 0; x < 25; x++)
-        {
-            write_psoc1(val,cardmessage2[x]);
-        }        
-        write_psoc1(val,10);
-        for(x = 0; x < 25; x++)
-        {
-            write_psoc1(val,cardmessage3[x]);
-        }        
-        write_psoc1(val,10);
-        
+    write_psoc1(val,10);
+    
+    for(x = 0; x <= 24; x++)
+    {
+        write_psoc1(val,cardmessage1[x]);
+        //write_psoc1(val,title2[x]);
     }
+        
+    write_psoc1(val,10);    
+    for(x = 0; x <= 24; x++)
+    {
+        write_psoc1(val,cardmessage2[x]);
+        //write_psoc1(val,title3[x]);
+    }
+    write_psoc1(val,10);
+    
+    for(x = 0; x <= 24; x++)
+    {
+        write_psoc1(val,cardmessage3[x]);
+        //write_psoc1(val,title3[x]);
+    }
+    write_psoc1(val,10);
      ////////////////  PIE DE PÁGINA /////////////////////////
     for(x = 0; x < 30; x++)
     {

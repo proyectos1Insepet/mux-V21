@@ -1082,7 +1082,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         { 
                             RF_Connection_PutChar(buffer_A[x]);
                         }
-                        bufferAready = 0;                                               
+                        bufferAready = 0;                         
                     }
                     // Redeem request
                     if(bufferAready == 8)
@@ -3414,19 +3414,28 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         }
                         for(x = 0; x < 25; x++)
                         {
-                            cardmessage1[x] = PRF_rxBuffer[x + 18]; 
+                            cardmessage1[x] = PRF_rxBuffer[x + 33]; 
                         }
                         for(x = 0; x < 25; x++)
                         {
-                            cardmessage1[x] = PRF_rxBuffer[x + 26]; 
+                            cardmessage2[x] = PRF_rxBuffer[x + 58]; 
                         } 
                         for(x = 0; x < 25; x++)
                         {
-                            cardmessage3[x] = PRF_rxBuffer[x + 35]; 
+                            cardmessage3[x] = PRF_rxBuffer[x + 83]; 
                         }
-                        flowDisplay1 = 44;
-                        SetPicture(1, DISPLAY_RECIBO_SALDO);  
-                        side.a.rfState = RF_IDLE;                                                                                                                              
+                        flowDisplay1 = 43;
+                        SetPicture(1, DISPLAY_RECIBO_SALDO);                          
+                        side.a.rfState = RF_IDLE;                                                                                                       
+                        buffer_tx[5] = side.a.RF;
+                        buffer_tx[6] = 0xB9;
+                        buffer_tx[7] = RF_PAYCONFIRMATION;
+                        buffer_tx[8] = 0x03;
+                        buffer_tx[9] = verificar_check(buffer_tx, 10);                                                              
+                        for (x = 0; x < 10; x++)
+                        {                                              
+                            RF_Connection_PutChar(buffer_tx[x]);
+                        }
                     }
                 break;
                              
@@ -3984,7 +3993,7 @@ void pollingRFA_Tx(){
         {
             buffer_A[x + 8] = bufferDisplay1.MoneyPay[x];            
         }
-        for(x = 0; x < 10; x++)
+        for(x = 1; x <= bufferDisplay1.PaymentNumber[0]; x++)
         {
             buffer_A[x+16] = bufferDisplay1.PaymentNumber[x];
         }
