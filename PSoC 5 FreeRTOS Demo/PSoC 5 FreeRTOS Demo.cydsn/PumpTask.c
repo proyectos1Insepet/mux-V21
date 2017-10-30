@@ -5454,7 +5454,7 @@ void PollingDisplay2(void){
                             vTaskDelay( 200 / portTICK_PERIOD_MS );
                             writevalueB = atoi(bufferDisplay2.MoneyPay);
                             resB =(atoi(bufferDisplay2.saleValue)-atoi(bufferDisplay2.MoneyPayed));
-                            if( abs(res) > writevalue )
+                            if( abs(resB) > writevalueB )
                             {
                                 for(x = 0; x < keysTerpel + 1; x++)
                                 {
@@ -7632,7 +7632,7 @@ void PollingDisplay3(void){
                             {
                                 bufferDisplay3.passCard[x] = 0;
                             }
-                            flowDisplay1 = 0;
+                            flowDisplay3 = 0;
                         break;
                     }                    
                     Display1_ClearRxBuffer();
@@ -11071,7 +11071,7 @@ void PollingDisplay4(void){
                             {
                                 bufferDisplay4.idFormaPago[x] = 0;
                             }                            
-                            flowDisplay2 = 0;
+                            flowDisplay4 = 0;
                             ShiftStateD  = 0;
                             SetPicture(2,DISPLAY_INICIO0);
                         break;                            
@@ -11168,7 +11168,7 @@ void PollingDisplay4(void){
                             vTaskDelay( 200 / portTICK_PERIOD_MS );
                             writevalueB = atoi(bufferDisplay4.MoneyPay);
                             resB =(atoi(bufferDisplay4.saleValue)-atoi(bufferDisplay4.MoneyPayed));
-                            if( abs(res) > writevalue )
+                            if( abs(resB) > writevalueB )
                             {
                                 for(x = 0; x < keysTerpel + 1; x++)
                                 {
