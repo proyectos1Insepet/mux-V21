@@ -40,7 +40,7 @@ void PrinterTask(void *arg)
     TickType_t xLastWakeTime;
     const TickType_t xFrequency = 10;
     xLastWakeTime = xTaskGetTickCount();
-    uint8 x; 
+    uint8 x, position; 
  
     
     while(1) 
@@ -48,7 +48,8 @@ void PrinterTask(void *arg)
         if(bufferDisplay1.flagPrint == 1 && bufferDisplay1.PrintFlagEOT == 1)
         {      
             //Impresion
-            imprimir(printPortA, side.a.RF);
+            position = side.a.RF;
+            imprimir(printPortA, position);
             bufferDisplay1.flagPrint = 0;            
             bufferDisplay1.PrintFlagEOT = 0;
             for(x = 0; x < 10; x++)                                         //NUMERO DE VENTA
@@ -62,7 +63,8 @@ void PrinterTask(void *arg)
         if(bufferDisplay2.flagPrint == 1 && bufferDisplay2.PrintFlagEOT == 1)
         {    
             //Impresion
-            imprimir(printPortB, side.b.RF);
+            position = side.b.RF;
+            imprimir(printPortB, position);
             bufferDisplay2.flagPrint = 0;             
             bufferDisplay2.PrintFlagEOT = 0;            
             for(x = 0; x < 10; x++)                                         //NUMERO DE VENTA
@@ -77,7 +79,8 @@ void PrinterTask(void *arg)
         {    
                 
             //Impresion
-            imprimir(printPortA, side.c.RF);
+            position = side.c.RF;
+            imprimir(printPortA, position);
             bufferDisplay3.flagPrint = 0;            
             bufferDisplay3.PrintFlagEOT = 0;
             for(x = 0; x < 10; x++)                                         //NUMERO DE VENTA
@@ -91,7 +94,8 @@ void PrinterTask(void *arg)
         if(bufferDisplay4.flagPrint == 1 && bufferDisplay4.PrintFlagEOT == 1 )
         {                    
             //Impresion
-            imprimir(printPortB, side.d.RF);
+            position = side.d.RF;
+            imprimir(printPortB, position);
             bufferDisplay4.flagPrint = 0;
             bufferDisplay4.PrintFlagEOT = 0;                            
             for(x = 0; x < 10; x++)                                         //NUMERO DE VENTA

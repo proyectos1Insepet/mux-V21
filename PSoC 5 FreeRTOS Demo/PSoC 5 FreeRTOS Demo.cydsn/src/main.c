@@ -41,7 +41,7 @@
 
 xSemaphoreHandle g_pUARTSemaphore;
       
-char Version[] = "MUX Version 25.1";
+char Version[] = "MUX Version 26.0";
 
 /*
  * Inicializa los perifiericos del sistema
@@ -184,23 +184,24 @@ void loadConfiguration(){
 		Pie3[x]=EEPROM_1_ReadByte(130+x);
 	}
 
-    //LeerEeprom(700,31);
     MoneyDec   = EEPROM_1_ReadByte(2);  //Punto decimal dinero
     VolDec     = EEPROM_1_ReadByte(3);  //Punto decimal volumen
     PPUDec     = EEPROM_1_ReadByte(4);  //Punto decimal PPU
     DDMode     = EEPROM_1_ReadByte(5);  //Punto decimal 
     digits     = EEPROM_1_ReadByte(6);  //Digitos
-    lockTurn   = EEPROM_1_ReadByte(7);  
-    //lockTurn   = 1;                   //Fijo turno abierto para pruebas
-    printPortA   = EEPROM_1_ReadByte(8);  //Puertos de impresion
-    printPortB   = EEPROM_1_ReadByte(9);  //Puertos de impresion
-    IDCast[0]    = EEPROM_1_ReadByte(10); //ID Estacion1
-    IDCast[1]    = EEPROM_1_ReadByte(11); //ID Estacion2  
-    side.a.dir   = EEPROM_1_ReadByte(12); //Primera posicion
-    side.b.dir   = EEPROM_1_ReadByte(13); //Segunda posicion
-    side.c.dir   = EEPROM_1_ReadByte(14); //Tercera posicion
-    side.d.dir   = EEPROM_1_ReadByte(15); //Cuarta posicion
-    //logoPrint = EEPROM_1_ReadByte(110);  //Logo de estación
+    bufferDisplay1.lockTurn = EEPROM_1_ReadByte(220);  
+    bufferDisplay2.lockTurn = EEPROM_1_ReadByte(221);
+    bufferDisplay3.lockTurn = EEPROM_1_ReadByte(222);
+    bufferDisplay4.lockTurn = EEPROM_1_ReadByte(223);
+    printPortA   = EEPROM_1_ReadByte(8);    //Puertos de impresion
+    printPortB   = EEPROM_1_ReadByte(9);    //Puertos de impresion
+    IDCast[0]    = EEPROM_1_ReadByte(10);   //ID Estacion1
+    IDCast[1]    = EEPROM_1_ReadByte(11);   //ID Estacion2  
+    side.a.dir   = EEPROM_1_ReadByte(12);   //Primera posicion
+    side.b.dir   = EEPROM_1_ReadByte(13);   //Segunda posicion
+    side.c.dir   = EEPROM_1_ReadByte(14);   //Tercera posicion
+    side.d.dir   = EEPROM_1_ReadByte(15);   //Cuarta posicion
+    logoPrint[1] = EEPROM_1_ReadByte(215);  //Logo de estación
 }
 
 /* 
@@ -377,7 +378,8 @@ int main()
     vTaskResume( Pump_Task );               /* Resume Pump task                         */
     CyDelay(10);
     vTaskResume( Display_Task );            /* Resume Display task                      */
-
+    CyDelay(10);
+    
 	return 1;
 }
 

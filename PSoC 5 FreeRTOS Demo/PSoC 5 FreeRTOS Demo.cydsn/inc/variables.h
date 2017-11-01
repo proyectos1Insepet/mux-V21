@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#define logoPrint 11
+
 
  
 /*
@@ -32,12 +32,6 @@
 *
 *********************************************************************************************************
 */
-    volatile uint64 countAnimation1; //Contador de animacion para pantalla 1
-    volatile uint64 countAnimation2; //Contador de animacion para pantalla 2
-    volatile uint64 countRX;         //Contador de tiempos de envio de informacion al beagle
-    volatile uint64 countTX;         //Contador de tiempos de envio de informacion al beagle
-    volatile uint64 countPump;       //Contador de tiempos de pregunta estado a surtidor
-    volatile uint64 countLCD;        //Contador de tiempos de pregunta estado a surtidor
     volatile uint32 flowDisplay1;    //Flujo pantalla 1
     volatile uint32 flowDisplay2;    //Flujo pantalla 2
     volatile uint32 flowDisplay3;    //Flujo pantalla 3
@@ -50,30 +44,19 @@
     volatile uint8 flagPoint2;       //Bandera que indica si ya se digito una coma en el teclado numerico de la pantalla 2 
     volatile uint8 flagPoint3;       //Bandera que indica si ya se digito una coma en el teclado numerico de la pantalla 2 
     volatile uint8 flagPoint4;       //Bandera que indica si ya se digito una coma en el teclado numerico de la pantalla 2 
-    volatile uint8 productNumber;    //Numero de productos que tiene el surtidor
     volatile uint8 symbols[2];       //Simbolos visualizados en Teclado Numerico [0]=Dinero[1]=Volumen
     volatile uint8 time[3];          //Hora 
     volatile uint8 date[3];          //Fecha         
-    volatile uint8 idSeller[25];     //Identificacion de vendedor
-    volatile uint8 typeIdSeller;     //Tipo de identificacion del vendedor
-    volatile uint8 passwordSeller[8];//Contraseña Vendedor
-    volatile uint8 flagResetMux;     //Bandera que habilita Resetar el MUX
-    volatile uint8 stateBeagleSoft;  //Indica si el Beagle se encuentra en comunicaion con el software
-    volatile uint8 PrevStatePump[4]; //Estado anterior en el dispensador [0,pos1,1 pos2...    
-    volatile uint8 PlateRequest;
     volatile uint8 IDCast[2];
     volatile uint8 ActiveRF;
-    volatile uint8 counterRF;
     volatile uint8 temporal[200];
     volatile uint8 tempPreset[8];
     volatile uint8 tempPreset2[8];
     volatile uint8 tempPPU[5];
-    volatile uint8 CGrade;
     volatile uint8 ShiftState;
     volatile uint8 ShiftStateB;
     volatile uint8 ShiftStateC;
     volatile uint8 ShiftStateD;
-    volatile uint8 sizeSendB;
     volatile uint8 bufferAready;
     volatile uint8 bufferAreadyB;
     volatile uint8 bufferAreadyC;
@@ -85,26 +68,21 @@
     volatile uint8 flowPosB;
     volatile uint8 flowPosC;
     volatile uint8 flowPosD;
-    volatile uint8 TempPos[4];
     volatile uint8 RFOnline;
     volatile uint8 OSonline;
     volatile uint8 cardNumberA[3];
     volatile uint8 cardNumberB[3];
-
-  
     
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     uint8 UnitType,ConversionFactor,MoneyDec,VolDec,PPUDec,DDMode; // Variables configuracion del dispensador
-    uint8 statePump[4];                      //Estado en el que se encuentra el dispensador
     uint8 NumPositions;
-    uint8 lockTurn;                          //Bloquea temporalmente el turno 1=bloqueado o 0=desbloqueado
-    uint8 digits;                            //Version de digitos del surtidor
+    uint8 digits;                            // Version de digitos del surtidor
     uint8 hiddenKeys;
     uint8 PrinterType[2];
     char8 VolUnit[6];
-    uint8 dateDownHandle[3];                 //Fecha en la que se baja la manija
-    uint8 timeDownHandle[2];                 //Hora en la que se baja la manija
-    uint8 count_protector,count_protector2;  
+    uint8 dateDownHandle[3];                 // Fecha en la que se baja la manija
+    uint8 timeDownHandle[2];                 // Hora en la que se baja la manija
     uint8 configAccess[5];
     uint8 controlChar;
     char8 idStation[5];    
@@ -113,15 +91,11 @@
     uint8 printPortB;
     uint8 buffer_rf[1024];
     uint8 buffer_tx[512];
-    uint8 buffer_txTotals[512];
     uint8 buffer_A[255];
     uint8 buffer_B[255];
     uint8 buffer_C[255];
     uint8 buffer_D[255];
     char8 buffer_print[250];
-    uint8 buffer_txPreset[60];
-    uint8 buffer_txEOT[60];
-    uint8 buffer_txDisplay[60];
     uint16 intIDStation;
     uint8 Encabezado1[31];
     uint8 Encabezado2[31];
@@ -136,10 +110,6 @@
     uint8 Product3[17];
     uint8 Product4[17];
     uint8 CopiasCredito;        
-
-
-
-
     uint8 StatePosition[8];
     uint8 ActualState[20];
     uint8 InitState[4];
@@ -147,8 +117,6 @@
     uint8 PresetFlag2;
     uint8 PresetFlag3;
     uint8 PresetFlag4;
-    uint8 PrintON;
-    uint8 NewPPU;
     uint8 AuthType;
     uint8 AuthType2;
     uint8 AuthType3;
@@ -173,7 +141,7 @@
     uint8 ppuiButtonB[5];
     uint8 PPUAux;
     uint16 LongEsperada;
-    uint8 buffer_i2c[64]; //Buffer de lectura del i2c 
+    uint8 buffer_i2c[64];           //Buffer de lectura del i2c 
     uint8 LicensePlate[9];
     uint8 LicensePlate2[9];
     uint8 BalanceA[21];
@@ -197,10 +165,6 @@
     uint8 CountType[17];
     uint8 CountTypeB[17];
     uint8 ControlType;
-    uint8 IDPrintFlagA;
-    uint8 IDPrintFlagB;
-    uint8 IDPrintFlagC;
-    uint8 IDPrintFlagD;
     uint8 ppux10;
     uint32 IntValueA;
     uint32 IntValueB;
@@ -210,7 +174,7 @@
     uint32 CounterB;
     uint32 CounterC;
     uint32 CounterD;
-    //uint8 logoPrint[2];
+    uint8 logoPrint[2];
     uint8 DeliveryStateA;
     uint8 DeliveryStateB;
     uint8 DeliveryStateC;
@@ -229,8 +193,7 @@
     uint8 cardmessageB[25];
     uint8 cardmessage1B[25];
     uint8 cardmessage2B[25];
-    uint8 cardmessage3B[25];
-    
+    uint8 cardmessage3B[25];    
     uint8 cardmessagedisplay;
     uint8 validaclientefiel;
     uint8 validaclientefiel2;
@@ -247,6 +210,7 @@
 	uint8 StopSendTotalD;
     
     
+    
 /*
 *********************************************************************************************************
 *
@@ -257,39 +221,16 @@
 struct buffer{
     uint8 idType;                   //Tipo de metodo de Identificacion 
     uint8 idSerial[150];             //Serial del metodo de identificacion
-    uint8 wayToPay;                 //Forma de pago seleccionada
-    uint8 flagWayToPayMixed;        //Bandera para indicar forma de pago mixta
-    uint8 selectedSale[10];         //N° de Venta seleccionada a discriminar para forma de pago
-    uint8 moneySelectedSale[10];    //Valor recibido de la venta seleccionada a discriminar para forma de pago,mismo para enviar
-    uint8 serialSelectedSale[25];   //Serial ID de la venta seleccionada a discriminar para forma de pago
-    uint8 keyboardWayToPay;         //Tipo de teclado a mostrar atado a la forma de pago
-    uint8 authorizationFlag;        //Bandera que habilita si autoriza o no la peticion
     uint8 valueKeys[21];            //Valor temporal de los numeros digitados en el teclado numerico
-    uint8 vehicleType;              //Tipo de vehiculo, 1-6
     uint8 saleType;                 //Tipo de venta, 1=Efectivo 2=Credito 3=Calibracion 4=Autoservicio
-    uint8 salePerform;              //Venta a realiza, 1=Combustible 2=Canasta 3=Calibracion
     uint8 presetType[2];            //Tipo de programacion, 1V=Volumen 2D=Dinero 2F=Lleno 21=P1 22=P2 23=P3
     uint8 presetValue[2][10];       //Valor de programacion a programar, [0][n]=Valor para surtidor, [1][n]=Valor a mostrar
-    uint8 productType;              //Tipo de producto que se eligio en la pantalla (anticontaminante)
-    uint8 stateMux[5];              //Estado en el que se encuentra el MUX, cantidad [0], prioridad [1], en cola [2,3,4]
-    uint8 dateLiftHandle[6];        //Fecha en la que se sube la manija    
-    uint8 timeLiftHandle[6];        //Hora en la que se sube la manija
-    uint8 totalMoneyPrevious[14];   //Total de dinero antes de hacer la venta
-    uint8 totalVolumePrevious[14];  //Total de volumen antes de hacer la venta
-    uint8 totalPPUPrevious[14];     //Total de PPU antes de hacer la venta
-    uint8 totalMoneyAfter[14];      //Total de dinero depues de hacer la venta
-    uint8 totalVolumeAfter[14];     //Total de volumen depues de hacer la venta
-    uint8 totalPPUAfter[14];        //Total de PPU depues de hacer la venta
     uint8 licenceSale[11];          //Placa venta
     uint8 mileageSale[11];          //Kilometraje venta
     uint8 identySale[11];           //Placa venta crédito
     uint8 flagKeyboard;             //Bandera que habilita que teclado se digito al colocar datos mientras tanquea, y cantidad canastilla
-    uint8 flagPayment;              //Bandera que habilita que imagen de formas de pago se esta visualizando (1-4) 
-    uint8 flagLiftHandle;           //Bandera para indicar el estado de sube manija
     uint8 flagEndSale;              //Bandera que indica que la venta finalizo, se valida en introducir placa
-    uint8 flagChangePPU;            //Bandera que habilita cambiar PPUs cuando los envie el beagle
     uint8 flagPrint;                //Bandera de impresion de recibo
-    bool flagActiveSale;           //Bandera de venta activa
     uint8 shiftId[11];
     uint8 shiftPassword[11];
     uint8 CreditpresetValue[2][10];
@@ -310,6 +251,11 @@ struct buffer{
     uint8 VarActual;
     uint8 buffer_TX[100];
     uint8 FidelConf;
+    uint8 TryCounter;
+    uint8 lockTurn;                          //Bloquea temporalmente el turno 1=bloqueado o 0=desbloqueado
+    bool TryCounterFlag;
+    bool TryCounterEnable;
+    bool flagActiveSale;            //Bandera de venta activa
     bool  lastSale;
     uint8 saleNumber[10];
     char8 saleValue[8];

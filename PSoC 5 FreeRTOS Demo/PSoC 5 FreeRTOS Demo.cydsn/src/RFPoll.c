@@ -972,8 +972,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
     uint16  x, y;      
     uint8 EEpromGradeAddress;
    
-    ActiveRF = 1;
-    counterRF = 0;   
+    ActiveRF = 1;  
     y = 0;
     buffer_tx[y] = 0xBC; y++;
     buffer_tx[y] = 0xCB; y++;
@@ -1152,8 +1151,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         }
                         
                         return;
-                    }
-                    
+                    }                 
                     // Si el estado es PRESET 
                     if(bufferAreadyB == 1)
                     {                                                                   
@@ -1165,8 +1163,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         bufferAreadyB = 0;
                         DeliveryStateB = 0;
                         return;
-                    }
-                    
+                    }                    
                     // Authorization Request
                     if(bufferAreadyB == 2)
                     {                                                             
@@ -3885,15 +3882,11 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     for(x = 1; x < 31; x++){
                         EEPROM_1_WriteByte(Pie1[x],x+100);
                     }
-                    //WriteEeprom(500,Pie1);
-                    //vTaskDelay( 20 / portTICK_PERIOD_MS );
                     WriteEeprom(600,Pie2);
                     vTaskDelay( 20 / portTICK_PERIOD_MS );
                     for(x = 1; x < 31; x++){
                         EEPROM_1_WriteByte(Pie3[x],x+130);
                     }
-                    //WriteEeprom(700,Pie3);
-                    //vTaskDelay( 20 / portTICK_PERIOD_MS );
                     WriteEeprom(335,Product1);
                     WriteEeprom(355,Product2);
                     vTaskDelay( 20 / portTICK_PERIOD_MS );
@@ -3905,36 +3898,45 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     
                     if(PRF_rxBuffer[5] == side.a.RF)
                     {
-                        for(x = 8; x < 12; x++){
+                        for(x = 8; x < 12; x++)
+                        {
                             side.a.GradesHose[x-7] = PRF_rxBuffer[x];
-                        }
+                        }                      
+                        bufferDisplay1.lockTurn = PRF_rxBuffer[12];
+                        EEPROM_1_WriteByte(bufferDisplay1.lockTurn,220);
                     }
                     if(PRF_rxBuffer[5] == side.b.RF)
                     {
-                        for(x = 8; x < 12; x++){
+                        for(x = 8; x < 12; x++)
+                        {
                             side.b.GradesHose[x-7] = PRF_rxBuffer[x];
                         }
+                        bufferDisplay2.lockTurn = PRF_rxBuffer[12];
+                        EEPROM_1_WriteByte(bufferDisplay2.lockTurn,221);
                     }
                     if(PRF_rxBuffer[5] == side.c.RF)
                     {
-                        for(x = 8; x < 12; x++){
+                        for(x = 8; x < 12; x++)
+                        {
                             side.c.GradesHose[x-7] = PRF_rxBuffer[x];
                         }
+                        bufferDisplay3.lockTurn = PRF_rxBuffer[12];
+                        EEPROM_1_WriteByte(bufferDisplay3.lockTurn,222);
                     }
                     if(PRF_rxBuffer[5] == side.d.RF)
                     {
-                        for(x = 8; x < 12; x++){
+                        for(x = 8; x < 12; x++)
+                        {
                             side.d.GradesHose[x-7] = PRF_rxBuffer[x];
                         }
+                        bufferDisplay4.lockTurn = PRF_rxBuffer[12];
+                        EEPROM_1_WriteByte(bufferDisplay4.lockTurn,223);
                     }
                     side.a.GradesHose[0] = 0x04;  //Recordar modificar donde aparezcan
                     side.b.GradesHose[0] = 0x04;
                     side.c.GradesHose[0] = 0x04;
                     side.d.GradesHose[0] = 0x04;
                     PrinterType[0]       = 0x01;
-                    
-                    lockTurn = PRF_rxBuffer[12];
-                    EEPROM_1_WriteByte(lockTurn,7);
                     
                     PrinterType[1] = PRF_rxBuffer[7];
                     WriteEeprom(2,PrinterType);
@@ -3962,8 +3964,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             SetPicture(1,DISPLAY_ID_RECONOCIDO);
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
                             ShiftState = 0;
-                            lockTurn = PRF_rxBuffer[7];
-                            EEPROM_1_WriteByte(lockTurn,7);
+                            bufferDisplay1.lockTurn = PRF_rxBuffer[7];
+                            EEPROM_1_WriteByte(bufferDisplay1.lockTurn,220);
                             flowDisplay1 = 0;
                             if(NumPositions == 2){
                                 SetPicture(1, DISPLAY_INICIO0);
@@ -3983,16 +3985,15 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
                             flowDisplay2 = 0;
                             ShiftState = 0;
-                            //side.b.rfState = RF_IDLE;
-                            //side.b.RFstateReport = 0;
+
                         }
                         else
                         {
                             SetPicture(2,DISPLAY_ID_RECONOCIDO);
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
                             ShiftState = 0;
-                            lockTurn = PRF_rxBuffer[7];
-                            EEPROM_1_WriteByte(lockTurn,7);
+                            bufferDisplay2.lockTurn = PRF_rxBuffer[7];
+                            EEPROM_1_WriteByte(bufferDisplay2.lockTurn,221);
                             flowDisplay2 = 0;
                             if(NumPositions == 2){
                                 SetPicture(2, DISPLAY_INICIO0);
@@ -4012,16 +4013,15 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
                             flowDisplay3 = 0;
                             ShiftState = 0;
-                            //side.c.rfState = RF_IDLE;
-                            //side.c.RFstateReport = 0;
+
                         }
                         else
                         {
                             SetPicture(1,DISPLAY_ID_RECONOCIDO);
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
                             ShiftState = 0;
-                            lockTurn = PRF_rxBuffer[7];
-                            EEPROM_1_WriteByte(lockTurn,7);
+                            bufferDisplay3.lockTurn = PRF_rxBuffer[7];
+                            EEPROM_1_WriteByte(bufferDisplay3.lockTurn,222);
                             flowDisplay3 = 0;
                             if(NumPositions == 2){
                                 SetPicture(1, DISPLAY_INICIO0);
@@ -4041,16 +4041,14 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
                             flowDisplay4 = 0;
                             ShiftState = 0;
-                            //side.d.rfState = RF_IDLE;
-                            //side.d.RFstateReport = 0;
                         }
                         else
                         {
                             SetPicture(2,DISPLAY_ID_RECONOCIDO);
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
                             ShiftState = 0;
-                            lockTurn = PRF_rxBuffer[7];
-                            EEPROM_1_WriteByte(lockTurn,7);
+                            bufferDisplay4.lockTurn = PRF_rxBuffer[7];
+                            EEPROM_1_WriteByte(bufferDisplay4.lockTurn,223);
                             flowDisplay4 = 0;
                             if(NumPositions == 2){
                                 SetPicture(2, DISPLAY_INICIO0);

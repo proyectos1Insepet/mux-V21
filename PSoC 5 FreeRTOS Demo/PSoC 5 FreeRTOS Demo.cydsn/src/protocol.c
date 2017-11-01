@@ -1,36 +1,13 @@
-/*
-*********************************************************************************************************
-*                                         MUX ADVANCE CODE
-*
-*                             (c) Copyright 2016; Sistemas Insepet LTDA
-*
-*               All rights reserved.  Protected by international copyright laws.
-*               Knowledge of the source code may NOT be used to develop a similar product.
-*               Please help us continue to provide the Embedded community with the finest
-*               software available.  Your honesty is greatly appreciated.
-*********************************************************************************************************
-*/
-
-/*
-*********************************************************************************************************
-*
-*                                             MUX ADVANCE CODE
-*
-*                                             CYPRESS PSoC5LP
-*                                                with the
-*                                            CY8C5969AXI-LP035
-*
-* Filename      : protocol.c
-* Version       : V1.00
-* Programmer(s) : 
-                  
-*********************************************************************************************************
-*/
-
-/*
-*********************************************************************************************************
-*                                             INCLUDE FILES
-*********************************************************************************************************
+/* ========================================
+ *
+ * Copyright SISTEMAS INSEPET, 2017
+ * All Rights Reserved
+ * UNPUBLISHED, LICENSED SOFTWARE.
+ *
+ * CONFIDENTIAL AND PROPRIETARY INFORMATION
+ * WHICH IS THE PROPERTY OF SISTEMAS INSEPET.
+ *
+ * ========================================
 */
 #include <device.h>
 #include <variables.h>
@@ -192,10 +169,7 @@ uint8 get_position(void){
            InitState[3] = (Pump_ReadRxData() & 0xF0) >> 4;
            Pump_ClearRxBuffer();
         }  
-        TempPos[0] = side.a.dir;
-        TempPos[1] = side.b.dir;
-        TempPos[2] = side.c.dir;
-        TempPos[3] = side.d.dir;
+
     }
     
     // Retorna el numero de posiciones   
