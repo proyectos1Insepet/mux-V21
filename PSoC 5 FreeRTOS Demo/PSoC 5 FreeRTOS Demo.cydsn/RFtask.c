@@ -41,7 +41,7 @@ void RF_Task(void *arg)
     uint8 x;
     static uint16 cnt = 0;  
     uint8 FlagRF;
-    uint8 FlagRecv = 0;
+    //uint8 FlagRecv = 0;
     uint8 HeaderRF = 0;
     uint8 buffer_rfTMP;
     uint8 GeneralConfig;
@@ -187,6 +187,14 @@ void RF_Task(void *arg)
             else if ( buffer_rf[6] == 0xB9)
             {
                 LongEsperada = 107;
+            }
+            else if ( buffer_rf[6] == 0xBB)
+            {
+                LongEsperada = 8;
+            }
+            else if ( buffer_rf[6] == 0xBF)
+            {
+                LongEsperada = 8;
             }
             // big config
             else if ( buffer_rf[6] == 0xE1)

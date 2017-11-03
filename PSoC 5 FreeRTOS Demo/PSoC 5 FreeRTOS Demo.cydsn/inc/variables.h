@@ -392,6 +392,7 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_POR_FAVOR_ESPERE                = 0x39,
     DISPLAY_FORMA_DE_PAGO_TERPEL            = 0x97,
     DISPLAY_AUTORIZACION_RECHAZADA          = 0x98,
+    DISPLAY_VOUCHER                         = 0x99,
     
     DISPLAY_CONFIGURAR_FECHA_HORA           = 0x3E,
     DISPLAY_HORA                            = 0x3F,
@@ -453,6 +454,7 @@ enum _RF_STATES_
     RF_FIDELITY         = 0x0F,
     RF_REDEEM_WNUMBER   = 0x11,
     RF_PAYCONFIRMATION  = 0x12,
+    RF_PAYCONFIR_V      = 0x13,
 };
 
 enum _AUTH_TYPE_

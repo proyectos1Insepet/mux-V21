@@ -999,10 +999,14 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     {
                         side.a.rfState = RF_FIDELITY;                                            
                     }
-                    if(side.a.ActivoRedencion  == 2)
+                    if(side.a.ActivoRedencion  == 2 )
                     {
                         side.a.rfState = RF_PAYCONFIRMATION;                                            
-                    }                    
+                    }   
+                    if(side.a.ActivoRedencion  == 3 )
+                    {
+                        side.a.rfState = RF_PAYCONFIR_V;                                            
+                    }
                     // Idle state 
                     if(bufferAready == 0 && side.a.FlagTotal == 0)
                     {                          
@@ -1108,6 +1112,14 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             RF_Connection_PutChar(buffer_A[x]);
                         }
                         bufferAready = 0;                                             
+                    }
+                    if(bufferAready == 10)
+                    {                                                     
+                        for (x = 0; x < 19; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_A[x]);
+                        }                    
+                        bufferAready = 0;                                               
                     }
                     // Total
                     if(bufferAready == 0 && side.a.FlagTotal == 1)
@@ -2219,11 +2231,11 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {    
                             if(PrinterType[1] == 1)
                             {
-                                printLogoP(printPortA,logoPrint);    
+                                printLogoP(printPortA,logoPrint[1]);    
                             }
                             else
                             {
-                                printLogoK(printPortA,logoPrint);
+                                printLogoK(printPortA,logoPrint[1]);
                             }
                             write_psoc1(printPortA,10);
                         }
@@ -2262,11 +2274,11 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {
                             if(PrinterType[1] == 1)
                             {
-                                printLogoP(printPortB,logoPrint);    
+                                printLogoP(printPortB,logoPrint[1]);    
                             }
                             else
                             {
-                                printLogoK(printPortB,logoPrint);
+                                printLogoK(printPortB,logoPrint[1]);
                             }
                             write_psoc1(printPortB,10);
                         }
@@ -2301,11 +2313,11 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {
                             if(PrinterType[1] == 1)
                             {
-                                printLogoP(printPortA,logoPrint);    
+                                printLogoP(printPortA,logoPrint[1]);    
                             }
                             else
                             {
-                                printLogoK(printPortA,logoPrint);
+                                printLogoK(printPortA,logoPrint[1]);
                             }
                             
                             write_psoc1(printPortA,10);
@@ -2344,11 +2356,11 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {
                             if(PrinterType[1] == 1)
                             {
-                                printLogoP(printPortB,logoPrint);    
+                                printLogoP(printPortB,logoPrint[1]);    
                             }
                             else
                             {
-                                printLogoK(printPortB,logoPrint);
+                                printLogoK(printPortB,logoPrint[1]);
                             }
                             write_psoc1(printPortB,10);                           
                         }
@@ -3514,7 +3526,30 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         }
                     }
                 break;
-                case 0xB7:
+                    
+                case 0xBF:
+                    if(PRF_rxBuffer[5] == side.a.RF){
+                        side.a.ActivoRedencion = 3;
+                        side.a.RFstateReport = 0;
+                        buffer_tx[5] = side.a.RF;
+                        buffer_tx[6] = 0xBA;
+                        buffer_tx[7] = RF_PAYCONFIR_V;
+                        for(y = 1; y <= bufferDisplay1.saleNumber[0]; y++)
+                        {
+                            buffer_tx[7 + y] = bufferDisplay1.saleNumber[y];
+                        }
+                        if(y < 10){
+                            for(x = y;  x<=10 ; x++)
+                            {
+                                buffer_tx[7 + x] = 0x00;
+                            }                
+                        }  
+                        buffer_tx[18]  = verificar_check(buffer_tx,19);
+                        for (x = 0; x < 19; x++)
+                        {                                              
+                            RF_Connection_PutChar(buffer_tx[x]);
+                        }
+                    }                                        
                 break;
                     
                 case 0xB8:
@@ -3684,8 +3719,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         for(x = 0; x < 25; x++)
                         {
                             cardmessage3[x] = PRF_rxBuffer[x + 83]; 
-                        }
-                        flowDisplay1 = 43;
+                        }                        
                         SetPicture(1, DISPLAY_RECIBO_SALDO);                          
                         side.a.rfState = RF_IDLE;                                                                                                       
                         buffer_tx[5] = side.a.RF;
@@ -3697,6 +3731,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {                                              
                             RF_Connection_PutChar(buffer_tx[x]);
                         }
+                        flowDisplay1 = 43;
                     }
                     if(PRF_rxBuffer[5] == side.b.RF)
                     {
@@ -3798,6 +3833,25 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         }
                     }
                 break;
+                    
+                case 0xBB:
+                    if(PRF_rxBuffer[5] == side.a.RF){
+                        side.a.ActivoRedencion = 0;
+                        side.a.RFstateReport = 0;
+                        flowDisplay1 = 44;
+                        SetPicture(1, DISPLAY_VOUCHER);                          
+                        side.a.rfState = RF_IDLE;                                                                                                       
+                        buffer_tx[5] = side.a.RF;
+                        buffer_tx[6] = 0xBB;                        
+                        buffer_tx[7] = 0x03;
+                        buffer_tx[8] = verificar_check(buffer_tx, 9);                                                              
+                        for (x = 0; x < 10; x++)
+                        {                                              
+                            RF_Connection_PutChar(buffer_tx[x]);
+                        }
+                    }                                        
+                break;
+                                    
                              
                 case 0xE1:               //Configuracion de la estacion
                     
@@ -3872,8 +3926,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     write_hora();
                     write_fecha(); 
                     //logoPrint[0] = 0x01;
-                    //logoPrint = PRF_rxBuffer[15];
-                    //EEPROM_1_WriteByte(logoPrint,110);
+                    logoPrint[1] = PRF_rxBuffer[15];
+                    EEPROM_1_WriteByte(logoPrint[1],215);
                     WriteEeprom(30,Encabezado1);
                     WriteEeprom(65,Encabezado2);
                     WriteEeprom(100,Encabezado3);
@@ -4354,6 +4408,30 @@ void pollingRFA_Tx(){
         bufferAready = 9;               
         side.a.rfState = RF_PAYCONFIRMATION; 
         side.a.ActivoRedencion = 2;
+    }
+    if((side.a.pumpState == PUMP_IDLE || side.a.pumpState == PUMP_CALLING ) && side.a.RFstateReport == 6) //Forma Pago
+    {
+        buffer_A[0]  = 0xBC;
+        buffer_A[1]  = 0xCB;
+        buffer_A[2]  = 0xC8;
+        buffer_A[3]  = IDCast[0];
+        buffer_A[4]  = IDCast[1];
+        buffer_A[5]  = side.a.RF;
+        buffer_A[6]  = 0xBA;
+        buffer_A[7]  = RF_PAYCONFIR_V;                      
+        for(y = 1; y <= bufferDisplay1.saleNumber[0]; y++)
+        {
+            buffer_A[7 + y] = bufferDisplay1.saleNumber[y];
+        }
+        if(y < 10){
+            for(x = y;  x<=10 ; x++)
+            {
+                buffer_A[7 + x] = 0x00;
+            }                
+        }
+        buffer_A[18]  = verificar_check(buffer_A,19);
+        side.a.ActivoRedencion = 0;
+        bufferAready = 10;
     }
     
     /////////////// TICKET COPY //////////////////
