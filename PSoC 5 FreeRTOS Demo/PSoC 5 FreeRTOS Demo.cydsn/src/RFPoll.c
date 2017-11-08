@@ -1091,13 +1091,13 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     if(bufferAready == 8)
                     {     
                         if(bufferDisplay1.lastSale == true){
-                            for (x = 0; x < 10; x++)
+                            for (x = 0; x < 11; x++)
                             { 
                                 RF_Connection_PutChar(buffer_A[x]);
                             }
                         }
                         if(bufferDisplay1.lastSale == false){
-                            for (x = 0; x < 20; x++)
+                            for (x = 0; x < 21; x++)
                             { 
                                 RF_Connection_PutChar(buffer_A[x]);
                             }
@@ -1150,6 +1150,10 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     if(side.b.ActivoRedencion  == 2)
                     {
                         side.b.rfState = RF_PAYCONFIRMATION;                                            
+                    }
+                    if(side.b.ActivoRedencion  == 3 )
+                    {
+                        side.b.rfState = RF_PAYCONFIR_V;                                            
                     }
                     if(bufferAreadyB == 0 && side.b.FlagTotal == 0)
                     {                        
@@ -1230,13 +1234,13 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     if(bufferAreadyB == 8)
                     {     
                         if(bufferDisplay2.lastSale == true){
-                            for (x = 0; x < 10; x++)
+                            for (x = 0; x < 11; x++)
                             { 
                                 RF_Connection_PutChar(buffer_B[x]);
                             }
                         }
                         if(bufferDisplay2.lastSale == false){
-                            for (x = 0; x < 20; x++)
+                            for (x = 0; x < 21; x++)
                             { 
                                 RF_Connection_PutChar(buffer_B[x]);
                             }
@@ -1251,7 +1255,15 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             RF_Connection_PutChar(buffer_B[x]);
                         }
                         bufferAreadyB = 0;                                             
-                    }                                                                          
+                    }   
+                    if(bufferAreadyB == 10)
+                    {                                                     
+                        for (x = 0; x < 19; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_B[x]);
+                        }                    
+                        bufferAreadyB = 0;                                               
+                    }
                     // Totales
                     if(bufferAreadyB == 0 && side.b.FlagTotal == 1)
                     {                                           
@@ -1280,6 +1292,10 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     if(side.c.ActivoRedencion  == 2)
                     {
                         side.c.rfState = RF_PAYCONFIRMATION;                                            
+                    }
+                    if(side.c.ActivoRedencion  == 3 )
+                    {
+                        side.c.rfState = RF_PAYCONFIR_V;                                            
                     }
                     // Idle state
                     if(bufferAreadyC == 0 && side.c.FlagTotal == 0)
@@ -1361,13 +1377,13 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     if(bufferAreadyC == 8)
                     {     
                         if(bufferDisplay3.lastSale == true){
-                            for (x = 0; x < 10; x++)
+                            for (x = 0; x < 11; x++)
                             { 
                                 RF_Connection_PutChar(buffer_C[x]);
                             }
                         }
                         if(bufferDisplay3.lastSale == false){
-                            for (x = 0; x < 20; x++)
+                            for (x = 0; x < 21; x++)
                             { 
                                 RF_Connection_PutChar(buffer_C[x]);
                             }
@@ -1382,6 +1398,14 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             RF_Connection_PutChar(buffer_C[x]);
                         }
                         bufferAreadyC = 0;                                             
+                    }
+                    if(bufferAreadyC == 10)
+                    {                                                     
+                        for (x = 0; x < 19; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_C[x]);
+                        }                    
+                        bufferAreadyC = 0;                                               
                     }
                     // Total
                     if(bufferAreadyC == 0 && side.c.FlagTotal == 1)
@@ -1411,6 +1435,10 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     if(side.d.ActivoRedencion  == 2)
                     {
                         side.d.rfState = RF_PAYCONFIRMATION;                                            
+                    }
+                    if(side.d.ActivoRedencion  == 3 )
+                    {
+                        side.d.rfState = RF_PAYCONFIR_V;                                            
                     }
                     // Idle state
                     if(bufferAreadyD == 0 && side.d.FlagTotal == 0)
@@ -1497,13 +1525,13 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                     if(bufferAreadyD == 8)
                     {     
                         if(bufferDisplay4.lastSale == true){
-                            for (x = 0; x < 10; x++)
+                            for (x = 0; x < 11; x++)
                             { 
                                 RF_Connection_PutChar(buffer_D[x]);
                             }
                         }
                         if(bufferDisplay4.lastSale == false){
-                            for (x = 0; x < 20; x++)
+                            for (x = 0; x < 21; x++)
                             { 
                                 RF_Connection_PutChar(buffer_D[x]);
                             }
@@ -1518,6 +1546,14 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             RF_Connection_PutChar(buffer_D[x]);
                         }
                         bufferAreadyD = 0;                                             
+                    }
+                    if(bufferAreadyD == 10)
+                    {                                                     
+                        for (x = 0; x < 19; x++)
+                        { 
+                            RF_Connection_PutChar(buffer_D[x]);
+                        }                    
+                        bufferAreadyD = 0;                                               
                     }
                     // Total
                     if(bufferAreadyD == 0 && side.d.FlagTotal == 1)
@@ -3549,7 +3585,73 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {                                              
                             RF_Connection_PutChar(buffer_tx[x]);
                         }
-                    }                                        
+                    }   
+                    if(PRF_rxBuffer[5] == side.b.RF){
+                        side.b.ActivoRedencion = 3;
+                        side.b.RFstateReport = 0;
+                        buffer_tx[5] = side.b.RF;
+                        buffer_tx[6] = 0xBA;
+                        buffer_tx[7] = RF_PAYCONFIR_V;
+                        for(y = 1; y <= bufferDisplay2.saleNumber[0]; y++)
+                        {
+                            buffer_tx[7 + y] = bufferDisplay2.saleNumber[y];
+                        }
+                        if(y < 10){
+                            for(x = y;  x<=10 ; x++)
+                            {
+                                buffer_tx[7 + x] = 0x00;
+                            }                
+                        }  
+                        buffer_tx[18]  = verificar_check(buffer_tx,19);
+                        for (x = 0; x < 19; x++)
+                        {                                              
+                            RF_Connection_PutChar(buffer_tx[x]);
+                        }
+                    }
+                    if(PRF_rxBuffer[5] == side.c.RF){
+                        side.c.ActivoRedencion = 3;
+                        side.c.RFstateReport = 0;
+                        buffer_tx[5] = side.c.RF;
+                        buffer_tx[6] = 0xBA;
+                        buffer_tx[7] = RF_PAYCONFIR_V;
+                        for(y = 1; y <= bufferDisplay3.saleNumber[0]; y++)
+                        {
+                            buffer_tx[7 + y] = bufferDisplay3.saleNumber[y];
+                        }
+                        if(y < 10){
+                            for(x = y;  x<=10 ; x++)
+                            {
+                                buffer_tx[7 + x] = 0x00;
+                            }                
+                        }  
+                        buffer_tx[18]  = verificar_check(buffer_tx,19);
+                        for (x = 0; x < 19; x++)
+                        {                                              
+                            RF_Connection_PutChar(buffer_tx[x]);
+                        }
+                    }
+                    if(PRF_rxBuffer[5] == side.d.RF){
+                        side.d.ActivoRedencion = 3;
+                        side.d.RFstateReport = 0;
+                        buffer_tx[5] = side.d.RF;
+                        buffer_tx[6] = 0xBA;
+                        buffer_tx[7] = RF_PAYCONFIR_V;
+                        for(y = 1; y <= bufferDisplay4.saleNumber[0]; y++)
+                        {
+                            buffer_tx[7 + y] = bufferDisplay4.saleNumber[y];
+                        }
+                        if(y < 10){
+                            for(x = y;  x<=10 ; x++)
+                            {
+                                buffer_tx[7 + x] = 0x00;
+                            }                
+                        }  
+                        buffer_tx[18]  = verificar_check(buffer_tx,19);
+                        for (x = 0; x < 19; x++)
+                        {                                              
+                            RF_Connection_PutChar(buffer_tx[x]);
+                        }
+                    }
                 break;
                     
                 case 0xB8:
@@ -3849,7 +3951,52 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {                                              
                             RF_Connection_PutChar(buffer_tx[x]);
                         }
-                    }                                        
+                    }          
+                    if(PRF_rxBuffer[5] == side.b.RF){
+                        side.b.ActivoRedencion = 0;
+                        side.b.RFstateReport = 0;
+                        flowDisplay2 = 44;
+                        SetPicture(2, DISPLAY_VOUCHER);                          
+                        side.b.rfState = RF_IDLE;                                                                                                       
+                        buffer_tx[5] = side.b.RF;
+                        buffer_tx[6] = 0xBB;                        
+                        buffer_tx[7] = 0x03;
+                        buffer_tx[8] = verificar_check(buffer_tx, 9);                                                              
+                        for (x = 0; x < 10; x++)
+                        {                                              
+                            RF_Connection_PutChar(buffer_tx[x]);
+                        }
+                    }
+                    if(PRF_rxBuffer[5] == side.c.RF){
+                        side.c.ActivoRedencion = 0;
+                        side.c.RFstateReport = 0;
+                        flowDisplay3 = 44;
+                        SetPicture(1, DISPLAY_VOUCHER);                          
+                        side.c.rfState = RF_IDLE;                                                                                                       
+                        buffer_tx[5] = side.c.RF;
+                        buffer_tx[6] = 0xBB;                        
+                        buffer_tx[7] = 0x03;
+                        buffer_tx[8] = verificar_check(buffer_tx, 9);                                                              
+                        for (x = 0; x < 10; x++)
+                        {                                              
+                            RF_Connection_PutChar(buffer_tx[x]);
+                        }
+                    }
+                    if(PRF_rxBuffer[5] == side.d.RF){
+                        side.d.ActivoRedencion = 0;
+                        side.d.RFstateReport = 0;
+                        flowDisplay4 = 44;
+                        SetPicture(2, DISPLAY_VOUCHER);                          
+                        side.d.rfState = RF_IDLE;                                                                                                       
+                        buffer_tx[5] = side.d.RF;
+                        buffer_tx[6] = 0xBB;                        
+                        buffer_tx[7] = 0x03;
+                        buffer_tx[8] = verificar_check(buffer_tx, 9);                                                              
+                        for (x = 0; x < 10; x++)
+                        {                                              
+                            RF_Connection_PutChar(buffer_tx[x]);
+                        }
+                    }
                 break;
                                     
                              
@@ -4341,8 +4488,9 @@ void pollingRFA_Tx(){
             buffer_A[5]  = side.a.RF;
             buffer_A[6]  = 0xB4;
             buffer_A[7]  = RF_REDEEM;             
-            buffer_A[8]  = bufferDisplay1.idType;  
-            buffer_A[9]  = verificar_check(buffer_A,10);
+            buffer_A[8]  = bufferDisplay1.idType; 
+            buffer_A[9]  = bufferDisplay1.documentID;
+            buffer_A[10]  = verificar_check(buffer_A,11);
             side.a.ActivoRedencion = 0;
             bufferAready = 8; 
         }
@@ -4356,17 +4504,18 @@ void pollingRFA_Tx(){
             buffer_A[6]  = 0xB8;
             buffer_A[7]  = RF_REDEEM_WNUMBER;              
             buffer_A[8]  = bufferDisplay1.idType;  
+            buffer_A[9]  = bufferDisplay1.documentID;
             for(y = 1; y <= bufferDisplay1.saleNumber[0]; y++)
             {
-                buffer_A[8 + y] = bufferDisplay1.saleNumber[bufferDisplay1.saleNumber[0]-(y-1)];
+                buffer_A[9 + y] = bufferDisplay1.saleNumber[bufferDisplay1.saleNumber[0]-(y-1)];
             }
             if(y < 10){
                 for(x = y;  x<=10 ; x++)
                 {
-                    buffer_A[8 + x] = 0x00;
+                    buffer_A[9 + x] = 0x00;
                 }                
             }
-            buffer_A[19]  = verificar_check(buffer_A,20);
+            buffer_A[20]  = verificar_check(buffer_A,21);
             side.a.ActivoRedencion = 0;
             bufferAready = 8; 
         }
@@ -4430,8 +4579,9 @@ void pollingRFA_Tx(){
             }                
         }
         buffer_A[18]  = verificar_check(buffer_A,19);
+        side.a.RFstateReport   = 0;
         side.a.ActivoRedencion = 0;
-        bufferAready = 10;
+        bufferAready = 10;        
     }
     
     /////////////// TICKET COPY //////////////////
@@ -4952,8 +5102,9 @@ void pollingRFB_Tx(){
             buffer_B[5]  = side.b.RF;
             buffer_B[6]  = 0xB4;
             buffer_B[7]  = RF_REDEEM;             
-            buffer_B[8]  = bufferDisplay2.idType;  
-            buffer_B[9]  = verificar_check(buffer_B,10);
+            buffer_B[8]  = bufferDisplay2.idType; 
+            buffer_B[9]  = bufferDisplay2.documentID;
+            buffer_B[10]  = verificar_check(buffer_B,11);
             side.b.ActivoRedencion = 0;
             bufferAreadyB = 8; 
         }
@@ -4966,18 +5117,19 @@ void pollingRFB_Tx(){
             buffer_B[5]  = side.b.RF;
             buffer_B[6]  = 0xB8;
             buffer_B[7]  = RF_REDEEM_WNUMBER;              
-            buffer_B[8]  = bufferDisplay2.idType;  
+            buffer_B[8]  = bufferDisplay2.idType;
+            buffer_B[9]  = bufferDisplay2.documentID;
             for(y = 1; y <= bufferDisplay2.saleNumber[0]; y++)
             {
-                buffer_B[8 + y] = bufferDisplay2.saleNumber[bufferDisplay2.saleNumber[0]-(y-1)];
+                buffer_B[9 + y] = bufferDisplay2.saleNumber[bufferDisplay2.saleNumber[0]-(y-1)];
             }
             if(y < 10){
                 for(x = y;  x<=10 ; x++)
                 {
-                    buffer_B[8 + x] = 0x00;
+                    buffer_B[9 + x] = 0x00;
                 }                
             }
-            buffer_B[19]  = verificar_check(buffer_B,20);
+            buffer_B[20]  = verificar_check(buffer_B,21);
             side.b.ActivoRedencion = 0;
             bufferAreadyB = 8; 
         }
@@ -5019,7 +5171,32 @@ void pollingRFB_Tx(){
         bufferAreadyB = 9;               
         side.b.rfState = RF_PAYCONFIRMATION; 
         side.b.ActivoRedencion = 2;
-    }        
+    }
+    if((side.b.pumpState == PUMP_IDLE || side.b.pumpState == PUMP_CALLING ) && side.b.RFstateReport == 6) //Forma Pago
+    {
+        buffer_B[0]  = 0xBC;
+        buffer_B[1]  = 0xCB;
+        buffer_B[2]  = 0xC8;
+        buffer_B[3]  = IDCast[0];
+        buffer_B[4]  = IDCast[1];
+        buffer_B[5]  = side.b.RF;
+        buffer_B[6]  = 0xBA;
+        buffer_B[7]  = RF_PAYCONFIR_V;                      
+        for(y = 1; y <= bufferDisplay2.saleNumber[0]; y++)
+        {
+            buffer_B[7 + y] = bufferDisplay2.saleNumber[y];
+        }
+        if(y < 10){
+            for(x = y;  x<=10 ; x++)
+            {
+                buffer_B[7 + x] = 0x00;
+            }                
+        }
+        buffer_B[18]  = verificar_check(buffer_B,19);
+        side.b.RFstateReport   = 0;
+        side.b.ActivoRedencion = 0;
+        bufferAreadyB = 10;
+    }
     
     /////////////// COPIA DE RECIBO //////////////////
     if(side.b.rfStateCopy == RF_COPY_RECEIPT && side.b.RFstateReport == 1){ 
@@ -5520,8 +5697,9 @@ void pollingRFC_Tx(){
             buffer_C[5]  = side.c.RF;
             buffer_C[6]  = 0xB4;
             buffer_C[7]  = RF_REDEEM;             
-            buffer_C[8]  = bufferDisplay3.idType;  
-            buffer_C[9]  = verificar_check(buffer_C,10);
+            buffer_C[8]  = bufferDisplay3.idType;
+            buffer_C[9]  = bufferDisplay3.documentID;
+            buffer_C[10]  = verificar_check(buffer_C,11);
             side.c.ActivoRedencion = 0;
             bufferAreadyC = 8; 
         }
@@ -5534,18 +5712,19 @@ void pollingRFC_Tx(){
             buffer_C[5]  = side.c.RF;
             buffer_C[6]  = 0xB8;
             buffer_C[7]  = RF_REDEEM_WNUMBER;              
-            buffer_C[8]  = bufferDisplay3.idType;  
+            buffer_C[8]  = bufferDisplay3.idType; 
+            buffer_C[9]  = bufferDisplay3.documentID;
             for(y = 1; y <= bufferDisplay3.saleNumber[0]; y++)
             {
-                buffer_C[8 + y] = bufferDisplay3.saleNumber[bufferDisplay3.saleNumber[0]-(y-1)];
+                buffer_C[9 + y] = bufferDisplay3.saleNumber[bufferDisplay3.saleNumber[0]-(y-1)];
             }
             if(y < 10){
                 for(x = y;  x<=10 ; x++)
                 {
-                    buffer_C[8 + x] = 0x00;
+                    buffer_C[9 + x] = 0x00;
                 }                
             }
-            buffer_C[19]  = verificar_check(buffer_C,20);
+            buffer_C[20]  = verificar_check(buffer_C,21);
             side.c.ActivoRedencion = 0;
             bufferAreadyC = 8; 
         }
@@ -5588,6 +5767,31 @@ void pollingRFC_Tx(){
         side.c.rfState = RF_PAYCONFIRMATION; 
         side.c.ActivoRedencion = 2;
     }   
+    if((side.c.pumpState == PUMP_IDLE || side.c.pumpState == PUMP_CALLING ) && side.c.RFstateReport == 6) //Forma Pago
+    {
+        buffer_C[0]  = 0xBC;
+        buffer_C[1]  = 0xCB;
+        buffer_C[2]  = 0xC8;
+        buffer_C[3]  = IDCast[0];
+        buffer_C[4]  = IDCast[1];
+        buffer_C[5]  = side.c.RF;
+        buffer_C[6]  = 0xBA;
+        buffer_C[7]  = RF_PAYCONFIR_V;                      
+        for(y = 1; y <= bufferDisplay3.saleNumber[0]; y++)
+        {
+            buffer_C[7 + y] = bufferDisplay3.saleNumber[y];
+        }
+        if(y < 10){
+            for(x = y;  x<=10 ; x++)
+            {
+                buffer_C[7 + x] = 0x00;
+            }                
+        }
+        buffer_C[18]  = verificar_check(buffer_C,19);
+        side.c.RFstateReport   = 0;
+        side.c.ActivoRedencion = 0;
+        bufferAreadyC = 10;
+    }
     /////////////// TICKET COPY //////////////////
     if(side.c.rfStateCopy == RF_COPY_RECEIPT && side.c.RFstateReport == 1){ 
         buffer_C[0]   = 10;
@@ -6100,8 +6304,9 @@ void pollingRFD_Tx(){
             buffer_D[5]  = side.d.RF;
             buffer_D[6]  = 0xB4;
             buffer_D[7]  = RF_REDEEM;             
-            buffer_D[8]  = bufferDisplay4.idType;  
-            buffer_D[9]  = verificar_check(buffer_D,10);
+            buffer_D[8]  = bufferDisplay4.idType; 
+            buffer_D[9]  = bufferDisplay1.documentID;
+            buffer_D[10]  = verificar_check(buffer_D,11);
             side.d.ActivoRedencion = 0;
             bufferAreadyD = 8; 
         }
@@ -6114,18 +6319,19 @@ void pollingRFD_Tx(){
             buffer_D[5]  = side.d.RF;
             buffer_D[6]  = 0xB8;
             buffer_D[7]  = RF_REDEEM_WNUMBER;              
-            buffer_D[8]  = bufferDisplay4.idType;  
+            buffer_D[8]  = bufferDisplay4.idType; 
+            buffer_D[9]  = bufferDisplay4.documentID;
             for(y = 1; y <= bufferDisplay4.saleNumber[0]; y++)
             {
-                buffer_D[8 + y] = bufferDisplay4.saleNumber[bufferDisplay4.saleNumber[0]-(y-1)];
+                buffer_D[9 + y] = bufferDisplay4.saleNumber[bufferDisplay4.saleNumber[0]-(y-1)];
             }
             if(y < 10){
                 for(x = y;  x<=10 ; x++)
                 {
-                    buffer_D[8 + x] = 0x00;
+                    buffer_D[9 + x] = 0x00;
                 }                
             }
-            buffer_D[19]  = verificar_check(buffer_D,20);
+            buffer_D[20]  = verificar_check(buffer_D,21);
             side.d.ActivoRedencion = 0;
             bufferAreadyD = 8; 
         }
@@ -6168,6 +6374,31 @@ void pollingRFD_Tx(){
         side.d.rfState = RF_PAYCONFIRMATION; 
         side.d.ActivoRedencion = 2;
     }   
+    if((side.d.pumpState == PUMP_IDLE || side.d.pumpState == PUMP_CALLING ) && side.d.RFstateReport == 6) //Forma Pago
+    {
+        buffer_D[0]  = 0xBC;
+        buffer_D[1]  = 0xCB;
+        buffer_D[2]  = 0xC8;
+        buffer_D[3]  = IDCast[0];
+        buffer_D[4]  = IDCast[1];
+        buffer_D[5]  = side.d.RF;
+        buffer_D[6]  = 0xBA;
+        buffer_D[7]  = RF_PAYCONFIR_V;                      
+        for(y = 1; y <= bufferDisplay4.saleNumber[0]; y++)
+        {
+            buffer_D[7 + y] = bufferDisplay4.saleNumber[y];
+        }
+        if(y < 10){
+            for(x = y;  x<=10 ; x++)
+            {
+                buffer_D[7 + x] = 0x00;
+            }                
+        }
+        buffer_D[18]  = verificar_check(buffer_D,19);
+        side.d.RFstateReport   = 0;
+        side.d.ActivoRedencion = 0;
+        bufferAreadyD = 10;
+    }
     /////////////// TICKET COPY //////////////////
     if(side.d.rfStateCopy == RF_COPY_RECEIPT && side.d.RFstateReport == 1){ 
         buffer_D[0]   = 10;

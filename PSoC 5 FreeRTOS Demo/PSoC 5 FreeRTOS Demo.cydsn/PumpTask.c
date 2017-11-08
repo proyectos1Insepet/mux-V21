@@ -467,15 +467,18 @@ void PollingDisplay1(void){
                     {                                                                                                 
                         case 0x0A: //Si                                                       
                             side.a.ActivoFideliza = 0;
+                            side.a.ActivoRedencion = 0;
                             flowDisplay1 = 33;
                             SetPicture(1, DISPLAY_IDEN_FIDELIZACION);                              
                         break;
                         case 0x0B:  //No 
                             if(AuthType == 1){
                                 flowDisplay1 =10;
+                                side.a.ActivoRedencion = 0;
                                 SetPicture(1, DISPLAY_ID_TERPEL);
                             }else{
                                 flowDisplay1 =3;
+                                side.a.ActivoRedencion = 0;
                                 SetPicture(1, DISPLAY_FORMA_PROGRAMACION); 
                             }
                             side.a.ActivoFideliza = 0;                                                         
@@ -2397,15 +2400,18 @@ void PollingDisplay1(void){
                 case 1: //Enter
                     switch(bufferDisplay1.flagKeyboard)
                     {                           
-                        case 1://Datos fidelización
-                            
+                        case 1://Datos fidelización                            
                             for(x = 0; x < keysTerpel; x++)
                             {
                                 bufferDisplay1.idTerpelFideliza[x] = bufferDisplay1.valueKeys[x];
                             }                            
-                            flowDisplay1 = 35;  
-                            side.a.RFstateReport = 2;                        
-                            side.a.ActivoFideliza = 2;
+                            flowDisplay1 = 35;
+                            if(side.a.ActivoRedencion == 1){
+                                side.a.RFstateReport = 4;                                
+                            }else{
+                                side.a.RFstateReport = 2;                        
+                                side.a.ActivoFideliza = 2;
+                            }
                             SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
                         break;
                             
@@ -2514,40 +2520,82 @@ void PollingDisplay1(void){
                 {
                     switch(Display1_rxBuffer[3])
                     {  
-                        case 0x1A:  //Cedula
-                            flowDisplay1 = 32;
-                            numberKeys1 = 0;
-                            keysTerpel = 16;  
-                            bufferDisplay1.idType = 3;
-                            bufferDisplay1.flagKeyboard = 1;
-                            SetPicture(1, DISPLAY_PASAPORTE);
+                        case 0x1A:  //Cedula                             
+                            if(side.a.ActivoRedencion == 1 ){
+                                bufferDisplay1.documentID = 3 ;
+                                bufferDisplay1.idType = 5;
+                                flowDisplay1 = 35;
+                                side.a.RFstateReport = 4; 
+                                SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay1 = 32;
+                                numberKeys1 = 0;
+                                keysTerpel = 16;
+                                bufferDisplay1.idType = 3;
+                                SetPicture(1, DISPLAY_PASAPORTE);                             
+                            }
+                            bufferDisplay1.flagKeyboard = 1;                            
                         break;
                         
-                        case 0x1B:  //extranjería                                                        
-                            flowDisplay1 = 32;
-                            numberKeys1 = 0;
-                            keysTerpel = 16;   
-                            bufferDisplay1.idType = 4;
-                            bufferDisplay1.flagKeyboard = 1;
-                            SetPicture(1, DISPLAY_PASAPORTE);
+                        case 0x1B:  //extranjería                                                                                       
+                            if(side.a.ActivoRedencion == 1 ){
+                                bufferDisplay1.documentID = 4 ;
+                                bufferDisplay1.idType = 5;
+                                flowDisplay1 = 35;
+                                side.a.RFstateReport = 4; 
+                                SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay1 = 32;
+                                numberKeys1 = 0;
+                                keysTerpel = 16;
+                                bufferDisplay1.idType = 4;
+                                SetPicture(1, DISPLAY_PASAPORTE);                             
+                            }
+                            bufferDisplay1.flagKeyboard = 1;                            
                         break;
-                        case 0x1c: //PASAPORTE
-                            flowDisplay1 = 32;
-                            numberKeys1 = 0;
-                            keysTerpel = 12;   
-                            bufferDisplay1.idType = 5;
-                            bufferDisplay1.flagKeyboard = 1;
-                            SetPicture(1, DISPLAY_PASAPORTE);                            
+                        case 0x1c: //PASAPORTE                              
+                            if(side.a.ActivoRedencion == 1 ){
+                                bufferDisplay1.documentID = 5;
+                                bufferDisplay1.idType = 5;
+                                flowDisplay1 = 35;
+                                side.a.RFstateReport = 4; 
+                                SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay1 = 32;
+                                numberKeys1 = 0;
+                                keysTerpel = 16;
+                                bufferDisplay1.idType = 5;
+                                SetPicture(1, DISPLAY_PASAPORTE);                             
+                            }
+                            bufferDisplay1.flagKeyboard = 1;                                                    
                         break;
-                        case 0x1d: //Lifemiles
-                            flowDisplay1 = 40; 
-                            bufferDisplay1.idType = 2;
-                            SetPicture(1, DISPLAY_ID_LIFE_MILES);                             
+                        case 0x1d: //Lifemiles                            
+                            if(side.a.ActivoRedencion == 1 ){
+                                bufferDisplay1.idType = 5;
+                                bufferDisplay1.documentID = 2;
+                                flowDisplay1 = 35;
+                                side.a.RFstateReport = 4; 
+                                SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay1 = 40; 
+                                bufferDisplay1.idType = 2;
+                                SetPicture(1, DISPLAY_ID_LIFE_MILES);                                                             
+                            }                                                                                     
                         break;
-                        case 0x1e: //Tarjeta pre inscrita
-                            flowDisplay1 = 40; 
-                            bufferDisplay1.idType = 1;
-                            SetPicture(1, DISPLAY_ID_LIFE_MILES);                             
+                        case 0x1e: //Tarjeta pre inscrita                            
+                            if(side.a.ActivoRedencion == 1 ){
+                                bufferDisplay1.documentID = 1;
+                                bufferDisplay1.idType = 5;
+                                flowDisplay1 = 35;
+                                side.a.RFstateReport = 4;
+                                SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay1 = 32;
+                                numberKeys1 = 0;
+                                keysTerpel = 16;
+                                bufferDisplay1.idType = 1;
+                                SetPicture(1, DISPLAY_PASAPORTE);                             
+                            }                            
                         break;
                         case 0x7E:  //Init Screen                                                        
                             SetPicture(1, DISPLAY_INICIO0);
@@ -2828,11 +2876,9 @@ void PollingDisplay1(void){
                             SetPicture(1, DISPLAY_POR_FAVOR_ESPERE);	
                         break;                        
                         case 0x1D:  //LIFEMILES                             
-                            flowDisplay1 = 35;
-                            side.a.ActivoRedencion = 1;
-                            side.a.RFstateReport = 4;
-                            bufferDisplay1.idType = 5;  
-                            SetPicture(1, DISPLAY_POR_FAVOR_ESPERE);
+                            flowDisplay1 = 33;
+                            side.a.ActivoRedencion = 1;                                                          
+                            SetPicture(1, DISPLAY_IDEN_FIDELIZACION);  
                         break;
                         case 0x1E: //Debito     1.VISA 2.MASTER 3.Debito 4.SODEXO 5. LM 6.VOUCHER
                             flowDisplay1 = 35;
@@ -3050,6 +3096,8 @@ void PollingDisplay1(void){
                 flowDisplay1 = 14;    
                 hiddenKeys = 20;
                 controlChar ='*';
+                numberKeys1=0;
+                bufferDisplay1.flagKeyboard = 8;
                 SetPicture(1,DISPLAY_PASAPORTE); 
                 Display1_ClearRxBuffer();                                                                        									                                       
 			}                     
@@ -3089,19 +3137,19 @@ void PollingDisplay1(void){
         case 43:                                                
             for(x = 0; x < 25; x++)
             {
-                WriteMessage(1,cardmessage[x],6,x+5,1,0x0000,'Y');
+                WriteMessage(1,cardmessage[x],6,x+1,1,0x0000,'Y');
             }            
             for(x = 0; x < 25; x++)
             {
-                WriteMessage(1,cardmessage1[x],10,x+5,1,0x0000,'Y');
+                WriteMessage(1,cardmessage1[x],10,x+1,1,0x0000,'Y');
             }    
             for(x = 0; x < 25; x++)
             {
-                WriteMessage(1,cardmessage2[x],14,x+5,1,0x0000,'Y');
+                WriteMessage(1,cardmessage2[x],14,x+1,1,0x0000,'Y');
             }
             for(x = 0; x < 25; x++)
             {
-                WriteMessage(1,cardmessage3[x],18,x+5,1,0x0000,'Y');
+                WriteMessage(1,cardmessage3[x],18,x+1,1,0x0000,'Y');
             }
             if(Display1_GetRxBufferSize() == 8)
             {
@@ -3396,15 +3444,18 @@ void PollingDisplay2(void){
                     {                                                                                                 
                         case 0x0A: //Si                                                       
                             side.b.ActivoFideliza = 0;
+                            side.b.ActivoRedencion = 0;
                             flowDisplay2 = 33;
                             SetPicture(2, DISPLAY_IDEN_FIDELIZACION);                              
                         break;
                         case 0x0B:  //No 
                             if(AuthType2 == 1){
                                 flowDisplay2 =10;
+                                side.b.ActivoRedencion = 0;
                                 SetPicture(2, DISPLAY_ID_TERPEL);
                             }else{
                                 flowDisplay2 =3;
+                                side.b.ActivoRedencion = 0;
                                 SetPicture(2, DISPLAY_FORMA_PROGRAMACION); 
                             }
                             side.b.ActivoFideliza = 0;                                                         
@@ -5298,8 +5349,12 @@ void PollingDisplay2(void){
                                 bufferDisplay2.idTerpelFideliza[x] = bufferDisplay2.valueKeys[x];
                             }                            
                             flowDisplay2 = 35;  
-                            side.b.RFstateReport = 2;                        
-                            side.b.ActivoFideliza = 2;
+                            if(side.b.ActivoRedencion == 1){
+                                side.b.RFstateReport = 4;                                
+                            }else{
+                                side.b.RFstateReport = 2;                        
+                                side.b.ActivoFideliza = 2;
+                            }
                             SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
                         break;                            
                         case 2://LFM Forma de pago                            
@@ -5341,7 +5396,7 @@ void PollingDisplay2(void){
                             vTaskDelay( 200 / portTICK_PERIOD_MS );
                             writevalueB = atoi(bufferDisplay2.MoneyPay);
                             resB =(atoi(bufferDisplay2.saleValue)-atoi(bufferDisplay2.MoneyPayed));
-                            if( abs(resB) > writevalueB )
+                            if( abs(resB) >= writevalueB )
                             {
                                 for(x = 0; x < keysTerpel + 1; x++)
                                 {
@@ -5404,39 +5459,81 @@ void PollingDisplay2(void){
                     switch(Display2_rxBuffer[3])
                     {  
                         case 0x1A:  //Cedula
-                            flowDisplay2 = 32;
-                            numberKeys2 = 0;
-                            keysTerpel = 16;  
-                            bufferDisplay2.idType = 3;
-                            bufferDisplay2.flagKeyboard = 1;
-                            SetPicture(2, DISPLAY_PASAPORTE);
+                            if(side.b.ActivoRedencion == 1 ){
+                                bufferDisplay2.documentID = 3 ;
+                                bufferDisplay2.idType = 5;
+                                flowDisplay2 = 35;
+                                side.b.RFstateReport = 4; 
+                                SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay2 = 32;
+                                numberKeys2 = 0;
+                                keysTerpel = 16;
+                                bufferDisplay2.idType = 3;
+                                SetPicture(2, DISPLAY_PASAPORTE);                             
+                            }
+                            bufferDisplay2.flagKeyboard = 1; 
                         break;
                         
                         case 0x1B:  //extranjería                                                        
-                            flowDisplay2 = 32;
-                            numberKeys2 = 0;
-                            keysTerpel = 16;   
-                            bufferDisplay2.idType = 4;
-                            bufferDisplay2.flagKeyboard = 1;
-                            SetPicture(2, DISPLAY_PASAPORTE);
+                            if(side.b.ActivoRedencion == 1 ){
+                                bufferDisplay2.documentID = 4 ;
+                                bufferDisplay2.idType = 5;
+                                flowDisplay2 = 35;
+                                side.b.RFstateReport = 4; 
+                                SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay2 = 32;
+                                numberKeys2 = 0;
+                                keysTerpel = 16;
+                                bufferDisplay2.idType = 4;
+                                SetPicture(2, DISPLAY_PASAPORTE);                             
+                            }
+                            bufferDisplay2.flagKeyboard = 1; 
                         break;
                         case 0x1c: //PASAPORTE
-                            flowDisplay2 = 32;
-                            numberKeys2 = 0;
-                            keysTerpel = 12;   
-                            bufferDisplay2.idType = 5;
-                            bufferDisplay2.flagKeyboard = 1;
-                            SetPicture(2, DISPLAY_PASAPORTE);                            
+                            if(side.b.ActivoRedencion == 1 ){
+                                bufferDisplay2.documentID = 5;
+                                bufferDisplay2.idType = 5;
+                                flowDisplay2 = 35;
+                                side.b.RFstateReport = 4; 
+                                SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay2 = 32;
+                                numberKeys2 = 0;
+                                keysTerpel = 16;
+                                bufferDisplay2.idType = 5;
+                                SetPicture(2, DISPLAY_PASAPORTE);                             
+                            }
+                            bufferDisplay2.flagKeyboard = 1;                            
                         break;
                         case 0x1d: //Lifemiles
-                            flowDisplay2 = 40; 
-                            bufferDisplay2.idType = 2;
-                            SetPicture(2, DISPLAY_ID_LIFE_MILES);                             
+                            if(side.b.ActivoRedencion == 1 ){
+                                bufferDisplay2.idType = 5;
+                                bufferDisplay2.documentID = 2;
+                                flowDisplay2 = 35;
+                                side.b.RFstateReport = 4; 
+                                SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay2 = 40; 
+                                bufferDisplay2.idType = 2;
+                                SetPicture(2, DISPLAY_ID_LIFE_MILES);                                                             
+                            }                               
                         break;
                         case 0x1e: //Tarjeta pre inscrita
-                            flowDisplay2 = 40; 
-                            bufferDisplay2.idType = 1;
-                            SetPicture(2, DISPLAY_ID_LIFE_MILES);                             
+                            if(side.b.ActivoRedencion == 1 ){
+                                bufferDisplay2.documentID = 1;
+                                bufferDisplay2.idType = 5;
+                                flowDisplay2 = 35;
+                                side.b.RFstateReport = 4;
+                                SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay2 = 32;
+                                numberKeys2 = 0;
+                                keysTerpel = 16;
+                                bufferDisplay2.idType = 1;
+                                SetPicture(2, DISPLAY_PASAPORTE);                             
+                            }                               
                         break;
                         case 0x7E:  //Init Screen                                                        
                             SetPicture(2, DISPLAY_INICIO0);
@@ -5715,11 +5812,9 @@ void PollingDisplay2(void){
                             SetPicture(2, DISPLAY_POR_FAVOR_ESPERE);	
                         break;                        
                         case 0x1D:  //LIFEMILES                             
-                            flowDisplay2 = 35;
-                            side.b.ActivoRedencion = 1;
-                            side.b.RFstateReport = 4;
-                            bufferDisplay2.idType = 5;  
-                            SetPicture(2, DISPLAY_POR_FAVOR_ESPERE);
+                            flowDisplay2 = 33;
+                            side.b.ActivoRedencion = 1;                              
+                            SetPicture(2, DISPLAY_IDEN_FIDELIZACION);
                         break;
                         case 0x1E: //Debito     1.VISA 2.MASTER 3.Debito 4.SODEXO 5. LM 6.VOUCHER
                             flowDisplay2 = 35;
@@ -5931,6 +6026,8 @@ void PollingDisplay2(void){
                 flowDisplay2 = 14;    
                 hiddenKeys = 20;
                 controlChar ='*';
+                numberKeys2=0;
+                bufferDisplay2.flagKeyboard = 8;
                 SetPicture(2,DISPLAY_PASAPORTE); 
                 Display2_ClearRxBuffer();                                                                        									                                       
 			}                     
@@ -5969,19 +6066,19 @@ void PollingDisplay2(void){
         case 43:                                                
             for(x = 0; x < 25; x++)
             {
-                WriteMessage(2,cardmessageB[x],6,x+5,1,0x0000,'Y');
+                WriteMessage(2,cardmessageB[x],6,x+1,1,0x0000,'Y');
             }            
             for(x = 0; x < 25; x++)
             {
-                WriteMessage(2,cardmessage1B[x],10,x+5,1,0x0000,'Y');
+                WriteMessage(2,cardmessage1B[x],10,x+1,1,0x0000,'Y');
             }    
             for(x = 0; x < 25; x++)
             {
-                WriteMessage(2,cardmessage2B[x],14,x+5,1,0x0000,'Y');
+                WriteMessage(2,cardmessage2B[x],14,x+1,1,0x0000,'Y');
             }
             for(x = 0; x < 25; x++)
             {
-                WriteMessage(2,cardmessage3B[x],18,x+5,1,0x0000,'Y');
+                WriteMessage(2,cardmessage3B[x],18,x+1,1,0x0000,'Y');
             }
             if(Display2_GetRxBufferSize() == 8)
             {
@@ -6033,6 +6130,45 @@ void PollingDisplay2(void){
                 }
                 Display2_ClearRxBuffer();         
             }                        
+        break;
+            
+        case 44:
+            if(Display2_GetRxBufferSize() == 8)
+            {
+                if((Display2_rxBuffer[0] == 0xAA) && (Display2_rxBuffer[6] == 0xC3) && (Display2_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display2_rxBuffer[3])
+                    {                                                                                                 
+                        case 0x0A:  //Mas voucher
+                            bufferDisplay2.lastSale = false;
+                            side.b.RFstateReport    = 4;
+                            side.b.ActivoRedencion  = 1;
+                            flowDisplay2 = 35;
+                        break;
+                        
+                        case 0x0B:  //Finalizar                                                       
+                            side.b.RFstateReport = 6;                             
+                            flowDisplay2 = 35;                                                                                    
+                            SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
+                        break;
+                            
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            bufferDisplay2.flagPrint =  0;
+                            side.b.ActivoRedencion = 0;
+                            flowPosB     = 0;
+                            flowDisplay2 = 0;                            
+                            PresetFlag2  = 0;
+                            iButtonFlag2 = 0;
+                            for(x = 0; x < keysTerpel; x++)
+                            {
+                                bufferDisplay2.saleValue[x] = 0x00;
+                            }
+                        break;
+                    }                    
+                }
+                Display2_ClearRxBuffer();
+            } 
         break;
     }    
 }
@@ -6219,12 +6355,14 @@ void PollingDisplay3(void){
                     {                                                                                                 
                         case 0x0A: //Si                                                       
                             side.c.ActivoFideliza = 0;
+                            side.c.ActivoRedencion = 0;
                             flowDisplay3 = 33;
                             SetPicture(1, DISPLAY_IDEN_FIDELIZACION);                              
                         break;
                         case 0x0B:  //No 
                             if(AuthType3 == 1){
                                 flowDisplay3 =10;
+                                side.c.ActivoRedencion = 0;
                                 SetPicture(1, DISPLAY_ID_TERPEL);
                             }else{
                                 flowDisplay3 =3;
@@ -8133,8 +8271,12 @@ void PollingDisplay3(void){
                                 bufferDisplay3.idTerpelFideliza[x] = bufferDisplay3.valueKeys[x];
                             }                            
                             flowDisplay3 = 35;  
-                            side.c.RFstateReport = 2;                        
-                            side.c.ActivoFideliza = 2;
+                            if(side.c.ActivoRedencion == 1){
+                                side.c.RFstateReport = 4;                                
+                            }else{
+                                side.c.RFstateReport = 2;                        
+                                side.c.ActivoFideliza = 2;
+                            }
                             SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
                         break;
                             
@@ -8179,7 +8321,7 @@ void PollingDisplay3(void){
                             vTaskDelay( 200 / portTICK_PERIOD_MS );
                             writevalue = atoi(bufferDisplay3.MoneyPay);
                             res =(atoi(bufferDisplay3.saleValue)-atoi(bufferDisplay3.MoneyPayed));
-                            if( abs(res) > writevalue )
+                            if( abs(res) >= writevalue )
                             {
                                 for(x = 0; x < keysTerpel + 1; x++)
                                 {
@@ -8242,39 +8384,80 @@ void PollingDisplay3(void){
                     switch(Display1_rxBuffer[3])
                     {  
                         case 0x1A:  //Cedula
-                            flowDisplay3 = 32;
-                            numberKeys3 = 0;
-                            keysTerpel = 16;  
-                            bufferDisplay3.idType = 3;
-                            bufferDisplay3.flagKeyboard = 1;
-                            SetPicture(1, DISPLAY_PASAPORTE);
+                            if(side.c.ActivoRedencion == 1 ){
+                                bufferDisplay3.documentID = 3 ;
+                                bufferDisplay3.idType = 5;
+                                flowDisplay3 = 35;
+                                side.c.RFstateReport = 4; 
+                                SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay3 = 32;
+                                numberKeys3 = 0;
+                                keysTerpel = 16;
+                                bufferDisplay3.idType = 3;
+                                SetPicture(1, DISPLAY_PASAPORTE);                             
+                            }
+                            bufferDisplay3.flagKeyboard = 1;  
                         break;
-                        
-                        case 0x1B:  //extranjería                                                        
-                            flowDisplay3 = 32;
-                            numberKeys3 = 0;
-                            keysTerpel = 16;   
-                            bufferDisplay3.idType = 4;
-                            bufferDisplay3.flagKeyboard = 1;
-                            SetPicture(1, DISPLAY_PASAPORTE);
+                        case 0x1B:  //extranjería    
+                            if(side.c.ActivoRedencion == 1 ){
+                                bufferDisplay3.documentID = 4 ;
+                                bufferDisplay3.idType = 5;
+                                flowDisplay3 = 35;
+                                side.c.RFstateReport = 4; 
+                                SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay3 = 32;
+                                numberKeys3 = 0;
+                                keysTerpel = 16;
+                                bufferDisplay3.idType = 4;
+                                SetPicture(1, DISPLAY_PASAPORTE);                             
+                            }
+                            bufferDisplay3.flagKeyboard = 1;                            
                         break;
-                        case 0x1c: //PASAPORTE
-                            flowDisplay3 = 32;
-                            numberKeys3 = 0;
-                            keysTerpel = 12;   
-                            bufferDisplay3.idType = 5;
-                            bufferDisplay3.flagKeyboard = 1;
-                            SetPicture(1, DISPLAY_PASAPORTE);                            
+                        case 0x1c: //PASAPORTE                              
+                            if(side.c.ActivoRedencion == 1 ){
+                                bufferDisplay3.documentID = 5;
+                                bufferDisplay3.idType = 5;
+                                flowDisplay3 = 35;
+                                side.c.RFstateReport = 4; 
+                                SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay3 = 32;
+                                numberKeys3 = 0;
+                                keysTerpel = 16;
+                                bufferDisplay3.idType = 5;
+                                SetPicture(1, DISPLAY_PASAPORTE);                             
+                            }
+                            bufferDisplay3.flagKeyboard = 1;                                                    
                         break;
-                        case 0x1d: //Lifemiles
-                            flowDisplay3 = 40; 
-                            bufferDisplay3.idType = 2;
-                            SetPicture(1, DISPLAY_ID_LIFE_MILES);                             
+                        case 0x1d: //Lifemiles                            
+                            if(side.c.ActivoRedencion == 1 ){
+                                bufferDisplay3.idType = 5;
+                                bufferDisplay3.documentID = 2;
+                                flowDisplay3 = 35;
+                                side.c.RFstateReport = 4; 
+                                SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay3 = 40; 
+                                bufferDisplay3.idType = 2;
+                                SetPicture(1, DISPLAY_ID_LIFE_MILES);                                                             
+                            }                                                                                     
                         break;
-                        case 0x1e: //Tarjeta pre inscrita
-                            flowDisplay3 = 40; 
-                            bufferDisplay3.idType = 1;
-                            SetPicture(1, DISPLAY_ID_LIFE_MILES);                             
+                        case 0x1e: //Tarjeta pre inscrita                            
+                            if(side.c.ActivoRedencion == 1 ){
+                                bufferDisplay3.documentID = 1;
+                                bufferDisplay3.idType = 5;
+                                flowDisplay3 = 35;
+                                side.c.RFstateReport = 4;
+                                SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay3 = 32;
+                                numberKeys3 = 0;
+                                keysTerpel = 16;
+                                bufferDisplay3.idType = 1;
+                                SetPicture(1, DISPLAY_PASAPORTE);                             
+                            }                            
                         break;
                         case 0x7E:  //Init Screen                                                        
                             SetPicture(1, DISPLAY_INICIO0);
@@ -8560,11 +8743,9 @@ void PollingDisplay3(void){
                             SetPicture(1, DISPLAY_POR_FAVOR_ESPERE);	
                         break;                        
                         case 0x1D:  //LIFEMILES                             
-                            flowDisplay3 = 35;
-                            side.c.ActivoRedencion = 1;
-                            side.c.RFstateReport = 4;
-                            bufferDisplay3.idType = 5;  
-                            SetPicture(1, DISPLAY_POR_FAVOR_ESPERE);
+                            flowDisplay3 = 33;
+                            side.c.ActivoRedencion = 1;                            
+                            SetPicture(1, DISPLAY_IDEN_FIDELIZACION); 
                         break;
                         case 0x1E: //Debito     1.VISA 2.MASTER 3.Debito 4.SODEXO 5. LM 6.VOUCHER
                             flowDisplay3 = 35;
@@ -8776,6 +8957,8 @@ void PollingDisplay3(void){
                 flowDisplay3 = 14;    
                 hiddenKeys = 20;
                 controlChar ='*';
+                numberKeys3=0;
+                bufferDisplay3.flagKeyboard = 8;
                 SetPicture(1,DISPLAY_PASAPORTE); 
                 Display1_ClearRxBuffer();                                                                        									                                       
 			}                     
@@ -8815,19 +8998,19 @@ void PollingDisplay3(void){
         case 43:                                                
             for(x = 0; x < 25; x++)
             {
-                WriteMessage(1,cardmessage[x],6,x+5,1,0x0000,'Y');
+                WriteMessage(1,cardmessage[x],6,x+1,1,0x0000,'Y');
             }            
             for(x = 0; x < 25; x++)
             {
-                WriteMessage(1,cardmessage1[x],10,x+5,1,0x0000,'Y');
+                WriteMessage(1,cardmessage1[x],10,x+1,1,0x0000,'Y');
             }    
             for(x = 0; x < 25; x++)
             {
-                WriteMessage(1,cardmessage2[x],14,x+5,1,0x0000,'Y');
+                WriteMessage(1,cardmessage2[x],14,x+1,1,0x0000,'Y');
             }
             for(x = 0; x < 25; x++)
             {
-                WriteMessage(1,cardmessage3[x],18,x+5,1,0x0000,'Y');
+                WriteMessage(1,cardmessage3[x],18,x+1,1,0x0000,'Y');
             }
             if(Display1_GetRxBufferSize() == 8)
             {
@@ -8880,6 +9063,46 @@ void PollingDisplay3(void){
                 Display1_ClearRxBuffer();
             }                                 
         break;
+          
+         case 44:
+            if(Display1_GetRxBufferSize() == 8)
+            {
+                if((Display1_rxBuffer[0] == 0xAA) && (Display1_rxBuffer[6] == 0xC3) && (Display1_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display1_rxBuffer[3])
+                    {                                                                                                 
+                        case 0x0A:  //Mas voucher
+                            bufferDisplay3.lastSale = false;
+                            side.c.RFstateReport    = 4;
+                            side.c.ActivoRedencion  = 1;
+                            flowDisplay3 = 35;
+                        break;
+                        
+                        case 0x0B:  //Finalizar                                                       
+                            side.c.RFstateReport = 6;                             
+                            flowDisplay3 = 35;                                                                                    
+                            SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
+                        break;
+                            
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(1, DISPLAY_INICIO0);
+                            bufferDisplay3.flagPrint =  0;
+                            side.c.ActivoRedencion = 0;
+                            flowPosC     = 0;
+                            flowDisplay3 = 0;                            
+                            PresetFlag3  = 0;
+                            iButtonFlag3 = 0;
+                            for(x = 0; x < keysTerpel; x++)
+                            {
+                                bufferDisplay3.saleValue[x] = 0x00;
+                            }
+                        break;
+                    }                    
+                }
+                Display1_ClearRxBuffer();
+            } 
+        break;
+        
     }    
 }
 
@@ -9068,15 +9291,18 @@ void PollingDisplay4(void){
                     {                                                                                                 
                         case 0x0A: //Si                                                       
                             side.d.ActivoFideliza = 0;
+                            side.d.ActivoRedencion = 0;
                             flowDisplay4 = 33;
                             SetPicture(2, DISPLAY_IDEN_FIDELIZACION);                              
                         break;
                         case 0x0B:  //No 
                             if(AuthType4 == 1){
                                 flowDisplay4 =10;
+                                side.d.ActivoRedencion = 0;
                                 SetPicture(2, DISPLAY_ID_TERPEL);
                             }else{
                                 flowDisplay4 =3;
+                                side.d.ActivoRedencion = 0;
                                 SetPicture(2, DISPLAY_FORMA_PROGRAMACION); 
                             }
                             side.d.ActivoFideliza = 0;                                                         
@@ -10464,8 +10690,8 @@ void PollingDisplay4(void){
                             }
                             side.d.RFstateReport = 5;
                             vTaskDelay( 500 / portTICK_PERIOD_MS );  
-                            SetPicture(1, DISPLAY_POR_FAVOR_ESPERE);
-                            flowDisplay4 = 43;
+                            SetPicture(2, DISPLAY_POR_FAVOR_ESPERE);
+                            flowDisplay4 = 35;
                         break;
                     }                    
                     Display2_ClearRxBuffer();
@@ -10954,8 +11180,12 @@ void PollingDisplay4(void){
                                 bufferDisplay4.idTerpelFideliza[x] = bufferDisplay4.valueKeys[x];
                             }                            
                             flowDisplay4 = 35;  
-                            side.d.RFstateReport = 2;                        
-                            side.d.ActivoFideliza = 2;
+                            if(side.d.ActivoRedencion == 1){
+                                side.d.RFstateReport = 4;                                
+                            }else{
+                                side.d.RFstateReport = 2;                        
+                                side.d.ActivoFideliza = 2;
+                            }
                             SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
                         break;                            
                         case 2://LFM Forma de pago                            
@@ -10997,7 +11227,7 @@ void PollingDisplay4(void){
                             vTaskDelay( 200 / portTICK_PERIOD_MS );
                             writevalueB = atoi(bufferDisplay4.MoneyPay);
                             resB =(atoi(bufferDisplay4.saleValue)-atoi(bufferDisplay4.MoneyPayed));
-                            if( abs(resB) > writevalueB )
+                            if( abs(resB) >= writevalueB )
                             {
                                 for(x = 0; x < keysTerpel + 1; x++)
                                 {
@@ -11060,40 +11290,81 @@ void PollingDisplay4(void){
                     switch(Display2_rxBuffer[3])
                     {  
                         case 0x1A:  //Cedula
-                            flowDisplay4 = 32;
-                            numberKeys4 = 0;
-                            keysTerpel = 16;  
-                            bufferDisplay4.idType = 3;
-                            bufferDisplay4.flagKeyboard = 1;
-                            SetPicture(2, DISPLAY_PASAPORTE);
+                            if(side.d.ActivoRedencion == 1 ){
+                                bufferDisplay4.documentID = 3 ;
+                                bufferDisplay4.idType = 5;
+                                flowDisplay4 = 35;
+                                side.d.RFstateReport = 4; 
+                                SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay4 = 32;
+                                numberKeys4 = 0;
+                                keysTerpel = 16;
+                                bufferDisplay4.idType = 3;
+                                SetPicture(2, DISPLAY_PASAPORTE);                             
+                            }
+                            bufferDisplay4.flagKeyboard = 1;    
                         break;
                         
                         case 0x1B:  //extranjería                                                        
-                            flowDisplay4 = 32;
-                            numberKeys4 = 0;
-                            keysTerpel = 16;   
-                            bufferDisplay4.idType = 4;
-                            bufferDisplay4.flagKeyboard = 1;
-                            SetPicture(2, DISPLAY_PASAPORTE);
+                             if(side.d.ActivoRedencion == 1 ){
+                                bufferDisplay4.documentID = 4 ;
+                                bufferDisplay4.idType = 5;
+                                flowDisplay4 = 35;
+                                side.d.RFstateReport = 4; 
+                                SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay4 = 32;
+                                numberKeys4 = 0;
+                                keysTerpel = 16;
+                                bufferDisplay4.idType = 4;
+                                SetPicture(2, DISPLAY_PASAPORTE);                             
+                            }
+                            bufferDisplay4.flagKeyboard = 1;  
                         break;
                         case 0x1c: //PASAPORTE
-                            flowDisplay4 = 32;
-                            numberKeys4 = 0;
-                            keysTerpel = 12;   
-                            bufferDisplay4.idType = 5;
-                            bufferDisplay4.flagKeyboard = 1;
-                            SetPicture(2, DISPLAY_PASAPORTE);                            
+                            if(side.d.ActivoRedencion == 1 ){
+                                bufferDisplay4.documentID = 5;
+                                bufferDisplay4.idType = 5;
+                                flowDisplay4 = 35;
+                                side.d.RFstateReport = 4; 
+                                SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay4 = 32;
+                                numberKeys4 = 0;
+                                keysTerpel = 16;
+                                bufferDisplay4.idType = 5;
+                                SetPicture(2, DISPLAY_PASAPORTE);                             
+                            }
+                            bufferDisplay4.flagKeyboard = 1;                            
                         break;
-                        case 0x1d: //Lifemiles
-                            flowDisplay4 = 40; 
-                            bufferDisplay4.idType = 2;
-                            SetPicture(2, DISPLAY_ID_LIFE_MILES);                             
+                        case 0x1d: //Lifemiles                            
+                            if(side.d.ActivoRedencion == 1 ){
+                                bufferDisplay4.idType = 5;
+                                bufferDisplay4.documentID = 2;
+                                flowDisplay4 = 35;
+                                side.d.RFstateReport = 4; 
+                                SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay4 = 40; 
+                                bufferDisplay4.idType = 2;
+                                SetPicture(2, DISPLAY_ID_LIFE_MILES);                                                             
+                            }                                                                                     
                         break;
-                            
-                        case 0x1e: //Tarjeta pre inscrita
-                            flowDisplay4 = 40; 
-                            bufferDisplay4.idType = 1;
-                            SetPicture(2, DISPLAY_ID_LIFE_MILES);                             
+                        case 0x1e: //Tarjeta pre inscrita                            
+                            if(side.d.ActivoRedencion == 1 ){
+                                bufferDisplay4.documentID = 1;
+                                bufferDisplay4.idType = 5;
+                                flowDisplay4 = 35;
+                                side.d.RFstateReport = 4;
+                                SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
+                            }else{
+                                flowDisplay4 = 32;
+                                numberKeys4 = 0;
+                                keysTerpel = 16;
+                                bufferDisplay4.idType = 1;
+                                SetPicture(2, DISPLAY_PASAPORTE);                             
+                            }                            
                         break;
                         case 0x7E:  //Init Screen                                                        
                             SetPicture(2, DISPLAY_INICIO0);
@@ -11373,10 +11644,8 @@ void PollingDisplay4(void){
                             SetPicture(2, DISPLAY_POR_FAVOR_ESPERE);	
                         break;                        
                         case 0x1D:  //LIFEMILES                             
-                            flowDisplay4 = 35;
-                            side.d.ActivoRedencion = 1;
-                            side.d.RFstateReport = 4;
-                            bufferDisplay4.idType = 5;  
+                            flowDisplay4 = 33;
+                            side.d.ActivoRedencion = 1;  
                             SetPicture(2, DISPLAY_POR_FAVOR_ESPERE);
                         break;
                         case 0x1E: //Debito     1.VISA 2.MASTER 3.Debito 4.SODEXO 5. LM 6.VOUCHER
@@ -11589,6 +11858,8 @@ void PollingDisplay4(void){
                 flowDisplay4 = 14;    
                 hiddenKeys = 20;
                 controlChar ='*';
+                numberKeys4 = 0;
+                bufferDisplay4.flagKeyboard = 8;
                 SetPicture(2,DISPLAY_PASAPORTE); 
                 Display2_ClearRxBuffer();                                                                        									                                       
 			}                     
@@ -11627,19 +11898,19 @@ void PollingDisplay4(void){
         case 43:                                                
             for(x = 0; x < 25; x++)
             {
-                WriteMessage(2,cardmessageB[x],6,x+5,1,0x0000,'Y');
+                WriteMessage(2,cardmessageB[x],6,x+1,1,0x0000,'Y');
             }            
             for(x = 0; x < 25; x++)
             {
-                WriteMessage(2,cardmessage1B[x],10,x+5,1,0x0000,'Y');
+                WriteMessage(2,cardmessage1B[x],10,x+1,1,0x0000,'Y');
             }    
             for(x = 0; x < 25; x++)
             {
-                WriteMessage(2,cardmessage2B[x],14,x+5,1,0x0000,'Y');
+                WriteMessage(2,cardmessage2B[x],14,x+1,1,0x0000,'Y');
             }
             for(x = 0; x < 25; x++)
             {
-                WriteMessage(2,cardmessage3B[x],18,x+5,1,0x0000,'Y');
+                WriteMessage(2,cardmessage3B[x],18,x+1,1,0x0000,'Y');
             }
             if(Display2_GetRxBufferSize() == 8)
             {
@@ -11691,6 +11962,45 @@ void PollingDisplay4(void){
                 }
                 Display2_ClearRxBuffer();         
             }                        
+        break;
+        
+         case 44:
+            if(Display2_GetRxBufferSize() == 8)
+            {
+                if((Display2_rxBuffer[0] == 0xAA) && (Display2_rxBuffer[6] == 0xC3) && (Display2_rxBuffer[7] == 0x3C))
+                {
+                    switch(Display2_rxBuffer[3])
+                    {                                                                                                 
+                        case 0x0A:  //Mas voucher
+                            bufferDisplay4.lastSale = false;
+                            side.d.RFstateReport    = 4;
+                            side.d.ActivoRedencion  = 1;
+                            flowDisplay4 = 35;
+                        break;
+                        
+                        case 0x0B:  //Finalizar                                                       
+                            side.d.RFstateReport = 6;                             
+                            flowDisplay4 = 35;                                                                                    
+                            SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
+                        break;
+                            
+                        case 0x7E:  //Init Screen                                                        
+                            SetPicture(2, DISPLAY_INICIO0);
+                            bufferDisplay4.flagPrint =  0;
+                            side.d.ActivoRedencion = 0;
+                            flowPosD     = 0;
+                            flowDisplay4 = 0;                            
+                            PresetFlag4  = 0;
+                            iButtonFlag4 = 0;
+                            for(x = 0; x < keysTerpel; x++)
+                            {
+                                bufferDisplay4.saleValue[x] = 0x00;
+                            }
+                        break;
+                    }                    
+                }
+                Display2_ClearRxBuffer();
+            } 
         break;
     }    
 }

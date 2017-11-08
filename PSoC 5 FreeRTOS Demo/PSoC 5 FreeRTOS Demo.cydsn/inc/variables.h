@@ -263,6 +263,7 @@ struct buffer{
     char8 MoneyPay[8];
     uint8 PaymentNumber[10];
     char8 MoneyPayed[10];
+    char8 documentID;
 
 };
 
