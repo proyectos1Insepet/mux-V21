@@ -220,7 +220,7 @@ void InitDisplay1(){
 *********************************************************************************************************
 */
 void InitDisplay2(){ 
-    uint8 MuxVersion [10] = "MUX V.26.0";
+    uint8 MuxVersion [10] = "MUX V.26.1";
     if(NumPositions == 2){        
         SetPicture(2,DISPLAY_INICIO0);  
         flowDisplay2 = 0;
