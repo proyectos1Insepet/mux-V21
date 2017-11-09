@@ -2431,7 +2431,7 @@ void PollingDisplay1(void){
                             controlChar ='*';
                             numberKeys1 = 0;
                             bufferDisplay1.flagKeyboard = 8;
-                            SetPicture(1,DISPLAY_PASAPORTE);
+                            SetPicture(1,DISPLAY_PASS_ALFNUM);
                         break;
                             
                         case 3://numero de venta FP                            
@@ -3106,7 +3106,7 @@ void PollingDisplay1(void){
                 controlChar ='*';
                 numberKeys1=0;
                 bufferDisplay1.flagKeyboard = 8;
-                SetPicture(1,DISPLAY_PASAPORTE); 
+                SetPicture(1,DISPLAY_PASS_ALFNUM); 
                 Display1_ClearRxBuffer();                                                                        									                                       
 			}                     
             //Touch for return to init display
@@ -5383,7 +5383,7 @@ void PollingDisplay2(void){
                             controlChar ='*';
                             numberKeys2 = 0;
                             bufferDisplay2.flagKeyboard = 8;
-                            SetPicture(2,DISPLAY_PASAPORTE);
+                            SetPicture(2,DISPLAY_PASS_ALFNUM);
                         break;                            
                         case 3://numero de venta FP                            
                             for(x = 0; x < keysTerpel; x++)
@@ -6046,7 +6046,7 @@ void PollingDisplay2(void){
                 controlChar ='*';
                 numberKeys2=0;
                 bufferDisplay2.flagKeyboard = 8;
-                SetPicture(2,DISPLAY_PASAPORTE); 
+                SetPicture(2,DISPLAY_PASS_ALFNUM); 
                 Display2_ClearRxBuffer();                                                                        									                                       
 			}                     
             //Touch for return to init display
@@ -8316,7 +8316,7 @@ void PollingDisplay3(void){
                             controlChar ='*';
                             numberKeys3 = 0;
                             bufferDisplay3.flagKeyboard = 8;
-                            SetPicture(1,DISPLAY_PASAPORTE);
+                            SetPicture(1,DISPLAY_PASS_ALFNUM);
                         break;
                             
                         case 3://numero de venta FP                            
@@ -8987,7 +8987,7 @@ void PollingDisplay3(void){
                 controlChar ='*';
                 numberKeys3=0;
                 bufferDisplay3.flagKeyboard = 8;
-                SetPicture(1,DISPLAY_PASAPORTE); 
+                SetPicture(1,DISPLAY_PASS_ALFNUM); 
                 Display1_ClearRxBuffer();                                                                        									                                       
 			}                     
             //Touch for return to init display
@@ -11234,7 +11234,7 @@ void PollingDisplay4(void){
                             controlChar ='*';
                             numberKeys4 = 0;
                             bufferDisplay4.flagKeyboard = 8;
-                            SetPicture(2,DISPLAY_PASAPORTE);
+                            SetPicture(2,DISPLAY_PASS_ALFNUM);
                         break;                            
                         case 3://numero de venta FP                            
                             for(x = 0; x < keysTerpel; x++)
@@ -11898,7 +11898,7 @@ void PollingDisplay4(void){
                 controlChar ='*';
                 numberKeys4 = 0;
                 bufferDisplay4.flagKeyboard = 8;
-                SetPicture(2,DISPLAY_PASAPORTE); 
+                SetPicture(2,DISPLAY_PASS_ALFNUM); 
                 Display2_ClearRxBuffer();                                                                        									                                       
 			}                     
             //Touch for return to init display

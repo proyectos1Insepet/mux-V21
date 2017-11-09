@@ -411,6 +411,7 @@ enum _AVAILABLE_DISPLAYS_
     
     DISPLAY_AMBAS_IMPRESORAS_FUNCIONANDO    = 0x6B,
     DISPLAY_IMPRESORA_NO_FUNCIONANDO        = 0x67,
+    DISPLAY_PASS_ALFNUM                     = 0x79,
     
     DISPLAY_IDENTIFICADOR_ESTACION          = 0x64,
     DISPLAY_PRECIO_POR_UNIDAD               = 0x65,
@@ -422,6 +423,7 @@ enum _AVAILABLE_DISPLAYS_
     
     DISPLAY_SIDE_DUMMY_DISPLAY              = 0xFA,
     DISPLAY_NULL                            = 0xFF,
+    
     
     DISPLAY_MESSAGE                         = 0x88
 
