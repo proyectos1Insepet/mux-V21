@@ -2522,7 +2522,7 @@ void PollingDisplay1(void){
                     {  
                         case 0x1A:  //Cedula                             
                             if(side.a.ActivoRedencion == 1 ){
-                                bufferDisplay1.documentID = 3 ;
+                                bufferDisplay1.documentID = 3;
                                 bufferDisplay1.idType = 5;
                                 flowDisplay1 = 35;
                                 side.a.RFstateReport = 4; 
@@ -2878,7 +2878,7 @@ void PollingDisplay1(void){
                         case 0x1D:  //LIFEMILES                             
                             flowDisplay1 = 33;
                             side.a.ActivoRedencion = 1;                                                          
-                            SetPicture(1, DISPLAY_IDEN_FIDELIZACION);  
+                            SetPicture(1, DISPLAY_PAGO_LM);  
                         break;
                         case 0x1E: //Debito     1.VISA 2.MASTER 3.Debito 4.SODEXO 5. LM 6.VOUCHER
                             flowDisplay1 = 35;
@@ -3039,7 +3039,15 @@ void PollingDisplay1(void){
                             if(bufferDisplay1.idType ==5){
                                 flowDisplay1 = 40; 
                                 bufferDisplay1.idType = 'F'; //forma pago
-                                SetPicture(1, DISPLAY_ID_LIFE_MILES);  
+                                if(bufferDisplay1.documentID == 2){
+                                    SetPicture(1, DISPLAY_ID_LIFE_MILES);  
+                                }else{
+                                    bufferDisplay1.flagKeyboard = 2;
+                                    flowDisplay1 = 32;
+                                    numberKeys1 = 0;
+                                    keysTerpel = 16;
+                                    SetPicture(1, DISPLAY_PASAPORTE);
+                                }
                             }else{                            
                                 flowDisplay1 = 32;
                                 numberKeys1 = 0;
@@ -3212,9 +3220,11 @@ void PollingDisplay1(void){
                     {                                                                                                 
                         case 0x0A:  //Mas voucher
                             bufferDisplay1.lastSale = false;
-                            side.a.RFstateReport    = 4;
-                            side.a.ActivoRedencion  = 1;
                             flowDisplay1 = 35;
+                            side.a.ActivoRedencion = 1;
+                            side.a.RFstateReport = 4;
+                            bufferDisplay1.idType = 6;  
+                            SetPicture(1, DISPLAY_POR_FAVOR_ESPERE);
                         break;
                         
                         case 0x0B:  //Finalizar                                                       
@@ -5814,7 +5824,7 @@ void PollingDisplay2(void){
                         case 0x1D:  //LIFEMILES                             
                             flowDisplay2 = 33;
                             side.b.ActivoRedencion = 1;                              
-                            SetPicture(2, DISPLAY_IDEN_FIDELIZACION);
+                            SetPicture(2, DISPLAY_PAGO_LM);  
                         break;
                         case 0x1E: //Debito     1.VISA 2.MASTER 3.Debito 4.SODEXO 5. LM 6.VOUCHER
                             flowDisplay2 = 35;
@@ -5969,7 +5979,15 @@ void PollingDisplay2(void){
                             if(bufferDisplay2.idType ==5){
                                 flowDisplay2 = 40; 
                                 bufferDisplay2.idType = 'F'; //forma pago
-                                SetPicture(2, DISPLAY_ID_LIFE_MILES);  
+                                if(bufferDisplay2.documentID == 2){
+                                    SetPicture(2, DISPLAY_ID_LIFE_MILES);  
+                                }else{
+                                    bufferDisplay2.flagKeyboard = 2;
+                                    flowDisplay2 = 32;
+                                    numberKeys2 = 0;
+                                    keysTerpel = 16;
+                                    SetPicture(2, DISPLAY_PASAPORTE);
+                                } 
                             }else{                            
                                 flowDisplay2 = 32;
                                 numberKeys2 = 0;
@@ -6141,9 +6159,11 @@ void PollingDisplay2(void){
                     {                                                                                                 
                         case 0x0A:  //Mas voucher
                             bufferDisplay2.lastSale = false;
-                            side.b.RFstateReport    = 4;
-                            side.b.ActivoRedencion  = 1;
                             flowDisplay2 = 35;
+                            side.b.RFstateReport    = 4;
+                            side.b.ActivoRedencion  = 1;  
+                            bufferDisplay2.idType = 6;  
+                            SetPicture(2, DISPLAY_POR_FAVOR_ESPERE);
                         break;
                         
                         case 0x0B:  //Finalizar                                                       
@@ -8745,7 +8765,7 @@ void PollingDisplay3(void){
                         case 0x1D:  //LIFEMILES                             
                             flowDisplay3 = 33;
                             side.c.ActivoRedencion = 1;                            
-                            SetPicture(1, DISPLAY_IDEN_FIDELIZACION); 
+                            SetPicture(1, DISPLAY_PAGO_LM);  
                         break;
                         case 0x1E: //Debito     1.VISA 2.MASTER 3.Debito 4.SODEXO 5. LM 6.VOUCHER
                             flowDisplay3 = 35;
@@ -8900,7 +8920,15 @@ void PollingDisplay3(void){
                             if(bufferDisplay3.idType ==5){
                                 flowDisplay3 = 40; 
                                 bufferDisplay3.idType = 'F'; //forma pago
-                                SetPicture(1, DISPLAY_ID_LIFE_MILES);  
+                                if(bufferDisplay3.documentID == 2){
+                                    SetPicture(1, DISPLAY_ID_LIFE_MILES);  
+                                }else{
+                                    bufferDisplay3.flagKeyboard = 2;
+                                    flowDisplay3 = 32;
+                                    numberKeys3 = 0;
+                                    keysTerpel = 16;
+                                    SetPicture(1, DISPLAY_PASAPORTE);
+                                } 
                             }else{                            
                                 flowDisplay3 = 32;
                                 numberKeys3  = 0;
@@ -9073,9 +9101,11 @@ void PollingDisplay3(void){
                     {                                                                                                 
                         case 0x0A:  //Mas voucher
                             bufferDisplay3.lastSale = false;
-                            side.c.RFstateReport    = 4;
-                            side.c.ActivoRedencion  = 1;
                             flowDisplay3 = 35;
+                            side.c.ActivoRedencion = 1;
+                            side.c.RFstateReport = 4;
+                            bufferDisplay3.idType = 6;  
+                            SetPicture(1, DISPLAY_POR_FAVOR_ESPERE);
                         break;
                         
                         case 0x0B:  //Finalizar                                                       
@@ -11646,7 +11676,7 @@ void PollingDisplay4(void){
                         case 0x1D:  //LIFEMILES                             
                             flowDisplay4 = 33;
                             side.d.ActivoRedencion = 1;  
-                            SetPicture(2, DISPLAY_POR_FAVOR_ESPERE);
+                            SetPicture(2, DISPLAY_PAGO_LM);
                         break;
                         case 0x1E: //Debito     1.VISA 2.MASTER 3.Debito 4.SODEXO 5. LM 6.VOUCHER
                             flowDisplay4 = 35;
@@ -11801,7 +11831,15 @@ void PollingDisplay4(void){
                             if(bufferDisplay4.idType ==5){
                                 flowDisplay4 = 40; 
                                 bufferDisplay4.idType = 'F'; //forma pago
-                                SetPicture(2, DISPLAY_ID_LIFE_MILES);  
+                                if(bufferDisplay4.documentID == 2){
+                                    SetPicture(2, DISPLAY_ID_LIFE_MILES);  
+                                }else{
+                                    bufferDisplay4.flagKeyboard = 2;
+                                    flowDisplay4 = 32;
+                                    numberKeys4 = 0;
+                                    keysTerpel = 16;
+                                    SetPicture(2, DISPLAY_PASAPORTE);
+                                }  
                             }else{                            
                                 flowDisplay4 = 32;
                                 numberKeys4 = 0;
@@ -11973,9 +12011,11 @@ void PollingDisplay4(void){
                     {                                                                                                 
                         case 0x0A:  //Mas voucher
                             bufferDisplay4.lastSale = false;
-                            side.d.RFstateReport    = 4;
-                            side.d.ActivoRedencion  = 1;
                             flowDisplay4 = 35;
+                            side.d.ActivoRedencion = 1;
+                            side.d.RFstateReport = 4;
+                            bufferDisplay4.idType = 6;  
+                            SetPicture(2, DISPLAY_POR_FAVOR_ESPERE);
                         break;
                         
                         case 0x0B:  //Finalizar                                                       

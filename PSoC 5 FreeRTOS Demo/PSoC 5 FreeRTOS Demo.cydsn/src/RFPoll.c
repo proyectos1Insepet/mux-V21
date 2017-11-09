@@ -1118,7 +1118,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         for (x = 0; x < 19; x++)
                         { 
                             RF_Connection_PutChar(buffer_A[x]);
-                        }                    
+                        }
+                        side.a.ActivoRedencion = 3;
                         bufferAready = 0;                                               
                     }
                     // Total
@@ -1261,8 +1262,9 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         for (x = 0; x < 19; x++)
                         { 
                             RF_Connection_PutChar(buffer_B[x]);
-                        }                    
-                        bufferAreadyB = 0;                                               
+                        }                 
+                        side.b.ActivoRedencion = 3;
+                        bufferAreadyB = 0;                        
                     }
                     // Totales
                     if(bufferAreadyB == 0 && side.b.FlagTotal == 1)
@@ -1404,7 +1406,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         for (x = 0; x < 19; x++)
                         { 
                             RF_Connection_PutChar(buffer_C[x]);
-                        }                    
+                        } 
+                        side.c.ActivoRedencion = 3;
                         bufferAreadyC = 0;                                               
                     }
                     // Total
@@ -1552,7 +1555,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         for (x = 0; x < 19; x++)
                         { 
                             RF_Connection_PutChar(buffer_D[x]);
-                        }                    
+                        }                  
+                        side.d.ActivoRedencion = 3;
                         bufferAreadyD = 0;                                               
                     }
                     // Total
@@ -4579,8 +4583,7 @@ void pollingRFA_Tx(){
             }                
         }
         buffer_A[18]  = verificar_check(buffer_A,19);
-        side.a.RFstateReport   = 0;
-        side.a.ActivoRedencion = 0;
+        side.a.RFstateReport   = 0;        
         bufferAready = 10;        
     }
     

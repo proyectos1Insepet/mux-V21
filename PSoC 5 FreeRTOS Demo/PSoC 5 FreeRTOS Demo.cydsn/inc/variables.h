@@ -394,6 +394,7 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_FORMA_DE_PAGO_TERPEL            = 0x97,
     DISPLAY_AUTORIZACION_RECHAZADA          = 0x98,
     DISPLAY_VOUCHER                         = 0x99,
+    DISPLAY_PAGO_LM                         = 0x9A,
     
     DISPLAY_CONFIGURAR_FECHA_HORA           = 0x3E,
     DISPLAY_HORA                            = 0x3F,
