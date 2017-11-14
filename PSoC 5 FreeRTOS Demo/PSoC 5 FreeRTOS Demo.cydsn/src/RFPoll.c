@@ -4547,9 +4547,15 @@ void pollingRFA_Tx(){
         {
             buffer_A[x+16] = bufferDisplay1.PaymentNumber[x];
         }
-        for(x = 1; x < 13; x++)
+        for(y = 1; y <= bufferDisplay1.passCard[0]; y++)
         {
-            buffer_A[x + 25] = bufferDisplay1.passCard[x];
+            buffer_A[y + 25] = bufferDisplay1.passCard[y];
+        }
+        if(y < 12){
+            for(x = y;  x<=12 ; x++)
+            {
+                buffer_A[25 + x] = 0x00;
+            }                
         }
         buffer_A[38] = bufferDisplay1.idFormaPago[0];
         for(x = 1; x <= bufferDisplay1.idFormaPago[0]; x++)
@@ -5160,9 +5166,15 @@ void pollingRFB_Tx(){
         {
             buffer_B[x+16] = bufferDisplay2.PaymentNumber[x];
         }
-        for(x = 1; x < 13; x++)
+        for(y = 1; y <= bufferDisplay2.passCard[0]; y++)
         {
-            buffer_B[x + 25] = bufferDisplay2.passCard[x];
+            buffer_B[y + 25] = bufferDisplay2.passCard[y];
+        }
+        if(y < 12){
+            for(x = y;  x<=12 ; x++)
+            {
+                buffer_B[25 + x] = 0x00;
+            }                
         }
         buffer_B[38] = bufferDisplay2.idFormaPago[0];
         for(x = 1; x <= bufferDisplay2.idFormaPago[0]; x++)
@@ -5755,9 +5767,15 @@ void pollingRFC_Tx(){
         {
             buffer_C[x+16] = bufferDisplay3.PaymentNumber[x];
         }
-        for(x = 1; x < 13; x++)
+        for(y = 1; y <= bufferDisplay3.passCard[0]; y++)
         {
-            buffer_C[x + 25] = bufferDisplay3.passCard[x];
+            buffer_C[y + 25] = bufferDisplay3.passCard[y];
+        }
+        if(y < 12){
+            for(x = y;  x<=12 ; x++)
+            {
+                buffer_C[25 + x] = 0x00;
+            }                
         }
         buffer_C[38] = bufferDisplay3.idFormaPago[0];
         for(x = 1; x <= bufferDisplay3.idFormaPago[0]; x++)
@@ -6362,9 +6380,15 @@ void pollingRFD_Tx(){
         {
             buffer_D[x+16] = bufferDisplay4.PaymentNumber[x];
         }
-        for(x = 1; x < 13; x++)
+        for(y = 1; y <= bufferDisplay4.passCard[0]; y++)
         {
-            buffer_D[x + 25] = bufferDisplay4.passCard[x];
+            buffer_D[y + 25] = bufferDisplay4.passCard[y];
+        }
+        if(y < 12){
+            for(x = y;  x<=12 ; x++)
+            {
+                buffer_D[25 + x] = 0x00;
+            }                
         }
         buffer_D[38] = bufferDisplay4.idFormaPago[0];
         for(x = 1; x <= bufferDisplay4.idFormaPago[0]; x++)

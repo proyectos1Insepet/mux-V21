@@ -847,42 +847,86 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             
             MonthVisit = 0x00;
             
-            for(x = 0; x < 13; x++)
-            {																		
-				write_psoc1(val,PRN_MONEYDAY[x]);
-			} 
-			for(x = 0; x < 7; x++)
+            
+            // 2 - Dinero, 1 - Volumen
+            if(ControlType == 0x02) 
             {
-				write_psoc1(val,VolumeDay[x]);	
-			}
-            write_psoc1(val,10);
-            for(x = 0; x < 7; x++)
-            {
-				VolumeDay[x] = 0x00;	
-			}
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_MONEYDAY[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val,VolumeDay[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeDay[x] = 0x00;	
+    			}
 
-            for(x = 0; x < 13; x++)
-            {																		
-				write_psoc1(val,PRN_MONEYWEEK[x]);
-			} 
-			for(x = 0; x < 7; x++)
-            {
-				write_psoc1(val, VolumeWeek[x]);	
-			}
-            write_psoc1(val,10);
-            for(x = 0; x < 7; x++)
-            {
-				VolumeWeek[x] = 0x00;	
-			}
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_MONEYWEEK[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val, VolumeWeek[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeWeek[x] = 0x00;	
+    			}
 
-            for(x = 0; x < 13; x++)
-            {																		
-				write_psoc1(val,PRN_MONEYMONTH[x]);
-			} 
-			for(x = 0; x < 7; x++)
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_MONEYMONTH[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val,VolumeMonth[x]);	
+    			}
+            }
+            else
             {
-				write_psoc1(val,VolumeMonth[x]);	
-			}
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_VOLUMEDAY[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val,VolumeDay[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeDay[x] = 0x00;	
+    			}
+
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_VOLUMEWEEK[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val, VolumeWeek[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeWeek[x] = 0x00;	
+    			}
+
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_VOLUMEMONTH[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val,VolumeMonth[x]);	
+    			}
+            }
             write_psoc1(val,10);
             for(x = 0; x < 7; x++)
             {
@@ -1277,47 +1321,93 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             write_psoc1(val,10);
             MonthVisitB = 0x00;
 
-            for(x = 0; x < 13; x++)
-            {																		
-				write_psoc1(val,PRN_MONEYDAY[x]);
-			} 
-			for(x = 0; x < 7; x++)
+            if(ControlType == 0x02) 
             {
-				write_psoc1(val,VolumeDayB[x]);	
-			}
-            write_psoc1(val,10);
-            
-            for(x = 0; x < 7; x++)
-            {
-				VolumeDayB[x] = 0x00;	
-			}
-            for(x = 0; x < 13; x++)
-            {																		
-				write_psoc1(val,PRN_MONEYWEEK[x]);
-			} 
-			for(x = 0; x < 7; x++)
-            {
-				write_psoc1(val, VolumeWeekB[x]);	
-			}
-            write_psoc1(val,10);
-            for(x = 0; x < 7; x++)
-            {
-				VolumeWeekB[x] = 0x00;	
-			}
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_MONEYDAY[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val,VolumeDayB[x]);	
+    			}
+                write_psoc1(val,10);
+                
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeDayB[x] = 0x00;	
+    			}
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_MONEYWEEK[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val, VolumeWeekB[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeWeekB[x] = 0x00;	
+    			}
 
-            for(x = 0; x < 13; x++)
-            {																		
-				write_psoc1(val,PRN_MONEYMONTH[x]);
-			} 
-			for(x = 0; x < 7; x++)
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_MONEYMONTH[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val,VolumeMonthB[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeMonthB[x] = 0x00;	
+    			}
+            }
+            else
             {
-				write_psoc1(val,VolumeMonthB[x]);	
-			}
-            write_psoc1(val,10);
-            for(x = 0; x < 7; x++)
-            {
-				VolumeMonthB[x] = 0x00;	
-			}
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_VOLUMEDAY[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val,VolumeDayB[x]);	
+    			}
+                write_psoc1(val,10);
+                
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeDayB[x] = 0x00;	
+    			}
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_VOLUMEWEEK[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val, VolumeWeekB[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeWeekB[x] = 0x00;	
+    			}
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_VOLUMEMONTH[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val,VolumeMonthB[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeMonthB[x] = 0x00;	
+    			}
+            }
 
             for(x = 0; x < 13; x++)
             {																		
@@ -1721,47 +1811,94 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             write_psoc1(val,10);
             MonthVisit = 0x00;
 
-            for(x = 0; x < 13; x++)
-            {																		
-				write_psoc1(val,PRN_MONEYDAY[x]);
-			} 
-			for(x = 0; x < 7; x++)
+            if(ControlType == 0x02)
             {
-				write_psoc1(val,VolumeDay[x]);	
-			}
-            write_psoc1(val,10);
-            for(x = 0; x < 7; x++)
-            {
-				VolumeDay[x] = 0x00;	
-			}
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_MONEYDAY[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val,VolumeDay[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeDay[x] = 0x00;	
+    			}
 
-            for(x = 0; x < 13; x++)
-            {																		
-				write_psoc1(val,PRN_MONEYWEEK[x]);
-			} 
-			for(x = 0; x < 7; x++)
-            {
-				write_psoc1(val, VolumeWeek[x]);	
-			}
-            write_psoc1(val,10);
-            for(x = 0; x < 7; x++)
-            {
-				VolumeWeek[x] = 0x00;	
-			}
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_MONEYWEEK[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val, VolumeWeek[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeWeek[x] = 0x00;	
+    			}
 
-            for(x = 0; x < 13; x++)
-            {																		
-				write_psoc1(val,PRN_MONEYMONTH[x]);
-			} 
-			for(x = 0; x < 7; x++)
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_MONEYMONTH[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val,VolumeMonth[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeMonth[x] = 0x00;	
+    			}
+            }
+            else
             {
-				write_psoc1(val,VolumeMonth[x]);	
-			}
-            write_psoc1(val,10);
-            for(x = 0; x < 7; x++)
-            {
-				VolumeMonth[x] = 0x00;	
-			}
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_VOLUMEDAY[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val,VolumeDay[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeDay[x] = 0x00;	
+    			}
+
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_VOLUMEWEEK[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val, VolumeWeek[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeWeek[x] = 0x00;	
+    			}
+
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_VOLUMEMONTH[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val,VolumeMonth[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeMonth[x] = 0x00;	
+    			}
+            }
 
             for(x = 0; x < 13; x++)
             {																		
@@ -2139,47 +2276,94 @@ void imprimir(uint8 val, uint8 pos){ //val, puerto de impresora
             write_psoc1(val,10);
             MonthVisitB = 0x00;
 
-            for(x = 0; x < 13; x++)
-            {																		
-				write_psoc1(val,PRN_MONEYDAY[x]);
-			} 
-			for(x = 0; x < 7; x++)
+            if(ControlType == 0x02)
             {
-				write_psoc1(val,VolumeDayB[x]);	
-			}
-            write_psoc1(val,10);
-            for(x = 0; x < 7; x++)
-            {
-				VolumeDayB[x] = 0x00;	
-			}
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_MONEYDAY[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val,VolumeDayB[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeDayB[x] = 0x00;	
+    			}
 
-            for(x = 0; x < 13; x++)
-            {																		
-				write_psoc1(val,PRN_MONEYWEEK[x]);
-			} 
-			for(x = 0; x < 7; x++)
-            {
-				write_psoc1(val, VolumeWeekB[x]);	
-			}
-            write_psoc1(val,10);
-            for(x = 0; x < 7; x++)
-            {
-				VolumeWeekB[x] = 0x00;	
-			}
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_MONEYWEEK[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val, VolumeWeekB[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeWeekB[x] = 0x00;	
+    			}
 
-            for(x = 0; x < 13; x++)
-            {																		
-				write_psoc1(val,PRN_MONEYMONTH[x]);
-			} 
-			for(x = 0; x < 7; x++)
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_MONEYMONTH[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val,VolumeMonthB[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeMonthB[x] = 0x00;	
+    			}
+            }
+            else
             {
-				write_psoc1(val,VolumeMonthB[x]);	
-			}
-            write_psoc1(val,10);
-            for(x = 0; x < 7; x++)
-            {
-				VolumeMonthB[x] = 0x00;	
-			}
+                   for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_VOLUMEDAY[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val,VolumeDayB[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeDayB[x] = 0x00;	
+    			}
+
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_VOLUMEWEEK[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val, VolumeWeekB[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeWeekB[x] = 0x00;	
+    			}
+
+                for(x = 0; x < 13; x++)
+                {																		
+    				write_psoc1(val,PRN_VOLUMEMONTH[x]);
+    			} 
+    			for(x = 0; x < 7; x++)
+                {
+    				write_psoc1(val,VolumeMonthB[x]);	
+    			}
+                write_psoc1(val,10);
+                for(x = 0; x < 7; x++)
+                {
+    				VolumeMonthB[x] = 0x00;	
+    			}
+            }
 
             for(x = 0; x < 13; x++)
             {																		
@@ -2495,7 +2679,7 @@ void printBalance(uint8 val,uint8 pos){
 void printPayment(uint8 val,uint8 pos){
     uint8 x;
     
-    if(pos == side.a.dir || pos == side.c.dir)
+    if(pos == side.a.RF || pos == side.c.RF)
     {
         if(PrinterType[1] == 1)
         {
@@ -2504,7 +2688,7 @@ void printPayment(uint8 val,uint8 pos){
             printLogoK(printPortA,EEPROM_1_ReadByte(215));
         }
     }
-    if(pos == side.b.dir || pos == side.d.dir)
+    if(pos == side.b.RF || pos == side.d.RF)
     {
         if(PrinterType[1] == 1)
         {
@@ -2589,31 +2773,63 @@ void printPayment(uint8 val,uint8 pos){
         write_psoc1(val,SEPARATOR[x]);
     }
     write_psoc1(val,10);
-    for(x = 0; x <= 24; x++)
+    if(pos == side.a.RF || pos == side.c.RF)
     {
-        write_psoc1(val,cardmessage[x]);
-        //write_psoc1(val,title1[x]);
+        for(x = 0; x <= 24; x++)
+        {
+            write_psoc1(val,cardmessage[x]);
+            //write_psoc1(val,title1[x]);
+        }
+        write_psoc1(val,10);
+
+        for(x = 0; x <= 24; x++)
+        {
+            write_psoc1(val,cardmessage1[x]);
+            //write_psoc1(val,title2[x]);
+        }
+            
+        write_psoc1(val,10);    
+        for(x = 0; x <= 24; x++)
+        {
+            write_psoc1(val,cardmessage2[x]);
+            //write_psoc1(val,title3[x]);
+        }
+        write_psoc1(val,10);
+
+        for(x = 0; x <= 24; x++)
+        {
+            write_psoc1(val,cardmessage3[x]);
+            //write_psoc1(val,title3[x]);
+        }
     }
-    write_psoc1(val,10);
-    
-    for(x = 0; x <= 24; x++)
+    if(pos == side.b.RF || pos == side.d.RF)
     {
-        write_psoc1(val,cardmessage1[x]);
-        //write_psoc1(val,title2[x]);
-    }
-        
-    write_psoc1(val,10);    
-    for(x = 0; x <= 24; x++)
-    {
-        write_psoc1(val,cardmessage2[x]);
-        //write_psoc1(val,title3[x]);
-    }
-    write_psoc1(val,10);
-    
-    for(x = 0; x <= 24; x++)
-    {
-        write_psoc1(val,cardmessage3[x]);
-        //write_psoc1(val,title3[x]);
+        for(x = 0; x <= 24; x++)
+        {
+            write_psoc1(val,cardmessageB[x]);
+            //write_psoc1(val,title1[x]);
+        }
+        write_psoc1(val,10);
+
+        for(x = 0; x <= 24; x++)
+        {
+            write_psoc1(val,cardmessage1B[x]);
+            //write_psoc1(val,title2[x]);
+        }
+            
+        write_psoc1(val,10);    
+        for(x = 0; x <= 24; x++)
+        {
+            write_psoc1(val,cardmessage2B[x]);
+            //write_psoc1(val,title3[x]);
+        }
+        write_psoc1(val,10);
+
+        for(x = 0; x <= 24; x++)
+        {
+            write_psoc1(val,cardmessage3B[x]);
+            //write_psoc1(val,title3[x]);
+        }
     }
     write_psoc1(val,10);
      ////////////////  PIE DE PÁGINA /////////////////////////

@@ -1063,8 +1063,7 @@ void PollingDisplay1(void){
                             if(logoPrint[1]!= 11){
                             	flowDisplay1 = 24;
                             	numberKeys1 = 0;   
-                                bufferDisplay1.idType = 1;
-                            	//bufferDisplay1.flagPrint =  1;
+                                bufferDisplay1.idType = 1;                            	
                             	Tag_ClearRxBuffer();
                             	Tag_ClearTxBuffer();
                             	Tag_PutChar('O');
@@ -2343,8 +2342,7 @@ void PollingDisplay1(void){
                             ShiftState = 0;
                             SetPicture(1,DISPLAY_INICIO0);
                         break;   
-                        case 2://Tarjeta para forma pago
-                            
+                        case 2://Tarjeta para forma pago                            
                             for(x = 0; x < keysTerpel; x++)
                             {
                                 bufferDisplay1.idFormaPago[x] = 0;
@@ -2456,7 +2454,7 @@ void PollingDisplay1(void){
                             vTaskDelay( 200 / portTICK_PERIOD_MS );
                             writevalue = atoi(bufferDisplay1.MoneyPay);
                             res =(atoi(bufferDisplay1.saleValue)-atoi(bufferDisplay1.MoneyPayed));
-                            if( abs(res) >= writevalue )
+                            if( abs(res) >= writevalue && writevalue > 0 )
                             {
                                 for(x = 0; x < keysTerpel + 1; x++)
                                 {
@@ -3166,7 +3164,7 @@ void PollingDisplay1(void){
                     switch(Display1_rxBuffer[3])
                     {                                                                                                 
                         case 0x0A:  //Imprimir comprobante
-                            printPayment(printPortA,side.a.dir);
+                            printPayment(printPortA,side.a.RF);
                             vTaskDelay( 500 / portTICK_PERIOD_MS ); 
                             flowPos      = 0;
                             flowDisplay1 = 0;                            
@@ -5406,7 +5404,7 @@ void PollingDisplay2(void){
                             vTaskDelay( 200 / portTICK_PERIOD_MS );
                             writevalueB = atoi(bufferDisplay2.MoneyPay);
                             resB =(atoi(bufferDisplay2.saleValue)-atoi(bufferDisplay2.MoneyPayed));
-                            if( abs(resB) >= writevalueB )
+                            if( abs(resB) >= writevalueB && writevalueB > 0 )
                             {
                                 for(x = 0; x < keysTerpel + 1; x++)
                                 {
@@ -5915,7 +5913,8 @@ void PollingDisplay2(void){
             }            
         break;
         
-        case 41:            
+        case 41:     
+            bufferDisplay2.saleNumber[0] = 9;
             for(x = 0; x < 14; x++)
             {
                 WriteMessage(2,NumSale[x],4,x+5,1,0x0000,'Y');
@@ -5924,6 +5923,10 @@ void PollingDisplay2(void){
             {
                 WriteMessage(2,cardmessageB[x],6,x+5,1,0x0000,'Y');
             }
+            for(x = 1; x < 10; x++)
+            {
+                bufferDisplay2.saleNumber[x] = cardmessageB[x-1];                
+            } 
             if(bufferDisplay2.idType ==5){
                 for(x = 0; x < 9; x++)
                 {
@@ -6105,7 +6108,7 @@ void PollingDisplay2(void){
                     switch(Display2_rxBuffer[3])
                     {                                                                                                 
                         case 0x0A:  //Imprimir comprobante
-                            printPayment(printPortB,side.b.dir);
+                            printPayment(printPortB,side.b.RF);
                             vTaskDelay( 500 / portTICK_PERIOD_MS ); 
                             flowPosB     = 0;
                             flowDisplay2 = 0;                            
@@ -8341,7 +8344,7 @@ void PollingDisplay3(void){
                             vTaskDelay( 200 / portTICK_PERIOD_MS );
                             writevalue = atoi(bufferDisplay3.MoneyPay);
                             res =(atoi(bufferDisplay3.saleValue)-atoi(bufferDisplay3.MoneyPayed));
-                            if( abs(res) >= writevalue )
+                            if( abs(res) >= writevalue && writevalue > 0 )
                             {
                                 for(x = 0; x < keysTerpel + 1; x++)
                                 {
@@ -8856,7 +8859,8 @@ void PollingDisplay3(void){
             }            
         break;
         
-        case 41:            
+        case 41: 
+            bufferDisplay3.saleNumber[0] = 9;
             for(x = 0; x < 14; x++)
             {
                 WriteMessage(1,NumSale[x],4,x+5,1,0x0000,'Y');
@@ -8864,6 +8868,10 @@ void PollingDisplay3(void){
             for(x = 0; x < 10; x++)
             {
                 WriteMessage(1,cardmessage[x],6,x+5,1,0x0000,'Y');
+            }
+            for(x = 1; x < 10; x++)
+            {
+                bufferDisplay3.saleNumber[x] = cardmessage[x-1];                
             }
             if(bufferDisplay3.idType ==5){
                 for(x = 0; x < 9; x++)
@@ -9047,7 +9055,7 @@ void PollingDisplay3(void){
                     switch(Display1_rxBuffer[3])
                     {                                                                                                 
                         case 0x0A:  //Imprimir comprobante
-                            printPayment(printPortA,side.c.dir);
+                            printPayment(printPortA,side.c.RF);
                             vTaskDelay( 500 / portTICK_PERIOD_MS ); 
                             flowPosC     = 0;
                             flowDisplay3 = 0;                            
@@ -11257,7 +11265,7 @@ void PollingDisplay4(void){
                             vTaskDelay( 200 / portTICK_PERIOD_MS );
                             writevalueB = atoi(bufferDisplay4.MoneyPay);
                             resB =(atoi(bufferDisplay4.saleValue)-atoi(bufferDisplay4.MoneyPayed));
-                            if( abs(resB) >= writevalueB )
+                            if( abs(resB) >= writevalueB && writevalueB > 0 )
                             {
                                 for(x = 0; x < keysTerpel + 1; x++)
                                 {
@@ -11767,7 +11775,8 @@ void PollingDisplay4(void){
             }            
         break;
          
-        case 41:            
+        case 41:  
+            bufferDisplay4.saleNumber[0] = 9;
             for(x = 0; x < 14; x++)
             {
                 WriteMessage(2,NumSale[x],4,x+5,1,0x0000,'Y');
@@ -11775,6 +11784,10 @@ void PollingDisplay4(void){
             for(x = 0; x < 10; x++)
             {
                 WriteMessage(2,cardmessageB[x],6,x+5,1,0x0000,'Y');
+            }
+            for(x = 1; x < 10; x++)
+            {
+                bufferDisplay4.saleNumber[x] = cardmessageB[x-1];                
             }
             if(bufferDisplay4.idType ==5){
                 for(x = 0; x < 9; x++)
@@ -11957,7 +11970,7 @@ void PollingDisplay4(void){
                     switch(Display2_rxBuffer[3])
                     {                                                                                                 
                         case 0x0A:  //Imprimir comprobante
-                            printPayment(printPortB,side.d.dir);
+                            printPayment(printPortB,side.d.RF);
                             vTaskDelay( 500 / portTICK_PERIOD_MS ); 
                             flowPosD     = 0;
                             flowDisplay4 = 0;                            

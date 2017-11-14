@@ -41,7 +41,7 @@
 
 xSemaphoreHandle g_pUARTSemaphore;
       
-char Version[] = "MUX Version 26.0";
+char Version[] = "MUX Version 26.1";
 
 /*
  * Inicializa los perifiericos del sistema
