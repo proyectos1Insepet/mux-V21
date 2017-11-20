@@ -41,7 +41,7 @@
 
 xSemaphoreHandle g_pUARTSemaphore;
       
-char Version[] = "MUX Version 26.1";
+char Version[] = "MUX Version 26.3";
 
 /*
  * Inicializa los perifiericos del sistema
@@ -373,11 +373,14 @@ int main()
     prvHardwareSetup();                     /* FreeRTOS setup                           */   
     vTaskSuspend( Pump_Task );              /* Suspend Pump task                        */
     vTaskSuspend( Display_Task );           /* Suspend Display task                     */
+    vTaskSuspend( RF_Task );                /* Suspend RF task                          */
 	vTaskStartScheduler();                  /* Start the scheduler                      */
-    CyDelay(10);
+    CyDelay(100);
     vTaskResume( Pump_Task );               /* Resume Pump task                         */
     CyDelay(10);
     vTaskResume( Display_Task );            /* Resume Display task                      */
+    CyDelay(10);
+    vTaskResume( RF_Task );                /* Resume Display task                       */
     CyDelay(10);
     
 	return 1;

@@ -220,7 +220,7 @@ void InitDisplay1(){
 *********************************************************************************************************
 */
 void InitDisplay2(){ 
-    uint8 MuxVersion [10] = "MUX V.26.1";
+    uint8 MuxVersion [10] = "MUX V.26.3";
     if(NumPositions == 2){        
         SetPicture(2,DISPLAY_INICIO0);  
         flowDisplay2 = 0;
@@ -375,7 +375,7 @@ void PollingDisplay1(void){
                     switch(Display1_rxBuffer[3])
                     {
                         case 0x0D:  //Pantalla efectivo   
-                            if(bufferDisplay1.lockTurn == 1)
+                            if(EEPROM_1_ReadByte(220) == 1)
                             {
                                 if(logoPrint[1]!= 11){
                                     flowDisplay1 = 3; 
@@ -403,7 +403,7 @@ void PollingDisplay1(void){
                                 bufferDisplay1.CreditpresetValue[1][x] = 0x00;
                                 
                             }
-                            if(bufferDisplay1.lockTurn == 1)
+                            if(EEPROM_1_ReadByte(220) == 1)
                             {                                
                                 bufferDisplay1.saleType = 2;
                                 if(logoPrint[1]!= 11){
@@ -1587,7 +1587,7 @@ void PollingDisplay1(void){
                                             
                             flowDisplay1 = 13; 
                             
-                            if(bufferDisplay1.lockTurn == 1)
+                            if(EEPROM_1_ReadByte(220) == 1)
                             {
                                 SetPicture(1,DISPLAY_CERRAR_TURNO);
                             }else
@@ -2325,8 +2325,7 @@ void PollingDisplay1(void){
         break;
         
         ///////////////// CASOS FIDELIZACIÓN TERPEL /////////////        
-        case 32: //Teclado general 
-            
+        case 32: //Teclado general             
             switch (alphanumeric_keyboard(keysTerpel,0))
             {
                 case 0: //Cancelar
@@ -2369,6 +2368,7 @@ void PollingDisplay1(void){
                             }                            
                             flowDisplay1 = 0;
                             ShiftState = 0;
+							side.a.RFstateReport = 7;
                             SetPicture(1,DISPLAY_INICIO0);
                         break;
                         case 5://Tarjeta para forma pago
@@ -2379,6 +2379,8 @@ void PollingDisplay1(void){
                             }                            
                             flowDisplay1 = 0;
                             ShiftState = 0;
+							if(bufferDisplay1.idType == 6)
+                                side.a.RFstateReport = 7;
                             SetPicture(1,DISPLAY_INICIO0);
                         break;
                             
@@ -2594,6 +2596,7 @@ void PollingDisplay1(void){
                                 bufferDisplay1.idType = 1;
                                 SetPicture(1, DISPLAY_PASAPORTE);                             
                             }                            
+                            bufferDisplay1.flagKeyboard = 1;                                                    
                         break;
                         case 0x7E:  //Init Screen                                                        
                             SetPicture(1, DISPLAY_INICIO0);
@@ -2968,6 +2971,9 @@ void PollingDisplay1(void){
             
         case 41: 
             bufferDisplay1.saleNumber[0] = 9;
+			for (x = 1; x < 10; x++){
+                bufferDisplay1.saleNumber[x] = 0x00;
+            }
             for(x = 0; x < 14; x++)
             {
                 WriteMessage(1,NumSale[x],4,x+5,1,0x0000,'Y');
@@ -3063,6 +3069,7 @@ void PollingDisplay1(void){
                             flowDisplay1 = 0;                            
                             PresetFlag   = 0;
                             iButtonFlag  = 0;
+                            side.a.RFstateReport = 7;
                             SetPicture(1, DISPLAY_INICIO0);
                         break;
                             
@@ -3235,6 +3242,7 @@ void PollingDisplay1(void){
                             SetPicture(1, DISPLAY_INICIO0);
                             bufferDisplay1.flagPrint =  0;
                             side.a.ActivoRedencion = 0;
+							side.a.RFstateReport = 7;
                             flowPos      = 0;
                             flowDisplay1 = 0;                            
                             PresetFlag   = 0;
@@ -3362,7 +3370,7 @@ void PollingDisplay2(void){
                     switch(Display2_rxBuffer[3])
                     {
                         case 0x0D:  //Pantalla efectivo   
-                            if(bufferDisplay2.lockTurn == 1)
+                            if(EEPROM_1_ReadByte(221) == 1)
                             {
                                 if(logoPrint[1]!= 11){
                                     flowDisplay2 = 3; 
@@ -3388,7 +3396,7 @@ void PollingDisplay2(void){
                                 bufferDisplay2.CreditpresetValue[0][x] = 0x00;
                                 bufferDisplay2.CreditpresetValue[1][x] = 0x00;                                
                             }                            
-                            if(bufferDisplay2.lockTurn == 1)
+                            if(EEPROM_1_ReadByte(221) == 1)
                             {                                
                                 bufferDisplay2.saleType = 2;                                
                                 if(logoPrint[1]!= 11){
@@ -4560,7 +4568,7 @@ void PollingDisplay2(void){
                         case 0x46:  //Turnos                         
                         
                             flowDisplay2 = 13; 
-                            if(bufferDisplay2.lockTurn == 1)
+                            if(EEPROM_1_ReadByte(221) == 1)
                             {
                                 SetPicture(2,DISPLAY_CERRAR_TURNO);
                             }else
@@ -5283,14 +5291,13 @@ void PollingDisplay2(void){
                
         ///////////////// CASOS FIDELIZACIÓN TERPEL /////////////        
         case 32: //Teclado general             
-            switch (alphanumeric_keyboard2(keysTerpel,0))
+            switch (alphanumeric_keyboard2(keysTerpelB,0))
             {
                 case 0: //Cancelar
                     switch(bufferDisplay2.flagKeyboard)
                     {                        
-                        case 1://Cedula
-                            
-                            for(x = 0; x < keysTerpel; x++)
+                        case 1://Cedula                            
+                            for(x = 0; x < keysTerpelB; x++)
                             {
                                 bufferDisplay2.idTerpelFideliza[x] = 0;
                             }                            
@@ -5299,7 +5306,7 @@ void PollingDisplay2(void){
                             SetPicture(2,DISPLAY_INICIO0);
                         break;   
                         case 2://Tarjeta para forma pago                            
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelB; x++)
                             {
                                 bufferDisplay2.idFormaPago[x] = 0;
                             }                            
@@ -5323,6 +5330,7 @@ void PollingDisplay2(void){
                             }                            
                             flowDisplay2 = 0;
                             ShiftStateB = 0;
+							side.b.RFstateReport = 7;
                             SetPicture(2,DISPLAY_INICIO0);
                         break;
                         case 5://Tarjeta para forma pago                            
@@ -5332,6 +5340,8 @@ void PollingDisplay2(void){
                             }                            
                             flowDisplay2 = 0;
                             ShiftStateB = 0;
+							if(bufferDisplay2.idType == 6)
+                                side.b.RFstateReport = 7;							
                             SetPicture(2,DISPLAY_INICIO0);
                         break;
                             
@@ -5352,7 +5362,7 @@ void PollingDisplay2(void){
                     switch(bufferDisplay2.flagKeyboard)
                     {                           
                         case 1://Datos fidelización                            
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelB; x++)
                             {
                                 bufferDisplay2.idTerpelFideliza[x] = bufferDisplay2.valueKeys[x];
                             }                            
@@ -5366,7 +5376,7 @@ void PollingDisplay2(void){
                             SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
                         break;                            
                         case 2://LFM Forma de pago                            
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelB; x++)
                             {
                                 bufferDisplay2.idFormaPago[x] = bufferDisplay2.valueKeys[x];
                             }
@@ -5384,7 +5394,7 @@ void PollingDisplay2(void){
                             SetPicture(2,DISPLAY_PASS_ALFNUM);
                         break;                            
                         case 3://numero de venta FP                            
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelB; x++)
                             {
                                 bufferDisplay2.saleNumber[x] = bufferDisplay2.valueKeys[x];
                             }                            
@@ -5392,7 +5402,7 @@ void PollingDisplay2(void){
                             SetPicture(2, DISPLAY_FORMA_DE_PAGO_TERPEL);
                         break;                            
                         case 4://valor voucher                             
-                            for(x = 0; x < keysTerpel + 1; x++)
+                            for(x = 0; x < keysTerpelB + 1; x++)
                             {
                                 bufferDisplay2.MoneyPay[x] = 0x00;
                             }
@@ -5406,17 +5416,17 @@ void PollingDisplay2(void){
                             resB =(atoi(bufferDisplay2.saleValue)-atoi(bufferDisplay2.MoneyPayed));
                             if( abs(resB) >= writevalueB && writevalueB > 0 )
                             {
-                                for(x = 0; x < keysTerpel + 1; x++)
+                                for(x = 0; x < keysTerpelB + 1; x++)
                                 {
                                     bufferDisplay2.valueKeys[x] = 0x00;
                                 }
                                 flowDisplay2 = 32;
                                 numberKeys2 = 0;
-                                keysTerpel = 20;
+                                keysTerpelB = 20;
                                 if(bufferDisplay2.idType == 6){
                                     bufferDisplay2.flagKeyboard = 5;
                                 }else{
-                                    for(x = 0; x < keysTerpel; x++)
+                                    for(x = 0; x < keysTerpelB; x++)
                                     {
                                         bufferDisplay2.idFormaPago[x] = 0x00;
                                     }
@@ -5426,14 +5436,14 @@ void PollingDisplay2(void){
                             }else{                            
                                 flowDisplay2 = 32;
                                 numberKeys2 = 0;
-                                keysTerpel = 10;                            
+                                keysTerpelB = 10;                            
                                 bufferDisplay2.flagKeyboard = 4;                                
                                 SetPicture(2, DISPLAY_INTRODUZCA_VALOR); 
                                 WriteLCD(2,'$',3,2,1,0x0000,'N');
                             }
                         break;                            
                         case 5://pin voucher                           
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelB; x++)
                             {
                                 bufferDisplay2.idFormaPago[x] = bufferDisplay2.valueKeys[x];
                             }                            
@@ -5443,7 +5453,7 @@ void PollingDisplay2(void){
                             SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
                         break;                            
                         case 6://numero de pago                           
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelB; x++)
                             {
                                 bufferDisplay2.PaymentNumber[x] = bufferDisplay2.valueKeys[x];
                             }                            
@@ -5476,7 +5486,7 @@ void PollingDisplay2(void){
                             }else{
                                 flowDisplay2 = 32;
                                 numberKeys2 = 0;
-                                keysTerpel = 16;
+                                keysTerpelB = 16;
                                 bufferDisplay2.idType = 3;
                                 SetPicture(2, DISPLAY_PASAPORTE);                             
                             }
@@ -5493,7 +5503,7 @@ void PollingDisplay2(void){
                             }else{
                                 flowDisplay2 = 32;
                                 numberKeys2 = 0;
-                                keysTerpel = 16;
+                                keysTerpelB = 16;
                                 bufferDisplay2.idType = 4;
                                 SetPicture(2, DISPLAY_PASAPORTE);                             
                             }
@@ -5509,7 +5519,7 @@ void PollingDisplay2(void){
                             }else{
                                 flowDisplay2 = 32;
                                 numberKeys2 = 0;
-                                keysTerpel = 16;
+                                keysTerpelB = 16;
                                 bufferDisplay2.idType = 5;
                                 SetPicture(2, DISPLAY_PASAPORTE);                             
                             }
@@ -5538,10 +5548,11 @@ void PollingDisplay2(void){
                             }else{
                                 flowDisplay2 = 32;
                                 numberKeys2 = 0;
-                                keysTerpel = 16;
+                                keysTerpelB = 16;
                                 bufferDisplay2.idType = 1;
                                 SetPicture(2, DISPLAY_PASAPORTE);                             
-                            }                               
+                            }     
+                            bufferDisplay2.flagKeyboard = 1;                            
                         break;
                         case 0x7E:  //Init Screen                                                        
                             SetPicture(2, DISPLAY_INICIO0);
@@ -5772,7 +5783,7 @@ void PollingDisplay2(void){
                             bufferDisplay2.lastSale = false;
                             flowDisplay2 = 32;
                             numberKeys2 = 0;
-                            keysTerpel = 10;                            
+                            keysTerpelB = 10;                            
                             bufferDisplay2.flagKeyboard = 3;
                             SetPicture(2, DISPLAY_INTRODUZCA_VALOR);
                         break;
@@ -5873,7 +5884,7 @@ void PollingDisplay2(void){
                         case 0xB7:  //Solicita teclado 
                             flowDisplay2 = 32;
                             numberKeys2 = 0;
-                            keysTerpel = 20;                                                        
+                            keysTerpelB = 20;                                                        
                             SetPicture(2, DISPLAY_PASAPORTE);
                             if(bufferDisplay2.idType !='F'){
                                 for(x = 0; x < 20; x++)
@@ -5915,6 +5926,9 @@ void PollingDisplay2(void){
         
         case 41:     
             bufferDisplay2.saleNumber[0] = 9;
+			for (x = 1; x < 10; x++){
+                bufferDisplay2.saleNumber[x] = 0x00;
+            }
             for(x = 0; x < 14; x++)
             {
                 WriteMessage(2,NumSale[x],4,x+5,1,0x0000,'Y');
@@ -5988,13 +6002,13 @@ void PollingDisplay2(void){
                                     bufferDisplay2.flagKeyboard = 2;
                                     flowDisplay2 = 32;
                                     numberKeys2 = 0;
-                                    keysTerpel = 16;
+                                    keysTerpelB = 16;
                                     SetPicture(2, DISPLAY_PASAPORTE);
                                 } 
                             }else{                            
                                 flowDisplay2 = 32;
                                 numberKeys2 = 0;
-                                keysTerpel = 10;                            
+                                keysTerpelB = 10;                            
                                 bufferDisplay2.flagKeyboard = 4;                                
                                 SetPicture(2, DISPLAY_INTRODUZCA_VALOR); 
                                 WriteLCD(2,'$',3,2,1,0x0000,'N');
@@ -6008,6 +6022,8 @@ void PollingDisplay2(void){
                             flowDisplay2 = 0;                            
                             PresetFlag2  = 0;
                             iButtonFlag2 = 0;
+							if(bufferDisplay2.idType == 6)
+                                side.b.RFstateReport = 7;
                             SetPicture(2, DISPLAY_INICIO0);
                         break;
                             
@@ -6142,7 +6158,7 @@ void PollingDisplay2(void){
                             flowDisplay2 = 0;                            
                             PresetFlag2  = 0;
                             iButtonFlag2 = 0;
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelB; x++)
                             {
                                 bufferDisplay2.saleValue[x] = 0x00;
                             }
@@ -6179,11 +6195,12 @@ void PollingDisplay2(void){
                             SetPicture(2, DISPLAY_INICIO0);
                             bufferDisplay2.flagPrint =  0;
                             side.b.ActivoRedencion = 0;
+							side.b.RFstateReport = 7;
                             flowPosB     = 0;
                             flowDisplay2 = 0;                            
                             PresetFlag2  = 0;
                             iButtonFlag2 = 0;
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelB; x++)
                             {
                                 bufferDisplay2.saleValue[x] = 0x00;
                             }
@@ -6285,7 +6302,7 @@ void PollingDisplay3(void){
                     switch(Display1_rxBuffer[3])
                     {
                         case 0x0D:  //Pantalla efectivo   
-                            if(bufferDisplay3.lockTurn == 1)
+                            if(EEPROM_1_ReadByte(222) == 1)
                             {
                                 if(logoPrint[1]!= 11){
                                     flowDisplay3 = 3; 
@@ -6313,7 +6330,7 @@ void PollingDisplay3(void){
                                 bufferDisplay3.CreditpresetValue[1][x] = 0x00;
                                 
                             }
-                            if(bufferDisplay3.lockTurn == 1)
+                            if(EEPROM_1_ReadByte(222) == 1)
                             {                                
                                 bufferDisplay3.saleType = 2;                                
                                 if(logoPrint[1]!= 11){
@@ -7495,7 +7512,7 @@ void PollingDisplay3(void){
                         case 0x46:  //Turnos  
 							
                                 flowDisplay3 = 13; 
-                                if(bufferDisplay3.lockTurn == 1)
+                                if(EEPROM_1_ReadByte(222) == 1)
                                 {
                                     SetPicture(1,DISPLAY_CERRAR_TURNO);
                                 }else
@@ -8219,14 +8236,14 @@ void PollingDisplay3(void){
         ///////////////// CASOS FIDELIZACIÓN TERPEL /////////////        
          case 32: //Teclado general 
             
-            switch (alphanumeric_keyboard3(keysTerpel,0))
+            switch (alphanumeric_keyboard3(keysTerpelC,0))
             {
                 case 0: //Cancelar
                     switch(bufferDisplay3.flagKeyboard)
                     {                        
                         case 1://Cedula
                             
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelC; x++)
                             {
                                 bufferDisplay3.idTerpelFideliza[x] = 0;
                             }                            
@@ -8236,7 +8253,7 @@ void PollingDisplay3(void){
                         break;   
                         case 2://Tarjeta para forma pago
                             
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelC; x++)
                             {
                                 bufferDisplay3.idFormaPago[x] = 0;
                             }                            
@@ -8260,6 +8277,7 @@ void PollingDisplay3(void){
                             }                            
                             flowDisplay3 = 0;
                             ShiftStateC = 0;
+							side.c.RFstateReport = 7;
                             SetPicture(1,DISPLAY_INICIO0);
                         break;
                         case 5://Tarjeta para forma pago                            
@@ -8269,6 +8287,8 @@ void PollingDisplay3(void){
                             }                            
                             flowDisplay3 = 0;
                             ShiftStateC = 0;
+							if(bufferDisplay3.idType == 6)
+                                side.c.RFstateReport = 7;
                             SetPicture(1,DISPLAY_INICIO0);
                         break;
                             
@@ -8289,7 +8309,7 @@ void PollingDisplay3(void){
                     switch(bufferDisplay3.flagKeyboard)
                     {                           
                         case 1://Datos fidelización                            
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelC; x++)
                             {
                                 bufferDisplay3.idTerpelFideliza[x] = bufferDisplay3.valueKeys[x];
                             }                            
@@ -8304,7 +8324,7 @@ void PollingDisplay3(void){
                         break;
                             
                         case 2://LFM Forma de pago                            
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelC; x++)
                             {
                                 bufferDisplay3.idFormaPago[x] = bufferDisplay3.valueKeys[x];
                             }
@@ -8323,7 +8343,7 @@ void PollingDisplay3(void){
                         break;
                             
                         case 3://numero de venta FP                            
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelC; x++)
                             {
                                 bufferDisplay3.saleNumber[x] = bufferDisplay3.valueKeys[x];
                             }                            
@@ -8332,7 +8352,7 @@ void PollingDisplay3(void){
                         break;
                             
                         case 4://valor voucher                             
-                            for(x = 0; x < keysTerpel + 1; x++)
+                            for(x = 0; x < keysTerpelC + 1; x++)
                             {
                                 bufferDisplay3.MoneyPay[x] = 0x00;
                             }
@@ -8346,17 +8366,17 @@ void PollingDisplay3(void){
                             res =(atoi(bufferDisplay3.saleValue)-atoi(bufferDisplay3.MoneyPayed));
                             if( abs(res) >= writevalue && writevalue > 0 )
                             {
-                                for(x = 0; x < keysTerpel + 1; x++)
+                                for(x = 0; x < keysTerpelC + 1; x++)
                                 {
                                     bufferDisplay3.valueKeys[x] = 0x00;
                                 }
                                 flowDisplay3 = 32;
                                 numberKeys3 = 0;
-                                keysTerpel = 20;
+                                keysTerpelC = 20;
                                 if(bufferDisplay3.idType == 6){
                                     bufferDisplay3.flagKeyboard = 5;
                                 }else{
-                                    for(x = 0; x < keysTerpel; x++)
+                                    for(x = 0; x < keysTerpelC; x++)
                                     {
                                         bufferDisplay3.idFormaPago[x] = 0x00;
                                     }
@@ -8366,14 +8386,14 @@ void PollingDisplay3(void){
                             }else{                            
                                 flowDisplay3 = 32;
                                 numberKeys3 = 0;
-                                keysTerpel = 10;                            
+                                keysTerpelC = 10;                            
                                 bufferDisplay3.flagKeyboard = 4;                                
                                 SetPicture(1, DISPLAY_INTRODUZCA_VALOR); 
                                 WriteLCD(1,'$',3,2,1,0x0000,'N');
                             }
                         break;                            
                         case 5://pin voucher                           
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelC; x++)
                             {
                                 bufferDisplay3.idFormaPago[x] = bufferDisplay3.valueKeys[x];
                             }                            
@@ -8383,7 +8403,7 @@ void PollingDisplay3(void){
                             SetPicture(1,DISPLAY_POR_FAVOR_ESPERE);
                         break;                            
                         case 6://numero de pago                           
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelC; x++)
                             {
                                 bufferDisplay3.PaymentNumber[x] = bufferDisplay3.valueKeys[x];
                             }                            
@@ -8416,7 +8436,7 @@ void PollingDisplay3(void){
                             }else{
                                 flowDisplay3 = 32;
                                 numberKeys3 = 0;
-                                keysTerpel = 16;
+                                keysTerpelC = 16;
                                 bufferDisplay3.idType = 3;
                                 SetPicture(1, DISPLAY_PASAPORTE);                             
                             }
@@ -8432,7 +8452,7 @@ void PollingDisplay3(void){
                             }else{
                                 flowDisplay3 = 32;
                                 numberKeys3 = 0;
-                                keysTerpel = 16;
+                                keysTerpelC = 16;
                                 bufferDisplay3.idType = 4;
                                 SetPicture(1, DISPLAY_PASAPORTE);                             
                             }
@@ -8448,7 +8468,7 @@ void PollingDisplay3(void){
                             }else{
                                 flowDisplay3 = 32;
                                 numberKeys3 = 0;
-                                keysTerpel = 16;
+                                keysTerpelC = 16;
                                 bufferDisplay3.idType = 5;
                                 SetPicture(1, DISPLAY_PASAPORTE);                             
                             }
@@ -8477,10 +8497,11 @@ void PollingDisplay3(void){
                             }else{
                                 flowDisplay3 = 32;
                                 numberKeys3 = 0;
-                                keysTerpel = 16;
+                                keysTerpelC = 16;
                                 bufferDisplay3.idType = 1;
                                 SetPicture(1, DISPLAY_PASAPORTE);                             
                             }                            
+                            bufferDisplay3.flagKeyboard = 1;  
                         break;
                         case 0x7E:  //Init Screen                                                        
                             SetPicture(1, DISPLAY_INICIO0);
@@ -8719,7 +8740,7 @@ void PollingDisplay3(void){
                             bufferDisplay3.lastSale = false;
                             flowDisplay3 = 32;
                             numberKeys3 = 0;
-                            keysTerpel = 10;                            
+                            keysTerpelC = 10;                            
                             bufferDisplay3.flagKeyboard = 3;
                             SetPicture(1, DISPLAY_INTRODUZCA_VALOR);
                         break;                            
@@ -8819,7 +8840,7 @@ void PollingDisplay3(void){
                         case 0xB7:  //Solicita teclado 
                             flowDisplay3 = 32;
                             numberKeys3 = 0;
-                            keysTerpel = 20;                                                        
+                            keysTerpelC = 20;                                                        
                             SetPicture(1, DISPLAY_PASAPORTE);
                             if(bufferDisplay3.idType !='F'){
                                 for(x = 0; x < 20; x++)
@@ -8861,6 +8882,9 @@ void PollingDisplay3(void){
         
         case 41: 
             bufferDisplay3.saleNumber[0] = 9;
+			for (x = 1; x < 10; x++){
+                bufferDisplay3.saleNumber[x] = 0x00;
+            }
             for(x = 0; x < 14; x++)
             {
                 WriteMessage(1,NumSale[x],4,x+5,1,0x0000,'Y');
@@ -8934,13 +8958,13 @@ void PollingDisplay3(void){
                                     bufferDisplay3.flagKeyboard = 2;
                                     flowDisplay3 = 32;
                                     numberKeys3 = 0;
-                                    keysTerpel = 16;
+                                    keysTerpelC = 16;
                                     SetPicture(1, DISPLAY_PASAPORTE);
                                 } 
                             }else{                            
                                 flowDisplay3 = 32;
                                 numberKeys3  = 0;
-                                keysTerpel = 10;                            
+                                keysTerpelC = 10;                            
                                 bufferDisplay3.flagKeyboard = 4;                                
                                 SetPicture(1, DISPLAY_INTRODUZCA_VALOR); 
                                 WriteLCD(1,'$',3,2,1,0x0000,'N');
@@ -8954,6 +8978,8 @@ void PollingDisplay3(void){
                             flowDisplay3 = 0;                            
                             PresetFlag3  = 0;
                             iButtonFlag3 = 0;
+							if(bufferDisplay3.idType == 6)
+                                side.c.RFstateReport = 7;
                             SetPicture(1, DISPLAY_INICIO0);
                         break;
                             
@@ -9089,7 +9115,7 @@ void PollingDisplay3(void){
                             flowDisplay3 = 0;                            
                             PresetFlag3  = 0;
                             iButtonFlag3 = 0;
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelC; x++)
                             {
                                 bufferDisplay3.saleValue[x] = 0x00;
                             }
@@ -9126,11 +9152,12 @@ void PollingDisplay3(void){
                             SetPicture(1, DISPLAY_INICIO0);
                             bufferDisplay3.flagPrint =  0;
                             side.c.ActivoRedencion = 0;
+							side.c.RFstateReport = 7;
                             flowPosC     = 0;
                             flowDisplay3 = 0;                            
                             PresetFlag3  = 0;
                             iButtonFlag3 = 0;
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelC; x++)
                             {
                                 bufferDisplay3.saleValue[x] = 0x00;
                             }
@@ -9236,7 +9263,7 @@ void PollingDisplay4(void){
                     switch(Display2_rxBuffer[3])
                     {
                         case 0x0D:  //Pantalla efectivo   
-                            if(bufferDisplay4.lockTurn == 1)
+                            if(EEPROM_1_ReadByte(223) == 1)
                             {
                                 if(logoPrint[1]!= 11){
                                     flowDisplay4 = 3; 
@@ -9263,7 +9290,7 @@ void PollingDisplay4(void){
                                 bufferDisplay4.CreditpresetValue[1][x] = 0x00;
                                 
                             }                            
-                            if(bufferDisplay4.lockTurn == 1)
+                            if(EEPROM_1_ReadByte(223) == 1)
                             {                                
                                 bufferDisplay4.saleType = 2;                                
                                 if(logoPrint[1]!= 11){
@@ -10437,7 +10464,7 @@ void PollingDisplay4(void){
                         case 0x46:  //Turnos 
 							
                             flowDisplay4 = 13; 
-                            if(bufferDisplay4.lockTurn == 1)
+                            if(EEPROM_1_ReadByte(223) == 1)
                             {
                                 SetPicture(2,DISPLAY_CERRAR_TURNO);
                             }else
@@ -11144,14 +11171,14 @@ void PollingDisplay4(void){
             
         ///////////////// CASOS FIDELIZACIÓN TERPEL /////////////        
         case 32: //Teclado general      
-            switch (alphanumeric_keyboard4(keysTerpel,0))
+            switch (alphanumeric_keyboard4(keysTerpelD,0))
             {
                 case 0: //Cancelar
                     switch(bufferDisplay4.flagKeyboard)
                     {                        
                         case 1://Cedula
                             
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelD; x++)
                             {
                                 bufferDisplay4.idTerpelFideliza[x] = 0;
                             }                            
@@ -11160,7 +11187,7 @@ void PollingDisplay4(void){
                             SetPicture(2,DISPLAY_INICIO0);
                         break;   
                         case 2://Tarjeta para forma pago                            
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelD; x++)
                             {
                                 bufferDisplay4.idFormaPago[x] = 0;
                             }                            
@@ -11184,6 +11211,7 @@ void PollingDisplay4(void){
                             }                            
                             flowDisplay4 = 0;
                             ShiftStateD = 0;
+							side.d.RFstateReport = 7;
                             SetPicture(2,DISPLAY_INICIO0);
                         break;
                         case 5://Tarjeta para forma pago                            
@@ -11193,6 +11221,8 @@ void PollingDisplay4(void){
                             }                            
                             flowDisplay4 = 0;
                             ShiftStateD = 0;
+							if(bufferDisplay4.idType == 6)
+                                side.d.RFstateReport = 7;
                             SetPicture(2,DISPLAY_INICIO0);
                         break;
                             
@@ -11213,7 +11243,7 @@ void PollingDisplay4(void){
                     switch(bufferDisplay4.flagKeyboard)
                     {                           
                         case 1://Datos fidelización                            
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelD; x++)
                             {
                                 bufferDisplay4.idTerpelFideliza[x] = bufferDisplay4.valueKeys[x];
                             }                            
@@ -11227,7 +11257,7 @@ void PollingDisplay4(void){
                             SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
                         break;                            
                         case 2://LFM Forma de pago                            
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelD; x++)
                             {
                                 bufferDisplay4.idFormaPago[x] = bufferDisplay4.valueKeys[x];
                             }
@@ -11245,7 +11275,7 @@ void PollingDisplay4(void){
                             SetPicture(2,DISPLAY_PASS_ALFNUM);
                         break;                            
                         case 3://numero de venta FP                            
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelD; x++)
                             {
                                 bufferDisplay4.saleNumber[x] = bufferDisplay4.valueKeys[x];
                             }                            
@@ -11253,7 +11283,7 @@ void PollingDisplay4(void){
                             SetPicture(2, DISPLAY_FORMA_DE_PAGO_TERPEL);
                         break;                            
                         case 4://valor voucher                             
-                            for(x = 0; x < keysTerpel + 1; x++)
+                            for(x = 0; x < keysTerpelD + 1; x++)
                             {
                                 bufferDisplay4.MoneyPay[x] = 0x00;
                             }
@@ -11267,17 +11297,17 @@ void PollingDisplay4(void){
                             resB =(atoi(bufferDisplay4.saleValue)-atoi(bufferDisplay4.MoneyPayed));
                             if( abs(resB) >= writevalueB && writevalueB > 0 )
                             {
-                                for(x = 0; x < keysTerpel + 1; x++)
+                                for(x = 0; x < keysTerpelD + 1; x++)
                                 {
                                     bufferDisplay4.valueKeys[x] = 0x00;
                                 }
                                 flowDisplay4 = 32;
                                 numberKeys4 = 0;
-                                keysTerpel = 20;
+                                keysTerpelD = 20;
                                 if(bufferDisplay4.idType == 6){
                                     bufferDisplay4.flagKeyboard = 5;
                                 }else{
-                                    for(x = 0; x < keysTerpel; x++)
+                                    for(x = 0; x < keysTerpelD; x++)
                                     {
                                         bufferDisplay4.idFormaPago[x] = 0x00;
                                     }
@@ -11287,14 +11317,14 @@ void PollingDisplay4(void){
                             }else{                            
                                 flowDisplay4 = 32;
                                 numberKeys4 = 0;
-                                keysTerpel = 10;                            
+                                keysTerpelD = 10;                            
                                 bufferDisplay4.flagKeyboard = 4;                                
                                 SetPicture(2, DISPLAY_INTRODUZCA_VALOR); 
                                 WriteLCD(2,'$',3,2,1,0x0000,'N');
                             }
                         break;                            
                         case 5://pin voucher                           
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelD; x++)
                             {
                                 bufferDisplay4.idFormaPago[x] = bufferDisplay4.valueKeys[x];
                             }                            
@@ -11304,7 +11334,7 @@ void PollingDisplay4(void){
                             SetPicture(2,DISPLAY_POR_FAVOR_ESPERE);
                         break;                            
                         case 6://numero de pago                           
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelD; x++)
                             {
                                 bufferDisplay4.PaymentNumber[x] = bufferDisplay4.valueKeys[x];
                             }                            
@@ -11337,7 +11367,7 @@ void PollingDisplay4(void){
                             }else{
                                 flowDisplay4 = 32;
                                 numberKeys4 = 0;
-                                keysTerpel = 16;
+                                keysTerpelD = 16;
                                 bufferDisplay4.idType = 3;
                                 SetPicture(2, DISPLAY_PASAPORTE);                             
                             }
@@ -11354,7 +11384,7 @@ void PollingDisplay4(void){
                             }else{
                                 flowDisplay4 = 32;
                                 numberKeys4 = 0;
-                                keysTerpel = 16;
+                                keysTerpelD = 16;
                                 bufferDisplay4.idType = 4;
                                 SetPicture(2, DISPLAY_PASAPORTE);                             
                             }
@@ -11370,7 +11400,7 @@ void PollingDisplay4(void){
                             }else{
                                 flowDisplay4 = 32;
                                 numberKeys4 = 0;
-                                keysTerpel = 16;
+                                keysTerpelD = 16;
                                 bufferDisplay4.idType = 5;
                                 SetPicture(2, DISPLAY_PASAPORTE);                             
                             }
@@ -11399,10 +11429,11 @@ void PollingDisplay4(void){
                             }else{
                                 flowDisplay4 = 32;
                                 numberKeys4 = 0;
-                                keysTerpel = 16;
+                                keysTerpelD = 16;
                                 bufferDisplay4.idType = 1;
                                 SetPicture(2, DISPLAY_PASAPORTE);                             
                             }                            
+                            bufferDisplay4.flagKeyboard = 1;                            
                         break;
                         case 0x7E:  //Init Screen                                                        
                             SetPicture(2, DISPLAY_INICIO0);
@@ -11634,7 +11665,7 @@ void PollingDisplay4(void){
                             bufferDisplay4.lastSale = false;
                             flowDisplay4 = 32;
                             numberKeys4 = 0;
-                            keysTerpel = 10;                            
+                            keysTerpelD = 10;                            
                             bufferDisplay4.flagKeyboard = 3;
                             SetPicture(2, DISPLAY_INTRODUZCA_VALOR);
                         break;
@@ -11735,7 +11766,7 @@ void PollingDisplay4(void){
                         case 0xB7:  //Solicita teclado 
                             flowDisplay4 = 32;
                             numberKeys4 = 0;
-                            keysTerpel = 20;                                                        
+                            keysTerpelD = 20;                                                        
                             SetPicture(2, DISPLAY_PASAPORTE);
                             if(bufferDisplay4.idType !='F'){
                                 for(x = 0; x < 20; x++)
@@ -11777,6 +11808,9 @@ void PollingDisplay4(void){
          
         case 41:  
             bufferDisplay4.saleNumber[0] = 9;
+			for (x = 1; x < 10; x++){
+                bufferDisplay4.saleNumber[x] = 0x00;
+            }
             for(x = 0; x < 14; x++)
             {
                 WriteMessage(2,NumSale[x],4,x+5,1,0x0000,'Y');
@@ -11850,13 +11884,13 @@ void PollingDisplay4(void){
                                     bufferDisplay4.flagKeyboard = 2;
                                     flowDisplay4 = 32;
                                     numberKeys4 = 0;
-                                    keysTerpel = 16;
+                                    keysTerpelD = 16;
                                     SetPicture(2, DISPLAY_PASAPORTE);
                                 }  
                             }else{                            
                                 flowDisplay4 = 32;
                                 numberKeys4 = 0;
-                                keysTerpel = 10;                            
+                                keysTerpelD = 10;                            
                                 bufferDisplay4.flagKeyboard = 4;                                
                                 SetPicture(2, DISPLAY_INTRODUZCA_VALOR); 
                                 WriteLCD(2,'$',3,2,1,0x0000,'N');
@@ -11870,6 +11904,8 @@ void PollingDisplay4(void){
                             flowDisplay4 = 0;                            
                             PresetFlag4  = 0;
                             iButtonFlag4 = 0;
+							if(bufferDisplay4.idType == 6)
+                                side.c.RFstateReport = 7;
                             SetPicture(2, DISPLAY_INICIO0);
                         break;
                             
@@ -12004,7 +12040,7 @@ void PollingDisplay4(void){
                             flowDisplay4 = 0;                            
                             PresetFlag4  = 0;
                             iButtonFlag4 = 0;
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelD; x++)
                             {
                                 bufferDisplay4.saleValue[x] = 0x00;
                             }
@@ -12041,11 +12077,12 @@ void PollingDisplay4(void){
                             SetPicture(2, DISPLAY_INICIO0);
                             bufferDisplay4.flagPrint =  0;
                             side.d.ActivoRedencion = 0;
+							side.d.RFstateReport = 7;
                             flowPosD     = 0;
                             flowDisplay4 = 0;                            
                             PresetFlag4  = 0;
                             iButtonFlag4 = 0;
-                            for(x = 0; x < keysTerpel; x++)
+                            for(x = 0; x < keysTerpelD; x++)
                             {
                                 bufferDisplay4.saleValue[x] = 0x00;
                             }
@@ -12424,7 +12461,6 @@ void PresetAuthorize(uint8 Position)
                     flowDisplay1 = 8;
                     flowPos = flowDisplay1;
                     PresetFlag = 0;
-                    AuthType = 0;
                     Credit_Auth_OK = 0; 
                     
                     // PPU                                                        
@@ -12543,7 +12579,6 @@ void PresetAuthorize(uint8 Position)
                         flowDisplay2 = 8;
                         flowPosB = flowDisplay2;
                         PresetFlag2 = 0;
-                        AuthType2 = 0;
                         // PPU                                                        
                         for(x = 0; x < 5 ; x++ )
                         {
@@ -12660,7 +12695,6 @@ void PresetAuthorize(uint8 Position)
                         flowDisplay3 = 8;
                         flowPosC = flowDisplay3;
                         PresetFlag3 = 0;
-                        AuthType3 = 0;
                         Credit_Auth_OK3 = 0; 
                         // PPU                                                        
                         for(x = 0; x < 5 ; x++ )
@@ -12771,7 +12805,6 @@ void PresetAuthorize(uint8 Position)
                         PresetFlag4 = 0;
                         flowDisplay4 = 8;
                         flowPosD = flowDisplay4;
-                        AuthType4 = 0;
                         for(x = 0; x < 5 ; x++ )
                         {
                             ppuiButtonB[x] = 0x00;                            
@@ -13231,7 +13264,12 @@ void PumpAction(uint8 PositionPump, uint8 State)
                             }
                         }
                     }
-                    priceChange(side.a.dir, side.a.grade, side.a.ppuAuthorized[side.a.grade]);
+                    
+                    if(AuthType == 1)
+                    { 
+                        priceChange(side.a.dir, side.a.grade, side.a.ppuAuthorized[side.a.grade]);
+                    }
+                    AuthType = 0;
                     iButtonFlag = 0;
                     PresetFlag = 0;
                     flowDisplay1 = 0;
@@ -13280,8 +13318,12 @@ void PumpAction(uint8 PositionPump, uint8 State)
                                 bufferDisplay2.PrintEnd = 0;
                             }
                         }
+                    }              
+                    if(AuthType2 == 1)
+                    {
+                        priceChange(side.b.dir, side.b.grade, side.b.ppuAuthorized[side.b.grade]);
                     }
-                    priceChange(side.b.dir, side.b.grade, side.b.ppuAuthorized[side.b.grade]);
+                    AuthType2 = 0;
                     iButtonFlag2 = 0;
                     PresetFlag2 =0;        
                     pollTotalsB = 1;
@@ -13329,7 +13371,11 @@ void PumpAction(uint8 PositionPump, uint8 State)
                             }
                         }
                     }
-                    priceChange(side.c.dir, side.c.grade, side.c.ppuAuthorized[side.c.grade]);
+                    if(AuthType3 == 1)
+                    {
+                        priceChange(side.c.dir, side.c.grade, side.c.ppuAuthorized[side.c.grade]);
+                    }
+                    AuthType3 = 0;
                     iButtonFlag3 = 0;
                     PresetFlag3 = 0;
                     pollTotalsC = 1;
@@ -13377,7 +13423,16 @@ void PumpAction(uint8 PositionPump, uint8 State)
                             }
                         }
                     }
-                    priceChange(side.d.dir, side.d.grade, side.d.ppuAuthorized[side.d.grade]);
+                    if(AuthType4 == 1)
+                    {
+                        priceChange(side.d.dir, side.d.grade, side.d.ppuAuthorized[side.d.grade]);
+                    }
+                    
+                    if(RfActive)
+                    {
+                        bufferDisplay4.VarActual = 1;
+                    }
+                    AuthType4 = 0;
                     iButtonFlag4 = 0;
                     PresetFlag4 = 0; 
                     pollTotalsD = 1;
@@ -13432,7 +13487,11 @@ void PumpAction(uint8 PositionPump, uint8 State)
                             }
                         }
                     }
-                    priceChange(side.a.dir, side.a.grade, side.a.ppuAuthorized[side.a.grade]);
+                    if(AuthType == 1)
+                    {
+                        priceChange(side.a.dir, side.a.grade, side.a.ppuAuthorized[side.a.grade]);
+                    }
+                    AuthType = 0;
                     iButtonFlag = 0;
                     PresetFlag = 0;
                     flowDisplay1 = 0;
@@ -13480,7 +13539,11 @@ void PumpAction(uint8 PositionPump, uint8 State)
                             }
                         }
                     }
-                    priceChange(side.b.dir, side.b.grade, side.b.ppuAuthorized[side.b.grade]);
+                    if(AuthType2 == 1)
+                    {
+                        priceChange(side.b.dir, side.b.grade, side.b.ppuAuthorized[side.b.grade]);
+                    }
+                    AuthType2 = 0;
                     iButtonFlag2 = 0;
                     PresetFlag2 = 0;
                     pollTotalsB = 1;
@@ -13527,8 +13590,11 @@ void PumpAction(uint8 PositionPump, uint8 State)
                             }
                         }
                     }
-                    
-                    priceChange(side.c.dir, side.c.grade, side.c.ppuAuthorized[side.c.grade]);
+                    if(AuthType3 == 1)
+                    {
+                        priceChange(side.c.dir, side.c.grade, side.c.ppuAuthorized[side.c.grade]);
+                    }
+                    AuthType3 = 0;
                     iButtonFlag3 = 0;
                     PresetFlag3 = 0;
                     pollTotalsC = 1;
@@ -13577,7 +13643,15 @@ void PumpAction(uint8 PositionPump, uint8 State)
                             }
                         }
                     }
-                    priceChange(side.d.dir, side.d.grade, side.d.ppuAuthorized[side.d.grade]);
+                    if(AuthType4 == 1)
+                    {
+                        priceChange(side.d.dir, side.d.grade, side.d.ppuAuthorized[side.d.grade]);
+                    }
+                    if(RfActive)
+                    {
+                        bufferDisplay4.VarActual = 1;
+                    }
+                    AuthType4 = 0;
                     iButtonFlag4 = 0;
                     PresetFlag4 = 0;
                     pollTotalsD = 1;
@@ -13905,11 +13979,8 @@ void Pump_Task(void *arg)
             {
                 side.a.RFstateReport = 1;
                 side.b.RFstateReport = 0;
-                side.a.FlagTotal = 1;
-                if(RfActive == 0)
-                {
-                    pollTotals = 0;
-                }
+                side.a.FlagTotal = 1;               
+                pollTotals = 0;
             }
         }
         
@@ -13920,10 +13991,7 @@ void Pump_Task(void *arg)
                 side.b.RFstateReport = 1;
                 side.a.RFstateReport = 0;
                 side.b.FlagTotal = 1;
-                if(RfActive == 0)
-                {
-                    pollTotalsB = 0;
-                }
+                pollTotalsB = 0;
             }
         }
         
@@ -13934,10 +14002,7 @@ void Pump_Task(void *arg)
                 side.c.RFstateReport = 1;
                 side.d.RFstateReport = 0;
                 side.c.FlagTotal = 1;
-                if(RfActive == 0)
-                {
-                    pollTotalsC = 0;
-                }
+                pollTotalsC = 0;
             }
          }
  
@@ -13948,10 +14013,7 @@ void Pump_Task(void *arg)
                 side.c.RFstateReport = 0;
                 side.d.RFstateReport = 1;
                 side.d.FlagTotal = 1;
-                if(RfActive == 0)
-                {    
-                    pollTotalsD = 0;
-                }
+                pollTotalsD = 0;
            }                
         }
         

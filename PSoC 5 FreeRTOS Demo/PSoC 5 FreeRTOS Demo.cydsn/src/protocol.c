@@ -1641,7 +1641,6 @@ uint8 getSale(uint8 pos){
         CyDelay(250);
     }
     
-    //CyWdtClear();
     
     //6 Digits
 	if((digits != 7) && (Pump_GetRxBufferSize() == 33))

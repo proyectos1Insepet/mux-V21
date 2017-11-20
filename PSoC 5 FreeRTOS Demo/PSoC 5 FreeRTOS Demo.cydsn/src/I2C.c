@@ -148,7 +148,7 @@ uint8 write_fecha( void ){
 	dato[0]=4;
 	dato[1]=date[0]; //Dia del mes
 	dato[2]=date[1]; //Mes
-	dato[3]=date[2]; //Año
+	dato[3]=date[2]; //AÃ±o
 	I2C_Bus_MasterClearStatus();
     status = I2C_Bus_MasterSendStart(0x68, I2C_Bus_WRITE_XFER_MODE);
     if(I2C_Bus_MSTR_NO_ERROR == status) 

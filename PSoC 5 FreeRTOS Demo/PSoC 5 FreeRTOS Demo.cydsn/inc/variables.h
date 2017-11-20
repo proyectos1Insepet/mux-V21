@@ -202,13 +202,23 @@
     uint8 KmCash[2];
     uint8 magneticReader[3];
     uint8 keysTerpel;
+    uint8 keysTerpelB;
+    uint8 keysTerpelC;
+    uint8 keysTerpelD;
     uint16 RfActive;
     uint8 KmCash[2];
 	uint8 StopSendTotalA;
 	uint8 StopSendTotalB;
 	uint8 StopSendTotalC;
 	uint8 StopSendTotalD;
-    
+    bool IdFlagA;
+    bool IdFlagB;
+    bool IdFlagC;
+    bool IdFlagD;    
+    uint8 contA;
+    uint8 contB;
+    uint8 contC;
+    uint8 contD;
     
     
 /*
@@ -459,6 +469,7 @@ enum _RF_STATES_
     RF_REDEEM_WNUMBER   = 0x11,
     RF_PAYCONFIRMATION  = 0x12,
     RF_PAYCONFIR_V      = 0x13,
+    RF_PAY_EXIT         = 0x14
 };
 
 enum _AUTH_TYPE_
