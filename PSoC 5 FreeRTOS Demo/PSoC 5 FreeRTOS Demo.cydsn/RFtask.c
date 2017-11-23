@@ -40,9 +40,8 @@ void RF_Task(void *arg)
     uint16 i = 0; 
     uint8 x;
     static uint16 cnt = 0;  
-    uint8 FlagRF;
+    uint8 FlagRF = 0;
     //uint8 FlagRecv = 0;
-    uint8 HeaderRF = 0;
     uint8 buffer_rfTMP;
     uint8 GeneralConfig;
 
@@ -81,7 +80,6 @@ void RF_Task(void *arg)
         bufferDisplay4.VarActual = 1;
     }
     LongEsperada = 0;
-    HeaderRF = 1;
     while(1) 
     {       
         while(RF_Connection_GetRxBufferSize() > 0)  
@@ -99,8 +97,7 @@ void RF_Task(void *arg)
 //            }
             if (buffer_rfTMP == 0xBC)
             { 
-                i = 0;
-                HeaderRF = 0;
+                i = 0;                
                 LongEsperada = 0;
             }
                                  
@@ -230,9 +227,6 @@ void RF_Task(void *arg)
                     {
                        pollingRF_Rx(buffer_rf);
                        RFOnline = 1; 
-                       HeaderRF = 1;
-//                       i = 0;
-//                       LongEsperada = 0;
 					   for(x = 0; x < 100; x++)
 					   {
 						   buffer_rf[x] = 0x00;
@@ -240,14 +234,7 @@ void RF_Task(void *arg)
                     }
                     else
                     {
-                       RFOnline = 0;
-                       HeaderRF = 1;
-//                       i = 0;
-//                       LongEsperada = 0;
-//                       for(x = 0; x < 100; x++)
-//					   {
-//						   buffer_rf[x] = 0x00;
-//					   }
+                       RFOnline = 0;                       
                     }  
                 }
                 else
@@ -256,10 +243,7 @@ void RF_Task(void *arg)
                     {
                         
                        pollingRF_Rx(buffer_rf);
-                       RFOnline = 1; 
-                       HeaderRF = 1;
-//                       i = 0;
-//                       LongEsperada = 0;
+                       RFOnline = 1;                        
                        for(x = 0; x < 100; x++)
 					   {
 						   buffer_rf[x] = 0x00;
@@ -267,8 +251,7 @@ void RF_Task(void *arg)
                     }
                     else
                     {
-                       RFOnline = 0;
-                       HeaderRF = 1;
+                       RFOnline = 0;                       
                     }
                 }
                 buffer_rf[6] = 0xFF;

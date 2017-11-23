@@ -78,15 +78,7 @@ uint8 passwordPump[5] = "00204";
 */
 void InitDisplay1(){ 
     uint8 x;
-    uint8_t iniText[10]        = "Iniciando"; 
-    uint8_t Unit[10]           = "S/D/Dupla ";
-    uint8_t Unit2[10]          = "Quadrupla";
-    uint8_t Unit3[10]          = "Sextupla";
-    uint8_t Unit4[10]          = "Octupla";
-    uint8_t DisplayMode0[10]   = "5-5-4     ";
-    uint8_t DisplayMode[10]    = "6-6-4     ";
-    uint8_t DisplayMode2[10]   = "7-7-5     ";
-    uint8_t DisplayMode3[10]   = "8-7-5     ";
+    //uint8_t DisplayMode3[10]   = "8-7-5     ";
       
     for(x = 0; x < 13; x++)
     {
@@ -108,98 +100,98 @@ void InitDisplay1(){
     if(NumPositions == 2)
     {
         SetPicture(1, DISPLAY_INICIO0);         
-        ShowMessage(1,iniText,0);    
+        //ShowMessage(1,iniText,0);    
         vTaskDelay( 300 / portTICK_PERIOD_MS );              //Freertos delay
-        if(UnitType == 0)
+        if(EEPROM_1_ReadByte(0) == 0)
         {
-            side.a.hoseNumber = UnitType + 1;
-            side.b.hoseNumber = UnitType + 1;
-            ShowMessage(1,Unit,0);                          //Mostrar tipo de dispensador      
+            side.a.hoseNumber = EEPROM_1_ReadByte(0) + 1;
+            side.b.hoseNumber = EEPROM_1_ReadByte(0) + 1;   //UnitType
+            //ShowMessage(1,Unit,0);                          //Mostrar tipo de dispensador      
         }
-        if(UnitType == 1)
+        if(EEPROM_1_ReadByte(0) == 1)
         {
-            side.a.hoseNumber = UnitType + 1;
-            side.b.hoseNumber = UnitType + 1;
-            ShowMessage(1,Unit2,0);
+            side.a.hoseNumber = EEPROM_1_ReadByte(0) + 1;
+            side.b.hoseNumber = EEPROM_1_ReadByte(0) + 1;
+            //ShowMessage(1,Unit2,0);
         }
-        if(UnitType == 2)
+        if(EEPROM_1_ReadByte(0) == 2)
         {
-            side.a.hoseNumber = UnitType + 1;
-            side.b.hoseNumber = UnitType + 1;
-            ShowMessage(1,Unit3,0);
+            side.a.hoseNumber = EEPROM_1_ReadByte(0) + 1;
+            side.b.hoseNumber = EEPROM_1_ReadByte(0) + 1;
+            //ShowMessage(1,Unit3,0);
         }
-        if(UnitType == 3)
+        if(EEPROM_1_ReadByte(0) == 3)
         {
-            side.a.hoseNumber = UnitType + 1;
-            side.b.hoseNumber = UnitType + 1;
-            ShowMessage(1,Unit4,0);
+            side.a.hoseNumber = EEPROM_1_ReadByte(0) + 1;
+            side.b.hoseNumber = EEPROM_1_ReadByte(0) + 1;
+            //ShowMessage(1,Unit4,0);
         } 
-        if(DDMode == 0)
+        if(EEPROM_1_ReadByte(5) == 0) //DDMode
         {
-            ShowMessage(1,DisplayMode0,22);                 //Mostrar modo de display
+            //ShowMessage(1,DisplayMode0,22);                 //Mostrar modo de display
             digits = 5;
         }
-        if(DDMode == 1)
+        if(EEPROM_1_ReadByte(5) == 1) //DDMode
         {
-            ShowMessage(1,DisplayMode,22);                  //Mostrar modo de display
+            //ShowMessage(1,DisplayMode,22);                  //Mostrar modo de display
             digits = 6;
         }
-        if(DDMode == 2)
+        if(EEPROM_1_ReadByte(5) == 2) //DDMode
         {
-           ShowMessage(1,DisplayMode2,22);
+           //ShowMessage(1,DisplayMode2,22);
             digits = 7;
         }
-        if(DDMode == 3)
+        if(EEPROM_1_ReadByte(5) == 3) //DDMode
         {
-            ShowMessage(1,DisplayMode3,22);
+            //ShowMessage(1,DisplayMode3,22);
             digits = 8;
         }
     }
     if(NumPositions == 4)
     {
         SetPicture(1,DISPLAY_SELECCIONE_POSICION);        
-        ShowMessage(1, iniText, 0);    
+        //ShowMessage(1, iniText, 0);    
         vTaskDelay( 300 / portTICK_PERIOD_MS );              //Freertos delay
-        if(UnitType == 0)
+        if(EEPROM_1_ReadByte(0) == 0) //UnitType
         {
-            side.a.hoseNumber = UnitType + 1;
-            side.b.hoseNumber = UnitType + 1;
-            side.c.hoseNumber = UnitType + 1;
-            side.d.hoseNumber = UnitType + 1;
-            ShowMessage(1,Unit,0);                          //Mostrar tipo de dispensador      
+            side.a.hoseNumber = EEPROM_1_ReadByte(0) + 1;
+            side.b.hoseNumber = EEPROM_1_ReadByte(0) + 1;
+            side.c.hoseNumber = EEPROM_1_ReadByte(0) + 1;
+            side.d.hoseNumber = EEPROM_1_ReadByte(0) + 1;
+            //ShowMessage(1,Unit,0);                          //Mostrar tipo de dispensador      
         }
-        if(UnitType == 1)
+        if(EEPROM_1_ReadByte(0) == 1)
         {
-            side.a.hoseNumber = UnitType ;
-            side.b.hoseNumber = UnitType ;
-            side.c.hoseNumber = UnitType ;
-            side.d.hoseNumber = UnitType ;
-            ShowMessage(1,Unit2,0);
+            side.a.hoseNumber = EEPROM_1_ReadByte(0) ;
+            side.b.hoseNumber = EEPROM_1_ReadByte(0) ;
+            side.c.hoseNumber = EEPROM_1_ReadByte(0) ;
+            side.d.hoseNumber = EEPROM_1_ReadByte(0) ;
+            //ShowMessage(1,Unit2,0);
         }
-        if(UnitType == 2)
+        if(EEPROM_1_ReadByte(0) == 2)
         {
-            side.a.hoseNumber = UnitType;
-            side.b.hoseNumber = UnitType;
-            side.c.hoseNumber = UnitType - 1;
-            side.d.hoseNumber = UnitType - 1;
-            ShowMessage(1,Unit3,0);
+            side.a.hoseNumber = EEPROM_1_ReadByte(0);
+            side.b.hoseNumber = EEPROM_1_ReadByte(0);
+            side.c.hoseNumber = EEPROM_1_ReadByte(0) - 1;
+            side.d.hoseNumber = EEPROM_1_ReadByte(0) - 1;
+            //ShowMessage(1,Unit3,0);
         }
-        if(UnitType == 3)
+        if(EEPROM_1_ReadByte(0) == 3)
         {
-            side.a.hoseNumber = UnitType - 1;
-            side.b.hoseNumber = UnitType - 1;
-            side.c.hoseNumber = UnitType - 1;
-            side.d.hoseNumber = UnitType - 1;
-            ShowMessage(1,Unit4,0);
+            side.a.hoseNumber = EEPROM_1_ReadByte(0) - 1;
+            side.b.hoseNumber = EEPROM_1_ReadByte(0) - 1;
+            side.c.hoseNumber = EEPROM_1_ReadByte(0) - 1;
+            side.d.hoseNumber = EEPROM_1_ReadByte(0) - 1;
+            //ShowMessage(1,Unit4,0);
         }    
-        if(DDMode == 1)
+        if(EEPROM_1_ReadByte(5) == 1) //DDMode
         {
-            ShowMessage(1,DisplayMode,22);                  //Mostrar modo de display
+            //ShowMessage(1,DisplayMode,22);                  //Mostrar modo de display
             digits = 6;
         }
-        if(DDMode == 2)
+        if(EEPROM_1_ReadByte(5) == 2) //DDMode
         {
-            ShowMessage(1,DisplayMode2,22);
+            //ShowMessage(1,DisplayMode2,22);
             digits = 7;
         } 
     }        
@@ -312,7 +304,7 @@ void PollingDisplay1(void){
                 {     
                     if(NumPositions == 2 && bufferDisplay1.PrintEnd == 0){
                         flowDisplay1 = 2;                         //Pantalla forma de pago                      
-                        if(logoPrint[1]!= 11){
+                        if(EEPROM_1_ReadByte(215)!= 11){
                             SetPicture(1, DISPLAY_FORMA_PAGO_DESEADA);                                                
 							Display1_ClearRxBuffer();
                         }else{
@@ -324,7 +316,7 @@ void PollingDisplay1(void){
                                 if(bufferDisplay1.flagActiveSale || bufferDisplay1.PrintEnd == 1){
                                     flowDisplay1 = flowPos;      //Si está vendiendo en esta posición regresa a su flujo
                                 }else{
-                                    if(logoPrint[1]!= 11){
+                                    if(EEPROM_1_ReadByte(215)!= 11){
                                         SetPicture(1, DISPLAY_FORMA_PAGO_DESEADA);                                                
                                     }else{
                                         SetPicture(1,DISPLAY_FORMA_PAGO_DESEADA_TERPEL);
@@ -353,7 +345,7 @@ void PollingDisplay1(void){
                                 if (bufferDisplay3.flagActiveSale || bufferDisplay3.PrintEnd == 1){                                    
                                     flowDisplay3 = flowPosC;     //Si la venta está activa en POS B regresa a su flujo
                                 }else{
-                                    if(logoPrint[1]!= 11){
+                                    if(EEPROM_1_ReadByte(215)!= 11){
                                         SetPicture(1, DISPLAY_FORMA_PAGO_DESEADA);                                                
                                     }else{
                                         SetPicture(1,DISPLAY_FORMA_PAGO_DESEADA_TERPEL);
@@ -377,7 +369,7 @@ void PollingDisplay1(void){
                         case 0x0D:  //Pantalla efectivo   
                             if(EEPROM_1_ReadByte(220) == 1)
                             {
-                                if(logoPrint[1]!= 11){
+                                if(EEPROM_1_ReadByte(215)!= 11){
                                     flowDisplay1 = 3; 
                                     AuthType = 2;
                                     bufferDisplay1.saleType = 1;                                    
@@ -406,7 +398,7 @@ void PollingDisplay1(void){
                             if(EEPROM_1_ReadByte(220) == 1)
                             {                                
                                 bufferDisplay1.saleType = 2;
-                                if(logoPrint[1]!= 11){
+                                if(EEPROM_1_ReadByte(215)!= 11){
                                     flowDisplay1 = 10;
                                     SetPicture(1, DISPLAY_ID_DIGITAL);
                                 }else{
@@ -519,7 +511,7 @@ void PollingDisplay1(void){
                             numberKeys1 = 0;
                             SetPicture(1, DISPLAY_INTRODUZCA_VALOR);   
                             WriteLCD(1, '$', 3, 2, 1, 0x0000, 'N');                            
-                            if(MoneyDec > 0)
+                            if(EEPROM_1_ReadByte(2) > 0)
                             {
                                 flagPoint1 = 0;
                             }else
@@ -535,7 +527,7 @@ void PollingDisplay1(void){
                             numberKeys1 = 0;                            
                             SetPicture(1, DISPLAY_INTRODUZCA_VOLUMEN);                            
                             WriteLCD(1, 'G', 3, 2, 1, 0x0000, 'N');                            
-                            if(VolDec > 0)
+                            if(EEPROM_1_ReadByte(3) > 0) //VolDec
                             {
                                 flagPoint1 = 0;
                             }else
@@ -1060,7 +1052,7 @@ void PollingDisplay1(void){
                             SetPicture(1, DISPLAY_ESPERANDO_ID);                            
                         break; 
                         case 0xB7:  //ID Number
-                            if(logoPrint[1]!= 11){
+                            if(EEPROM_1_ReadByte(215)!= 11){
                             	flowDisplay1 = 24;
                             	numberKeys1 = 0;   
                                 bufferDisplay1.idType = 1;                            	
@@ -1538,7 +1530,7 @@ void PollingDisplay1(void){
                     switch(Display1_rxBuffer[3])
                     {                                                                                                 
                         case 0x0A:
-                            printBalance(printPortA,side.a.dir);
+                            printBalance(EEPROM_1_ReadByte(8),side.a.dir); //PrintPortA
                             vTaskDelay( 200 / portTICK_PERIOD_MS );
                             bufferDisplay1.flagPrint =  0;
                             flowPos      = 0;
@@ -1956,13 +1948,11 @@ void PollingDisplay1(void){
                             SetPicture(1,DISPLAY_IMPRESORA_NO_FUNCIONANDO);                            
                         break;
                         case 0x39:  //Si funcionan
-                            flowDisplay1 = 15; 
-                            printPortA = 1;
-                            printPortB = 2;
-                            EEPROM_1_WriteByte(printPortA,8);
-                            EEPROM_1_WriteByte(printPortB,9);
+                            flowDisplay1 = 15;                           
+                            EEPROM_1_WriteByte(1,8);
+                            EEPROM_1_WriteByte(2,9);
                             SetPicture(1,DISPLAY_CONFIGURACIONES);
-                        break;                                             
+                        break;                                            
                         case 0x7E:  //Pantalla Inicial
                             bufferDisplay1.flagPrint =  0;
                             SetPicture(1,DISPLAY_INICIO0);
@@ -1990,27 +1980,21 @@ void PollingDisplay1(void){
                     {
                         case 0x8C:  //1 no funciona  
                             flowDisplay1 = 15; 
-                            printPortA = 2;
-                            printPortB = 2;
-                            EEPROM_1_WriteByte(printPortA,8);
-                            EEPROM_1_WriteByte(printPortB,9);
+                            EEPROM_1_WriteByte(2,8);
+                            EEPROM_1_WriteByte(2,9);
                             SetPicture(1,DISPLAY_CONFIGURACIONES);                            
                         break;
                         case 0x8D:  //2 no funciona
                             flowDisplay1 = 15; 
-                            printPortA = 1;
-                            printPortB = 1;
-                            EEPROM_1_WriteByte(printPortA,8);
-                            EEPROM_1_WriteByte(printPortB,9);
+                            EEPROM_1_WriteByte(1,8);
+                            EEPROM_1_WriteByte(1,9);
                             SetPicture(1,DISPLAY_CONFIGURACIONES); 
                         break;
                             
                         case 0x8E:  //ninguna funciona
                             flowDisplay1 = 15; 
-                            printPortA = 0;
-                            printPortB = 0;
-                            EEPROM_1_WriteByte(printPortA,8);
-                            EEPROM_1_WriteByte(printPortB,9);
+                            EEPROM_1_WriteByte(0,8);
+                            EEPROM_1_WriteByte(0,9);
                             SetPicture(1,DISPLAY_CONFIGURACIONES); 
                         break;
                                                
@@ -3171,7 +3155,7 @@ void PollingDisplay1(void){
                     switch(Display1_rxBuffer[3])
                     {                                                                                                 
                         case 0x0A:  //Imprimir comprobante
-                            printPayment(printPortA,side.a.RF);
+                            printPayment(EEPROM_1_ReadByte(8),side.a.RF);
                             vTaskDelay( 500 / portTICK_PERIOD_MS ); 
                             flowPos      = 0;
                             flowDisplay1 = 0;                            
@@ -3304,7 +3288,7 @@ void PollingDisplay2(void){
                 {                                             
                     if(NumPositions == 2 && bufferDisplay2.PrintEnd == 0){
                         flowDisplay2 = 2;                               //Pantalla forma de pago                      
-                        if(logoPrint[1]!= 11){
+                        if(EEPROM_1_ReadByte(215)!= 11){
                             SetPicture(2, DISPLAY_FORMA_PAGO_DESEADA);                                                
 							Display2_ClearRxBuffer();
                         }else{
@@ -3316,7 +3300,7 @@ void PollingDisplay2(void){
                                 if(bufferDisplay2.flagActiveSale || bufferDisplay2.PrintEnd == 1){
                                     flowDisplay2 = flowPos;      //Si está vendiendo en esta posición regresa a su flujo
                                 }else{
-                                    if(logoPrint[1]!= 11){
+                                    if(EEPROM_1_ReadByte(215)!= 11){
                                         SetPicture(2, DISPLAY_FORMA_PAGO_DESEADA);                                                
                                     }else{
                                         SetPicture(2,DISPLAY_FORMA_PAGO_DESEADA_TERPEL);
@@ -3345,7 +3329,7 @@ void PollingDisplay2(void){
                                 if (bufferDisplay4.flagActiveSale || bufferDisplay4.PrintEnd == 1){                                    
                                     flowDisplay4 = flowPosD;    //Si la venta está activa en POS B regresa a su flujo
                                 }else{
-                                    if(logoPrint[1]!= 11){
+                                    if(EEPROM_1_ReadByte(215)!= 11){
                                         SetPicture(2, DISPLAY_FORMA_PAGO_DESEADA);                                                
                                     }else{
                                         SetPicture(2,DISPLAY_FORMA_PAGO_DESEADA_TERPEL);
@@ -3372,7 +3356,7 @@ void PollingDisplay2(void){
                         case 0x0D:  //Pantalla efectivo   
                             if(EEPROM_1_ReadByte(221) == 1)
                             {
-                                if(logoPrint[1]!= 11){
+                                if(EEPROM_1_ReadByte(215)!= 11){
                                     flowDisplay2 = 3; 
                                     AuthType2 = 2;
                                     bufferDisplay2.saleType = 1;                                    
@@ -3399,7 +3383,7 @@ void PollingDisplay2(void){
                             if(EEPROM_1_ReadByte(221) == 1)
                             {                                
                                 bufferDisplay2.saleType = 2;                                
-                                if(logoPrint[1]!= 11){
+                                if(EEPROM_1_ReadByte(215)!= 11){
                                     flowDisplay2 = 10;
                                     SetPicture(2, DISPLAY_ID_DIGITAL);
                                 }else{
@@ -3511,7 +3495,7 @@ void PollingDisplay2(void){
                             numberKeys2 = 0;
                             SetPicture(2,DISPLAY_INTRODUZCA_VALOR);   
                             WriteLCD(2,'$',3,2,1,0x0000,'N');							
-                            if(MoneyDec > 0)
+                            if(EEPROM_1_ReadByte(2) > 0)
                             {
                                 flagPoint2 = 0;
                             }else
@@ -3527,7 +3511,7 @@ void PollingDisplay2(void){
                             numberKeys2 = 0;                            
                             SetPicture(2,DISPLAY_INTRODUZCA_VOLUMEN);                            
                             WriteLCD(2,'G',3,2,1,0x0000,'N');                            							
-                            if(VolDec > 0)
+                            if(EEPROM_1_ReadByte(3) > 0) //VolDec
                             {
                                 flagPoint2 = 0;
                             }else
@@ -4047,7 +4031,7 @@ void PollingDisplay2(void){
                             SetPicture(2,DISPLAY_ESPERANDO_ID);                            
                         break; 
                         case 0xB7:  //ID por número
-                            if(logoPrint[1]!= 11){
+                            if(EEPROM_1_ReadByte(215)!= 11){
                             	flowDisplay2 = 24;
                             	numberKeys2 = 0;                            
                             	//bufferDisplay2.flagPrint =  1;
@@ -4521,7 +4505,7 @@ void PollingDisplay2(void){
                     switch(Display2_rxBuffer[3])
                     {                                                                                                 
                         case 0x0A:
-                            printBalance(printPortB,side.d.dir);
+                            printBalance(EEPROM_1_ReadByte(9),side.d.dir);
                             vTaskDelay( 200 / portTICK_PERIOD_MS );
                             bufferDisplay2.flagPrint =  0;
                             flowPosB     = 0;
@@ -4956,10 +4940,8 @@ void PollingDisplay2(void){
                         break;
                         case 0x39:  //Si funcionan
                             flowDisplay2 = 15; 
-                            printPortA = 1;
-                            printPortB = 2;
-                            EEPROM_1_WriteByte(printPortA,8);
-                            EEPROM_1_WriteByte(printPortB,9);
+                            EEPROM_1_WriteByte(1,8);
+                            EEPROM_1_WriteByte(2,9);
                             SetPicture(2,DISPLAY_CONFIGURACIONES);
                         break;
                                                
@@ -4990,27 +4972,21 @@ void PollingDisplay2(void){
                     {
                         case 0x8C:  //1 no funciona  
                             flowDisplay2 = 15; 
-                            printPortA = 2;
-                            printPortB = 2;
-                            EEPROM_1_WriteByte(printPortA,8);
-                            EEPROM_1_WriteByte(printPortB,9);
+                            EEPROM_1_WriteByte(2,8);
+                            EEPROM_1_WriteByte(2,9);
                             SetPicture(2,DISPLAY_CONFIGURACIONES);                            
                         break;
                         case 0x8D:  //2 no funciona
                             flowDisplay2 = 15; 
-                            printPortA = 1;
-                            printPortB = 1;
-                            EEPROM_1_WriteByte(printPortA,8);
-                            EEPROM_1_WriteByte(printPortB,9);
+                            EEPROM_1_WriteByte(1,8);
+                            EEPROM_1_WriteByte(1,9);
                             SetPicture(2,DISPLAY_CONFIGURACIONES); 
                         break;
                             
                         case 0x8E:  //ninguna funciona
                             flowDisplay2 = 15; 
-                            printPortA = 0;
-                            printPortB = 0;
-                            EEPROM_1_WriteByte(printPortA,8);
-                            EEPROM_1_WriteByte(printPortB,9);
+                            EEPROM_1_WriteByte(0,8);
+                            EEPROM_1_WriteByte(0,9);
                             SetPicture(2,DISPLAY_CONFIGURACIONES); 
                         break;
                                                
@@ -6124,7 +6100,7 @@ void PollingDisplay2(void){
                     switch(Display2_rxBuffer[3])
                     {                                                                                                 
                         case 0x0A:  //Imprimir comprobante
-                            printPayment(printPortB,side.b.RF);
+                            printPayment(EEPROM_1_ReadByte(9),side.b.RF);
                             vTaskDelay( 500 / portTICK_PERIOD_MS ); 
                             flowPosB     = 0;
                             flowDisplay2 = 0;                            
@@ -6252,7 +6228,7 @@ void PollingDisplay3(void){
                                 if(bufferDisplay1.flagActiveSale || bufferDisplay1.PrintEnd == 1){
                                     flowDisplay1 = flowPos;      //Si está vendiendo en esta posición regresa a su flujo
                                 }else{
-                                    if(logoPrint[1]!= 11){
+                                    if(EEPROM_1_ReadByte(215)!= 11){
                                         SetPicture(1, DISPLAY_FORMA_PAGO_DESEADA);                                                
                                     }else{
                                         SetPicture(1,DISPLAY_FORMA_PAGO_DESEADA_TERPEL);
@@ -6281,7 +6257,7 @@ void PollingDisplay3(void){
                                 if (bufferDisplay3.flagActiveSale || bufferDisplay3.PrintEnd == 1){                                    
                                     flowDisplay3 = flowPosC;    //Si la venta está activa en POS B regresa a su flujo
                                 }else{
-                                    if(logoPrint[1]!= 11){
+                                    if(EEPROM_1_ReadByte(215)!= 11){
                                         SetPicture(1, DISPLAY_FORMA_PAGO_DESEADA);                                                
                                     }else{
                                         SetPicture(1,DISPLAY_FORMA_PAGO_DESEADA_TERPEL);
@@ -6304,7 +6280,7 @@ void PollingDisplay3(void){
                         case 0x0D:  //Pantalla efectivo   
                             if(EEPROM_1_ReadByte(222) == 1)
                             {
-                                if(logoPrint[1]!= 11){
+                                if(EEPROM_1_ReadByte(215)!= 11){
                                     flowDisplay3 = 3; 
                                     AuthType3 = 2;
                                     bufferDisplay3.saleType = 1;                                    
@@ -6333,7 +6309,7 @@ void PollingDisplay3(void){
                             if(EEPROM_1_ReadByte(222) == 1)
                             {                                
                                 bufferDisplay3.saleType = 2;                                
-                                if(logoPrint[1]!= 11){
+                                if(EEPROM_1_ReadByte(215)!= 11){
                                     flowDisplay3 = 10;
                                     SetPicture(1, DISPLAY_ID_DIGITAL);
                                 }else{
@@ -6445,7 +6421,7 @@ void PollingDisplay3(void){
                             numberKeys3 = 0;
                             SetPicture(1, DISPLAY_INTRODUZCA_VALOR);   
                             WriteLCD(1, '$', 3, 2, 1, 0x0000, 'N');                            
-                            if(MoneyDec > 0)
+                            if(EEPROM_1_ReadByte(2) > 0)
                             {
                                 flagPoint3 = 0;
                             }else
@@ -6461,7 +6437,7 @@ void PollingDisplay3(void){
                             numberKeys3 = 0;                            
                             SetPicture(1, DISPLAY_INTRODUZCA_VOLUMEN);                            
                             WriteLCD(1, 'G', 3, 2, 1, 0x0000, 'N');                            
-                            if(VolDec > 0)
+                            if(EEPROM_1_ReadByte(3) > 0) //VolDec
                             {
                                 flagPoint3 = 0;
                             }else
@@ -6986,7 +6962,7 @@ void PollingDisplay3(void){
                             SetPicture(1, DISPLAY_ESPERANDO_ID);                            
                         break; 
                         case 0xB7:  //ID Number
-                            if(logoPrint[1]!= 11){
+                            if(EEPROM_1_ReadByte(215)!= 11){
                             	flowDisplay3 = 24;
                             	numberKeys3 = 0;                            
                             	//bufferDisplay3.flagPrint =  1;
@@ -7464,7 +7440,7 @@ void PollingDisplay3(void){
                     switch(Display1_rxBuffer[3])
                     {                                                                                                 
                         case 0x0A:
-                            printBalance(printPortA,side.c.dir);
+                            printBalance(EEPROM_1_ReadByte(8),side.c.dir);
                             vTaskDelay( 200 / portTICK_PERIOD_MS );
                             bufferDisplay3.flagPrint =  0;
                             flowPosC     = 0;
@@ -7870,10 +7846,8 @@ void PollingDisplay3(void){
                         break;
                         case 0x39:  //Si funcionan
                             flowDisplay3 = 15; 
-                            printPortA = 1;
-                            printPortB = 2;
-                            EEPROM_1_WriteByte(printPortA,8);
-                            EEPROM_1_WriteByte(printPortB,9);
+                            EEPROM_1_WriteByte(1,8);
+                            EEPROM_1_WriteByte(2,9);
                             SetPicture(1,DISPLAY_CONFIGURACIONES);
                         break;                                             
                         case 0x7E:  //Pantalla Inicial
@@ -7903,27 +7877,21 @@ void PollingDisplay3(void){
                     {
                         case 0x8C:  //1 no funciona  
                             flowDisplay3 = 15; 
-                            printPortA = 2;
-                            printPortB = 2;
-                            EEPROM_1_WriteByte(printPortA,8);
-                            EEPROM_1_WriteByte(printPortB,9);
+                            EEPROM_1_WriteByte(2,8);
+                            EEPROM_1_WriteByte(2,9);
                             SetPicture(1,DISPLAY_CONFIGURACIONES);                            
                         break;
                         case 0x8D:  //2 no funciona
-                            flowDisplay3 = 15; 
-                            printPortA = 1;
-                            printPortB = 1;
-                            EEPROM_1_WriteByte(printPortA,8);
-                            EEPROM_1_WriteByte(printPortB,9);
+                            flowDisplay3 = 15;
+                            EEPROM_1_WriteByte(1,8);
+                            EEPROM_1_WriteByte(1,9);
                             SetPicture(1,DISPLAY_CONFIGURACIONES); 
                         break;
                             
                         case 0x8E:  //ninguna funciona
                             flowDisplay3 = 15; 
-                            printPortA = 0;
-                            printPortB = 0;
-                            EEPROM_1_WriteByte(printPortA,8);
-                            EEPROM_1_WriteByte(printPortB,9);
+                            EEPROM_1_WriteByte(0,8);
+                            EEPROM_1_WriteByte(0,9);
                             SetPicture(1,DISPLAY_CONFIGURACIONES); 
                         break;
                                                
@@ -9081,7 +9049,7 @@ void PollingDisplay3(void){
                     switch(Display1_rxBuffer[3])
                     {                                                                                                 
                         case 0x0A:  //Imprimir comprobante
-                            printPayment(printPortA,side.c.RF);
+                            printPayment(EEPROM_1_ReadByte(8),side.c.RF);
                             vTaskDelay( 500 / portTICK_PERIOD_MS ); 
                             flowPosC     = 0;
                             flowDisplay3 = 0;                            
@@ -9210,7 +9178,7 @@ void PollingDisplay4(void){
                                 if(bufferDisplay2.flagActiveSale || bufferDisplay2.PrintEnd == 1){
                                     flowDisplay2 = flowPosB;      //Si está vendiendo en esta posición regresa a su flujo
                                 }else{
-                                    if(logoPrint[1]!= 11){
+                                    if(EEPROM_1_ReadByte(215)!= 11){
                                         SetPicture(2, DISPLAY_FORMA_PAGO_DESEADA);                                                
                                     }else{
                                         SetPicture(2,DISPLAY_FORMA_PAGO_DESEADA_TERPEL);
@@ -9239,7 +9207,7 @@ void PollingDisplay4(void){
                                 if (bufferDisplay4.flagActiveSale || bufferDisplay4.PrintEnd == 1){                                    
                                     flowDisplay4 = flowPosD;    //Si la venta está activa en POS B regresa a su flujo
                                 }else{
-                                    if(logoPrint[1]!= 11){
+                                    if(EEPROM_1_ReadByte(215)!= 11){
                                         SetPicture(2, DISPLAY_FORMA_PAGO_DESEADA);                                                
                                     }else{
                                         SetPicture(2,DISPLAY_FORMA_PAGO_DESEADA_TERPEL);
@@ -9265,7 +9233,7 @@ void PollingDisplay4(void){
                         case 0x0D:  //Pantalla efectivo   
                             if(EEPROM_1_ReadByte(223) == 1)
                             {
-                                if(logoPrint[1]!= 11){
+                                if(EEPROM_1_ReadByte(215)!= 11){
                                     flowDisplay4 = 3; 
                                     AuthType4 = 2;
                                     bufferDisplay4.saleType = 1;                                    
@@ -9293,7 +9261,7 @@ void PollingDisplay4(void){
                             if(EEPROM_1_ReadByte(223) == 1)
                             {                                
                                 bufferDisplay4.saleType = 2;                                
-                                if(logoPrint[1]!= 11){
+                                if(EEPROM_1_ReadByte(215)!= 11){
                                     flowDisplay4 = 10;
                                     SetPicture(2, DISPLAY_ID_DIGITAL);
                                 }else{
@@ -9407,7 +9375,7 @@ void PollingDisplay4(void){
                             numberKeys4 = 0;
                             SetPicture(2,DISPLAY_INTRODUZCA_VALOR);   
                             WriteLCD(2,'$',3,2,1,0x0000,'N');							
-                            if(MoneyDec > 0)
+                            if(EEPROM_1_ReadByte(2) > 0)
                             {
                                 flagPoint4 = 0;
                             }else
@@ -9423,7 +9391,7 @@ void PollingDisplay4(void){
                             numberKeys4 = 0;                            
                             SetPicture(2,DISPLAY_INTRODUZCA_VOLUMEN);                            
                             WriteLCD(2,'G',3,2,1,0x0000,'N');                            							
-                            if(VolDec > 0)
+                            if(EEPROM_1_ReadByte(3) > 0) //VolDec
                             {
                                 flagPoint4 = 0;
                             }else
@@ -9938,7 +9906,7 @@ void PollingDisplay4(void){
                             SetPicture(2,DISPLAY_ESPERANDO_ID);                            
                         break; 
                         case 0xB7:  //ID por número
-                            if(logoPrint[1]!= 11){
+                            if(EEPROM_1_ReadByte(215)!= 11){
                             	flowDisplay4 = 24;
                             	numberKeys4 = 0;                            
                             	//bufferDisplay4.flagPrint =  1;
@@ -10417,7 +10385,7 @@ void PollingDisplay4(void){
                     switch(Display2_rxBuffer[3])
                     {                                                                                                 
                         case 0x0A:
-                            printBalance(printPortB,side.d.dir);
+                            printBalance(EEPROM_1_ReadByte(9),side.d.dir);
                             vTaskDelay( 200 / portTICK_PERIOD_MS );
                             bufferDisplay4.flagPrint =  0;
                             flowPosD     = 0;
@@ -10841,10 +10809,8 @@ void PollingDisplay4(void){
                         break;
                         case 0x39:  //Si funcionan
                             flowDisplay4 = 15; 
-                            printPortA = 1;
-                            printPortB = 2;
-                            EEPROM_1_WriteByte(printPortA,8);
-                            EEPROM_1_WriteByte(printPortB,9);
+                            EEPROM_1_WriteByte(1,8);
+                            EEPROM_1_WriteByte(2,9);
                             SetPicture(2,DISPLAY_CONFIGURACIONES);
                         break;
                                                
@@ -10875,27 +10841,21 @@ void PollingDisplay4(void){
                     {
                         case 0x8C:  //1 no funciona  
                             flowDisplay4 = 15; 
-                            printPortA = 2;
-                            printPortB = 2;
-                            EEPROM_1_WriteByte(printPortA,8);
-                            EEPROM_1_WriteByte(printPortB,9);
+                            EEPROM_1_WriteByte(2,8);
+                            EEPROM_1_WriteByte(2,9);
                             SetPicture(2,DISPLAY_CONFIGURACIONES);                            
                         break;
                         case 0x8D:  //2 no funciona
                             flowDisplay4 = 15; 
-                            printPortA = 1;
-                            printPortB = 1;
-                            EEPROM_1_WriteByte(printPortA,8);
-                            EEPROM_1_WriteByte(printPortB,9);
+                            EEPROM_1_WriteByte(1,8);
+                            EEPROM_1_WriteByte(1,9);
                             SetPicture(2,DISPLAY_CONFIGURACIONES); 
                         break;
                             
                         case 0x8E:  //ninguna funciona
                             flowDisplay4 = 15; 
-                            printPortA = 0;
-                            printPortB = 0;
-                            EEPROM_1_WriteByte(printPortA,8);
-                            EEPROM_1_WriteByte(printPortB,9);
+                            EEPROM_1_WriteByte(0,8);
+                            EEPROM_1_WriteByte(0,9);
                             SetPicture(2,DISPLAY_CONFIGURACIONES); 
                         break;
                                                
@@ -12006,7 +11966,7 @@ void PollingDisplay4(void){
                     switch(Display2_rxBuffer[3])
                     {                                                                                                 
                         case 0x0A:  //Imprimir comprobante
-                            printPayment(printPortB,side.d.RF);
+                            printPayment(EEPROM_1_ReadByte(9),side.d.RF);
                             vTaskDelay( 500 / portTICK_PERIOD_MS ); 
                             flowPosD     = 0;
                             flowDisplay4 = 0;                            
@@ -13188,7 +13148,7 @@ void PumpAction(uint8 PositionPump, uint8 State)
                     bufferDisplay1.flagActiveSale = true;
                     bufferDisplay1.flagEndSale = false;
                     bufferDisplay1.PrintEnd = 1;
-                    DeliveryStateA = 1;
+                    //DeliveryStateA = 1;
                     if(side.a.BusyChange == 1)
                         side.a.rfState = RF_DELIVERING;              
                 }
@@ -13196,7 +13156,7 @@ void PumpAction(uint8 PositionPump, uint8 State)
                 {
                     bufferDisplay2.flagActiveSale = true;
                     bufferDisplay2.flagEndSale = false;
-                    DeliveryStateB = 1;
+                    //DeliveryStateB = 1;
                     bufferDisplay2.PrintEnd = 1;
                     if(side.b.BusyChange == 1)
                         side.b.rfState = RF_DELIVERING;               
@@ -13205,7 +13165,7 @@ void PumpAction(uint8 PositionPump, uint8 State)
                 {
                     bufferDisplay3.flagActiveSale = true;
                     bufferDisplay3.flagEndSale = false;
-                    DeliveryStateC = 1;
+                    //DeliveryStateC = 1;
                     bufferDisplay3.PrintEnd = 1;
                     if(side.c.BusyChange == 1)
                         side.c.rfState = RF_DELIVERING;               
@@ -13214,7 +13174,7 @@ void PumpAction(uint8 PositionPump, uint8 State)
                 {
                     bufferDisplay4.flagActiveSale = true;
                     bufferDisplay4.flagEndSale = false;
-                    DeliveryStateD = 1;
+                    //DeliveryStateD = 1;
                     bufferDisplay4.PrintEnd = 1;
                     if(side.d.BusyChange == 1)
                         side.d.rfState = RF_DELIVERING;                

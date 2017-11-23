@@ -18,6 +18,18 @@
 #include <semphr.h>
 #include "os_resource.h"
 
+int8_t bandera_entrada;
+int16_t bandera_numero_entrada = 0;
+static int8_t byte_ibutto = 16;
+static int8_t byte_tag = 16;
+static int8_t byte_RFID = 16;
+static int8_t byte_QR = 40;
+static int8_t byte_MAG = 40;
+static int8_t byte_data;
+int8_t bandera_posicion;
+int8_t bandera_posicion1;
+int8_t bandera_posicion2;
+
 void send_pirata(uint8_t data_tx[],uint8_t tamano)
 {
     uint16_t i=0;
@@ -85,8 +97,8 @@ uint8_t code_pirata(char pos, char tipo)
 {
 
     uint16 x;                         //PUNTEROS
-    uint16_t check;                       //CHECL ES EL VALOR PARA DEFINIR SI LA TRAMA LLEGO COMPLETA
-    uint16 tamano;                      //TAMAÑO DEL VECTOR QUE LLEGO
+    //uint16_t check;                       //CHECL ES EL VALOR PARA DEFINIR SI LA TRAMA LLEGO COMPLETA
+    //uint16 tamano;                      //TAMAÑO DEL VECTOR QUE LLEGO
     uint8_t copy_tipo;
  
     if(bandera_entrada == 0)            //BANDERA DE ENTRADA

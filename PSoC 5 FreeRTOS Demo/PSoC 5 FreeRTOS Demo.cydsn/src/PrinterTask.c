@@ -49,7 +49,7 @@ void PrinterTask(void *arg)
         {      
             //Impresion
             position = side.a.RF;
-            imprimir(printPortA, position);
+            imprimir(EEPROM_1_ReadByte(8), position);
             bufferDisplay1.flagPrint = 0;            
             bufferDisplay1.PrintFlagEOT = 0;
             for(x = 0; x < 10; x++)                                         //NUMERO DE VENTA
@@ -64,7 +64,7 @@ void PrinterTask(void *arg)
         {    
             //Impresion
             position = side.b.RF;
-            imprimir(printPortB, position);
+            imprimir(EEPROM_1_ReadByte(9), position);
             bufferDisplay2.flagPrint = 0;             
             bufferDisplay2.PrintFlagEOT = 0;            
             for(x = 0; x < 10; x++)                                         //NUMERO DE VENTA
@@ -80,7 +80,7 @@ void PrinterTask(void *arg)
                 
             //Impresion
             position = side.c.RF;
-            imprimir(printPortA, position);
+            imprimir(EEPROM_1_ReadByte(8), position);
             bufferDisplay3.flagPrint = 0;            
             bufferDisplay3.PrintFlagEOT = 0;
             for(x = 0; x < 10; x++)                                         //NUMERO DE VENTA
@@ -95,7 +95,7 @@ void PrinterTask(void *arg)
         {                    
             //Impresion
             position = side.d.RF;
-            imprimir(printPortB, position);
+            imprimir(EEPROM_1_ReadByte(9), position);
             bufferDisplay4.flagPrint = 0;
             bufferDisplay4.PrintFlagEOT = 0;                            
             for(x = 0; x < 10; x++)                                         //NUMERO DE VENTA

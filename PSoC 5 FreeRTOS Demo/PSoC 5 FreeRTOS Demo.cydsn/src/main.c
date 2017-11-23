@@ -41,7 +41,7 @@
 
 xSemaphoreHandle g_pUARTSemaphore;
       
-char Version[] = "MUX Version 26.3";
+char Version[] = "MUX Version 26.4";
 
 /*
  * Inicializa los perifiericos del sistema
@@ -61,12 +61,12 @@ void GlobalInitializer(){
  * Almacena la configuracion de puntos decimales y posiciones detectadas 
 */
 void StoreConfiguration(){
-    EEPROM_1_WriteByte(UnitType,0);
-    EEPROM_1_WriteByte(ConversionFactor,1);
-    EEPROM_1_WriteByte(MoneyDec,2);
-    EEPROM_1_WriteByte(VolDec,3);
-    EEPROM_1_WriteByte(PPUDec,4);
-    EEPROM_1_WriteByte(DDMode,5);
+    //EEPROM_1_WriteByte(UnitType,0);
+    //EEPROM_1_WriteByte(ConversionFactor,1);
+    //EEPROM_1_WriteByte(MoneyDec,2);
+    //EEPROM_1_WriteByte(VolDec,3);
+    //EEPROM_1_WriteByte(PPUDec,4);
+    //EEPROM_1_WriteByte(DDMode,5);
     EEPROM_1_WriteByte(digits,6); 
     EEPROM_1_WriteByte(side.a.dir,12);
     EEPROM_1_WriteByte(side.b.dir,13);
@@ -86,10 +86,7 @@ void loadConfiguration(){
     //PrinterType[1] = 1; // Tipo de impresora
     
     /// Leer desde eeprom externa ///
-    LeerEeprom(0,2);
-	for(x=0;x<=buffer_i2c[0];x++){
-		//logoPrint[x]=buffer_i2c[x];
-	}
+    
     LeerEeprom(2,2);
 	for(x=0;x<=buffer_i2c[0];x++){
 		PrinterType[x]=buffer_i2c[x];
@@ -184,24 +181,24 @@ void loadConfiguration(){
 		Pie3[x]=EEPROM_1_ReadByte(130+x);
 	}
 
-    MoneyDec   = EEPROM_1_ReadByte(2);  //Punto decimal dinero
-    VolDec     = EEPROM_1_ReadByte(3);  //Punto decimal volumen
-    PPUDec     = EEPROM_1_ReadByte(4);  //Punto decimal PPU
-    DDMode     = EEPROM_1_ReadByte(5);  //Punto decimal 
+    //MoneyDec   = EEPROM_1_ReadByte(2);  //Punto decimal dinero
+    //VolDec     = EEPROM_1_ReadByte(3);  //Punto decimal volumen
+    //PPUDec     = EEPROM_1_ReadByte(4);  //Punto decimal PPU
+    //DDMode     = EEPROM_1_ReadByte(5);  //Punto decimal 
     digits     = EEPROM_1_ReadByte(6);  //Digitos
-    bufferDisplay1.lockTurn = EEPROM_1_ReadByte(220);  
-    bufferDisplay2.lockTurn = EEPROM_1_ReadByte(221);
-    bufferDisplay3.lockTurn = EEPROM_1_ReadByte(222);
-    bufferDisplay4.lockTurn = EEPROM_1_ReadByte(223);
-    printPortA   = EEPROM_1_ReadByte(8);    //Puertos de impresion
-    printPortB   = EEPROM_1_ReadByte(9);    //Puertos de impresion
+    //bufferDisplay1.lockTurn = EEPROM_1_ReadByte(220);  
+    //bufferDisplay2.lockTurn = EEPROM_1_ReadByte(221);
+    //bufferDisplay3.lockTurn = EEPROM_1_ReadByte(222);
+    //bufferDisplay4.lockTurn = EEPROM_1_ReadByte(223);
+    //printPortA   = EEPROM_1_ReadByte(8);    //Puertos de impresion
+    //printPortB   = EEPROM_1_ReadByte(9);    //Puertos de impresion
     IDCast[0]    = EEPROM_1_ReadByte(10);   //ID Estacion1
     IDCast[1]    = EEPROM_1_ReadByte(11);   //ID Estacion2  
     side.a.dir   = EEPROM_1_ReadByte(12);   //Primera posicion
     side.b.dir   = EEPROM_1_ReadByte(13);   //Segunda posicion
     side.c.dir   = EEPROM_1_ReadByte(14);   //Tercera posicion
     side.d.dir   = EEPROM_1_ReadByte(15);   //Cuarta posicion
-    logoPrint[1] = EEPROM_1_ReadByte(215);  //Logo de estación
+    //logoPrint[1] = EEPROM_1_ReadByte(215);  //Logo de estación
 }
 
 /* 
@@ -238,69 +235,66 @@ void InitPump(){
     NumPositions = get_position();
     //console();
     if(NumPositions > 0)
-    {
-              
-            if(NumPositions <= 2)
+    {          
+        if(NumPositions <= 2)
+        {
+          if(get_state(side.a.dir) == PUMP_PEOT || 
+             get_state(side.a.dir) == PUMP_FEOT)
             {
-              if(get_state(side.a.dir) == PUMP_PEOT || 
-                 get_state(side.a.dir) == PUMP_FEOT)
-                {
-                    getSale(side.a.dir);
-                    CyDelay(100);
-                }
-                if(get_state(side.b.dir) == PUMP_PEOT || 
-                   get_state(side.b.dir) == PUMP_FEOT)
-                { 
-                    getSale(side.b.dir);
-                    CyDelay(100);
-                }
+                getSale(side.a.dir);
+                CyDelay(100);
             }
+            if(get_state(side.b.dir) == PUMP_PEOT || 
+               get_state(side.b.dir) == PUMP_FEOT)
+            { 
+                getSale(side.b.dir);
+                CyDelay(100);
+            }
+        }
             
-            if(NumPositions > 2)
+        if(NumPositions > 2)
+        {
+            if(get_state(side.a.dir) == PUMP_PEOT || 
+               get_state(side.a.dir) == PUMP_FEOT)
             {
-                if(get_state(side.a.dir) == PUMP_PEOT || 
-                   get_state(side.a.dir) == PUMP_FEOT)
-                {
-                    getSale(side.a.dir);
-                    CyDelay(100);
-                }
-                if(get_state(side.b.dir) == PUMP_PEOT || 
-                   get_state(side.b.dir) == PUMP_FEOT)
-                  {
-                    getSale(side.b.dir);
-                    CyDelay(100);
-                  }
-                if(get_state(side.c.dir) == PUMP_PEOT || 
-                   get_state(side.c.dir) == PUMP_FEOT)
-                  {
-                    getSale(side.c.dir);
-                    CyDelay(100);
-                  }
-                if(get_state(side.d.dir) == PUMP_PEOT || 
-                   get_state(side.d.dir) == PUMP_FEOT)
-                 {
-                    getSale(side.d.dir);
-                    CyDelay(100);
-                 }
+                getSale(side.a.dir);
+                CyDelay(100);
             }
-                    
-                
-            if(get_state(side.a.dir) == PUMP_IDLE && get_state(side.b.dir) == PUMP_IDLE )
-            {
-                PumpCompleteConfiguration(side.a.dir);
+            if(get_state(side.b.dir) == PUMP_PEOT || 
+               get_state(side.b.dir) == PUMP_FEOT)
+              {
+                getSale(side.b.dir);
                 CyDelay(100);
-                StoreConfiguration();
+              }
+            if(get_state(side.c.dir) == PUMP_PEOT || 
+               get_state(side.c.dir) == PUMP_FEOT)
+              {
+                getSale(side.c.dir);
                 CyDelay(100);
-                return;
-            }else
-            {
+              }
+            if(get_state(side.d.dir) == PUMP_PEOT || 
+               get_state(side.d.dir) == PUMP_FEOT)
+             {
+                getSale(side.d.dir);
                 CyDelay(100);
-                SetPicture(1,DISPLAY_BAJE_MANIJA);
-                CyDelay(100);
-                SetPicture(2,DISPLAY_BAJE_MANIJA);
-                CyDelay(100);
-                InitPump();                
-            }
+             }
+        }      
+        if(get_state(side.a.dir) == PUMP_IDLE && get_state(side.b.dir) == PUMP_IDLE )
+        {
+            PumpCompleteConfiguration(side.a.dir);
+            CyDelay(100);
+            StoreConfiguration();
+            CyDelay(100);
+            return;
+        }else
+        {
+            CyDelay(100);
+            SetPicture(1,DISPLAY_BAJE_MANIJA);
+            CyDelay(100);
+            SetPicture(2,DISPLAY_BAJE_MANIJA);
+            CyDelay(100);
+            InitPump();                
+        }
     }        
     else
     {
@@ -320,19 +314,13 @@ void InitPump(){
    Main: Initialize and start Kernel
 *---------------------------------------------------------------------------*/
 int main()
-
-
 {	  
-
     /* Drivers                                                                          */
     CySysTickStart();
-    
     /* ISR                                                                              */
     CyGlobalIntEnable;                          /* Init the interrupts                  */
     GlobalInitializer();
-    
     uint8 x;
-    
     //Muestra la version del MUX
     SetPicture(1, DISPLAY_MESSAGE);
     SetPicture(2, DISPLAY_MESSAGE);
@@ -345,8 +333,6 @@ int main()
         WriteMessage(2, Version[x], 17, 1 + x, 1, 0x0000, 'N');                    
     }
     CyDelay(10);
-    
-    
     /* Init Pump                                                                        */       
     InitPump(); 
     loadConfiguration();
@@ -362,11 +348,9 @@ int main()
         getTotalsInit(side.c.dir);
         get_state(side.d.dir);
         getTotalsInit(side.d.dir);
-        
     }
     console(side.a.dir);
     OSonline = 0;
-
     
     /* OS Init                                                                          */
     osInit();                               /* Initialize all thread related tasks      */ 
@@ -382,7 +366,6 @@ int main()
     CyDelay(10);
     vTaskResume( RF_Task );                /* Resume Display task                       */
     CyDelay(10);
-    
 	return 1;
 }
 

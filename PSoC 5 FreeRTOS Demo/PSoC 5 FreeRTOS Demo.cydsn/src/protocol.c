@@ -870,16 +870,16 @@ uint8 PresetData(uint8 sideR, char8 grade, uint8 *value, uint8 preset){
             {
                 if(digits != 7)
                 {
-                    if(decimal > (VolDec - 1))
+                    if(decimal > ((EEPROM_1_ReadByte(3)) - 1)) //VolDec
                     {
                         for(w = value[0]; w > 1; w--)
                         {
                             value[w] = value[w - 1];
                         }
                         value[1] = '0';
-                    }else if(decimal < (VolDec - 1))
+                    }else if(decimal < ((EEPROM_1_ReadByte(3)) - 1)) //VolDec
                     {
-                        v = (VolDec - 1) - (decimal);
+                        v = ((EEPROM_1_ReadByte(3)) - 1) - (decimal);
                         for(w = 1; w <= value[0]; w++)
                         {
                             value[w] = value[v + w];
@@ -897,7 +897,7 @@ uint8 PresetData(uint8 sideR, char8 grade, uint8 *value, uint8 preset){
                 else{
                     if(decimal > 1)
                     {
-                        v = VolDec - decimal;
+                        v = EEPROM_1_ReadByte(3) - decimal; //VolDec
                         for(w = 1; w <= value[0]; w++)
                         {
                             value[w] = value[v + w];
@@ -911,7 +911,7 @@ uint8 PresetData(uint8 sideR, char8 grade, uint8 *value, uint8 preset){
                             }
                         }
                     }else{
-                        v = VolDec - decimal;
+                        v = EEPROM_1_ReadByte(3) - decimal; //VolDec
                         for(w = 1; w <= value[0]; w++)
                         {
                             value[w] = value[v + w];
@@ -1029,16 +1029,16 @@ uint8 PresetData(uint8 sideR, char8 grade, uint8 *value, uint8 preset){
             {
                 if(digits != 7)
                 {
-                    if(decimal > (VolDec - 1))
+                    if(decimal > ((EEPROM_1_ReadByte(3)) - 1)) //VolDec
                     {
                         for(w = value[0]; w > 1; w--)
                         {
                             value[w] = value[w - 1];
                         }
                         value[1] = '0';
-                    }else if(decimal < (VolDec - 1))
+                    }else if(decimal < ((EEPROM_1_ReadByte(3)) - 1)) //VolDec
                     {
-                        v = (VolDec - 1) - (decimal);
+                        v = ((EEPROM_1_ReadByte(3)) - 1) - (decimal); //VolDec
                         for(w = 1; w <= value[0]; w++)
                         {
                             value[w] = value[v + w];
@@ -1056,7 +1056,7 @@ uint8 PresetData(uint8 sideR, char8 grade, uint8 *value, uint8 preset){
                 else{
                     if(decimal > 1)
                     {
-                        v = VolDec - decimal;
+                        v = EEPROM_1_ReadByte(3) - decimal; //VolDec
                         for(w = 1; w <= value[0]; w++)
                         {
                             value[w] = value[v + w];
@@ -1070,7 +1070,7 @@ uint8 PresetData(uint8 sideR, char8 grade, uint8 *value, uint8 preset){
                             }
                         }
                     }else{
-                        v = VolDec - decimal;
+                        v = EEPROM_1_ReadByte(3) - decimal; //VolDec
                         for(w = 1; w <= value[0]; w++)
                         {
                             value[w] = value[v + w];
@@ -1184,16 +1184,16 @@ uint8 PresetData(uint8 sideR, char8 grade, uint8 *value, uint8 preset){
             {
                 if(digits != 7)
                 {
-                    if(decimal > (VolDec - 1))
+                    if(decimal > ((EEPROM_1_ReadByte(3)) - 1)) //VolDec
                     {
                         for(w = value[0]; w > 1; w--)
                         {
                             value[w] = value[w - 1];
                         }
                         value[1] = '0';
-                    }else if(decimal < (VolDec - 1))
+                    }else if(decimal < (EEPROM_1_ReadByte(3) - 1)) //VolDec
                     {
-                        v = (VolDec - 1) - (decimal);
+                        v = (EEPROM_1_ReadByte(3) - 1) - (decimal); //VolDec
                         for(w = 1; w <= value[0]; w++)
                         {
                             value[w] = value[v + w];
@@ -1211,7 +1211,7 @@ uint8 PresetData(uint8 sideR, char8 grade, uint8 *value, uint8 preset){
                 else{
                     if(decimal > 1)
                     {
-                        v = VolDec - decimal;
+                        v = EEPROM_1_ReadByte(3) - decimal; //VolDec
                         for(w = 1; w <= value[0]; w++)
                         {
                             value[w] = value[v + w];
@@ -1225,7 +1225,7 @@ uint8 PresetData(uint8 sideR, char8 grade, uint8 *value, uint8 preset){
                             }
                         }
                     }else{
-                        v = VolDec - decimal;
+                        v = EEPROM_1_ReadByte(3) - decimal; //VolDec
                         for(w = 1; w <= value[0]; w++)
                         {
                             value[w] = value[v + w];
@@ -1339,16 +1339,16 @@ uint8 PresetData(uint8 sideR, char8 grade, uint8 *value, uint8 preset){
             {
                 if(digits != 7)
                 {
-                    if(decimal > (VolDec - 1))
+                    if(decimal > (EEPROM_1_ReadByte(3) - 1)) //VolDec
                     {
                         for(w = value[0]; w > 1; w--)
                         {
                             value[w] = value[w - 1];
                         }
                         value[1] = '0';
-                    }else if(decimal < (VolDec - 1))
+                    }else if(decimal < (EEPROM_1_ReadByte(3) - 1)) //VolDec
                     {
-                        v = (VolDec - 1) - (decimal);
+                        v = (EEPROM_1_ReadByte(3) - 1) - (decimal); //VolDec
                         for(w = 1; w <= value[0]; w++)
                         {
                             value[w] = value[v + w];
@@ -1366,7 +1366,7 @@ uint8 PresetData(uint8 sideR, char8 grade, uint8 *value, uint8 preset){
                 else{
                     if(decimal > 1)
                     {
-                        v = VolDec - decimal;
+                        v = EEPROM_1_ReadByte(3) - decimal;
                         for(w = 1; w <= value[0]; w++)
                         {
                             value[w] = value[v + w];
@@ -1380,7 +1380,7 @@ uint8 PresetData(uint8 sideR, char8 grade, uint8 *value, uint8 preset){
                             }
                         }
                     }else{
-                        v = VolDec - decimal;
+                        v = EEPROM_1_ReadByte(3) - decimal;
                         for(w = 1; w <= value[0]; w++)
                         {
                             value[w] = value[v + w];
@@ -1504,45 +1504,28 @@ uint8 PumpCompleteConfiguration(uint8 side){
     Pump_ClearRxBuffer();
 
  // Almacena las configuraciones obtenidas
-    UnitType            =  buffer [10] & 0x0F;
-    ConversionFactor    =  buffer [12] & 0x0F;
+    //UnitType            =  buffer [10] & 0x0F;
+    EEPROM_1_WriteByte((buffer [10] & 0x0F),0); //UnitType
+    EEPROM_1_WriteByte((buffer [12] & 0x0F),1); //ConversionFactor    
     
-    if(ConversionFactor == 1)
-    {
-        VolUnit[0] = 0x47;
-        VolUnit[1] = 0x61;
-        VolUnit[2] = 0x6C;
-        VolUnit[3] = 0x20;
-        VolUnit[4] = 0x20;
-        VolUnit[5] = 0x20;
-    }
     
-    if(ConversionFactor == 2)
-    {
-        VolUnit[0] = 0x55;
-        VolUnit[1] = 0x6B;
-        VolUnit[2] = 0x20;
-        VolUnit[3] = 0x47;
-        VolUnit[4] = 0x61;
-        VolUnit[5] = 0x6C;        
-    }
-    
-    MoneyDec            = (buffer [14] & 0x0F) - 1;
+    //MoneyDec            = (buffer [14] & 0x0F) - 1;
+    EEPROM_1_WriteByte(((buffer [14] & 0x0F) - 1),2); //MoneyDec
     
     if( (buffer [16] & 0x0F) == 1 || (buffer [16] & 0x0F) == 4)
     {
-        VolDec              = 3;
+        EEPROM_1_WriteByte(3,3); //VolDec
     }
     if( (buffer [16] & 0x0F) == 3 || (buffer [16] & 0x0F) == 0){
-        VolDec              = 2;
+        EEPROM_1_WriteByte(2,3); //VolDec
     }
     if( (buffer [16]&0x0F) == 2)
     {
-        VolDec              = 1;
+        EEPROM_1_WriteByte(1,3); //VolDec
     }
-    PPUDec              = (buffer [18] & 0x0F) - 1;
-    DDMode              =  buffer [20] & 0x0F;
-    if(MoneyDec == 0x03 && PPUDec == 0x02)
+    EEPROM_1_WriteByte( ((buffer [18] & 0x0F) - 1),4); //PPUDec
+    EEPROM_1_WriteByte((buffer [20] & 0x0F),5);   //DDMode
+    if(EEPROM_1_ReadByte(2) == 0x03 && EEPROM_1_ReadByte(4) == 0x02) //MoneyDec && PPUDec
         ppux10 = 1;
     return 0;
 } 
@@ -1583,12 +1566,7 @@ uint8 PumpHoseActiveState(uint8 side){
         {
             Pump_PutChar(SendComand[x]);
         } 
-        //if(UnitType > 0){
-          //  CyDelay(300);
-        //}else{
-            //CyDelay(150);
          vTaskDelay( 150 / portTICK_PERIOD_MS );
-        //}
     }    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     BufferSize = Pump_GetRxBufferSize();
@@ -1640,8 +1618,6 @@ uint8 getSale(uint8 pos){
     {
         CyDelay(250);
     }
-    
-    
     //6 Digits
 	if((digits != 7) && (Pump_GetRxBufferSize() == 33))
     {

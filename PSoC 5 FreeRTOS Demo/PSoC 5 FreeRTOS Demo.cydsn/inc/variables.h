@@ -49,19 +49,14 @@
     volatile uint8 date[3];          //Fecha         
     volatile uint8 IDCast[2];
     volatile uint8 ActiveRF;
-    volatile uint8 temporal[200];
+    volatile uint8 temporal[180];
     volatile uint8 tempPreset[8];
     volatile uint8 tempPreset2[8];
-    volatile uint8 tempPPU[5];
-    volatile uint8 ShiftState;
-    volatile uint8 ShiftStateB;
-    volatile uint8 ShiftStateC;
-    volatile uint8 ShiftStateD;
+    volatile uint8 tempPPU[5];    
     volatile uint8 bufferAready;
     volatile uint8 bufferAreadyB;
     volatile uint8 bufferAreadyC;
-    volatile uint8 bufferAreadyD;
-    volatile uint8 ShiftDone;
+    volatile uint8 bufferAreadyD;    
     volatile uint8 selectPos;
     volatile uint8 selectPosB;
     volatile uint8 flowPos;
@@ -73,28 +68,27 @@
     volatile uint8 cardNumberA[3];
     volatile uint8 cardNumberB[3];
     
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    uint8 UnitType,ConversionFactor,MoneyDec,VolDec,PPUDec,DDMode; // Variables configuracion del dispensador
+////////////////////////////////////////////////////////////////////////////////////////////////////////////    
     uint8 NumPositions;
     uint8 digits;                            // Version de digitos del surtidor
     uint8 hiddenKeys;
     uint8 PrinterType[2];
-    char8 VolUnit[6];
     uint8 dateDownHandle[3];                 // Fecha en la que se baja la manija
     uint8 timeDownHandle[2];                 // Hora en la que se baja la manija
     uint8 configAccess[5];
     uint8 controlChar;
     char8 idStation[5];    
     uint8 pumpGap[3];
-    uint8 printPortA;
-    uint8 printPortB;
+    bool ShiftState;
+    bool ShiftStateB;
+    bool ShiftStateC;
+    bool ShiftStateD;
     uint8 buffer_rf[1024];
-    uint8 buffer_tx[512];
-    uint8 buffer_A[255];
-    uint8 buffer_B[255];
-    uint8 buffer_C[255];
-    uint8 buffer_D[255];
+    uint8 buffer_tx[255];
+    uint8 buffer_A[128];
+    uint8 buffer_B[128];
+    uint8 buffer_C[128];
+    uint8 buffer_D[128];
     char8 buffer_print[250];
     uint16 intIDStation;
     uint8 Encabezado1[31];
@@ -174,11 +168,10 @@
     uint32 CounterB;
     uint32 CounterC;
     uint32 CounterD;
-    uint8 logoPrint[2];
-    uint8 DeliveryStateA;
-    uint8 DeliveryStateB;
-    uint8 DeliveryStateC;
-    uint8 DeliveryStateD;
+//    uint8 DeliveryStateA;
+//    uint8 DeliveryStateB;
+//    uint8 DeliveryStateC;
+//    uint8 DeliveryStateD;
     uint8 pollTotals;
     uint8 pollTotalsB;
     uint8 pollTotalsC;
@@ -205,12 +198,11 @@
     uint8 keysTerpelB;
     uint8 keysTerpelC;
     uint8 keysTerpelD;
-    uint16 RfActive;
-    uint8 KmCash[2];
-	uint8 StopSendTotalA;
-	uint8 StopSendTotalB;
-	uint8 StopSendTotalC;
-	uint8 StopSendTotalD;
+    uint8 RfActive;
+	bool StopSendTotalA;
+	bool StopSendTotalB;
+	bool StopSendTotalC;
+	bool StopSendTotalD;
     bool IdFlagA;
     bool IdFlagB;
     bool IdFlagC;
@@ -260,9 +252,9 @@ struct buffer{
     uint8 PrintEnd;
     uint8 VarActual;
     uint8 buffer_TX[100];
-    uint8 FidelConf;
+    bool FidelConf;
     uint8 TryCounter;
-    uint8 lockTurn;                          //Bloquea temporalmente el turno 1=bloqueado o 0=desbloqueado
+    //uint8 lockTurn;                          //Bloquea temporalmente el turno 1=bloqueado o 0=desbloqueado
     bool TryCounterFlag;
     bool TryCounterEnable;
     bool flagActiveSale;            //Bandera de venta activa
@@ -310,10 +302,10 @@ struct position{
     uint8 RFstateReport;
     uint8 saleNumber[10];
     uint8 GradesHose[5];
-    uint8 BusyChange;
+    bool BusyChange;
     uint8 RF;
-    uint8 TotalRequest;
-    uint8 FlagTotal;
+    bool TotalRequest;
+    bool FlagTotal;
     uint8 ActivoFideliza;  
     uint8 ActivoRedencion;
 };
