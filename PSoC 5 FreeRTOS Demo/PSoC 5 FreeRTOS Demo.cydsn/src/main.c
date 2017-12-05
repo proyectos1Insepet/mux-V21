@@ -41,7 +41,7 @@
 
 xSemaphoreHandle g_pUARTSemaphore;
       
-char Version[] = "MUX Version 26.4";
+char Version[] = "MUX Version 26.6";
 
 /*
  * Inicializa los perifiericos del sistema
@@ -109,19 +109,19 @@ void loadConfiguration(){
 	}    
     LeerEeprom(335,17);
 	for(x=0;x<=buffer_i2c[0];x++){
-		Product1[x]=buffer_i2c[x];
+		producto[0][x]=buffer_i2c[x];
 	}
     LeerEeprom(355,17);
 	for(x=0;x<=buffer_i2c[0];x++){
-		Product2[x]=buffer_i2c[x];
+		producto[1][x]=buffer_i2c[x];
 	}
     LeerEeprom(375,17);
 	for(x=0;x<=buffer_i2c[0];x++){
-		Product3[x]=buffer_i2c[x];
+		producto[2][x]=buffer_i2c[x];
 	}
     LeerEeprom(395,17);
 	for(x=0;x<=buffer_i2c[0];x++){
-		Product4[x]=buffer_i2c[x];
+		producto[3][x]=buffer_i2c[x];
 	}
     LeerEeprom(30,31);
 	for(x=0;x<=buffer_i2c[0];x++){

@@ -99,10 +99,6 @@
     uint8 Pie1[31];
     uint8 Pie2[31];
     uint8 Pie3[31];
-    uint8 Product1[17];
-    uint8 Product2[17];
-    uint8 Product3[17];
-    uint8 Product4[17];
     uint8 CopiasCredito;        
     uint8 StatePosition[8];
     uint8 ActualState[20];
@@ -130,7 +126,7 @@
     uint8 Credit_Auth_OK3;
     uint8 Credit_Auth_OK4;
     uint8 Temp[20];
-    uint8 producto [4][13];    
+    uint8 producto[4][17];    
     uint8 ppuiButtonA[5];
     uint8 ppuiButtonB[5];
     uint8 PPUAux;
@@ -168,7 +164,7 @@
     uint32 CounterB;
     uint32 CounterC;
     uint32 CounterD;
-//    uint8 DeliveryStateA;
+    char8 TimeValue[3];
 //    uint8 DeliveryStateB;
 //    uint8 DeliveryStateC;
 //    uint8 DeliveryStateD;
