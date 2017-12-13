@@ -193,6 +193,10 @@ void RF_Task(void *arg)
             {
                 LongEsperada = 8;
             }
+            else if ( buffer_rf[6] == 0xC3)
+            {
+                LongEsperada = 14;
+            }
             // big config
             else if ( buffer_rf[6] == 0xE1)
             {

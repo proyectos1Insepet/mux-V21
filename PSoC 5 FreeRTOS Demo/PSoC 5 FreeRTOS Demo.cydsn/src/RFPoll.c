@@ -4450,7 +4450,16 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         }
                     }
                                        
-               break;                
+                break;  
+                    
+                case 0xC3:
+                    EEPROM_1_WriteByte(PRF_rxBuffer[7], 390);  //ibutton
+                    EEPROM_1_WriteByte(PRF_rxBuffer[8], 391);  //tag
+                    EEPROM_1_WriteByte(PRF_rxBuffer[9], 392);  //Keyboard
+                    EEPROM_1_WriteByte(PRF_rxBuffer[10], 393); //Banda magnetica
+                    EEPROM_1_WriteByte(PRF_rxBuffer[11], 394); //Codigo barras
+                    EEPROM_1_WriteByte(PRF_rxBuffer[12], 395); //codigo QR            
+                break;    
            }                       
         } 
 
