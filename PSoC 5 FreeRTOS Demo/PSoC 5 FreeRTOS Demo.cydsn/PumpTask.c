@@ -436,8 +436,11 @@ void PollingDisplay1(void){
                         break;
                         
                         case 0x0F: //Forma de pago
-                            flowDisplay1 = 38;                            
-                            SetPicture(1, DISPLAY_SELECCION_VENTA);
+                            if(EEPROM_1_ReadByte(220) == 1)
+                            {
+                                flowDisplay1 = 38;                            
+                                SetPicture(1, DISPLAY_SELECCION_VENTA);
+                            }
                         break;
                             
                         case 0x45:  //Pantalla otras opciones 
@@ -3564,8 +3567,11 @@ void PollingDisplay2(void){
                         break;
                             
                         case 0x0F: //Forma de pago
-                            flowDisplay2 = 38;                            
-                            SetPicture(2, DISPLAY_SELECCION_VENTA);
+                            if(EEPROM_1_ReadByte(221) == 1)
+                            {
+                                flowDisplay2 = 38;                            
+                                SetPicture(2, DISPLAY_SELECCION_VENTA);
+                            }
                         break;
                             
                         case 0x45:  //Pantalla otras opciones 
@@ -6644,8 +6650,11 @@ void PollingDisplay3(void){
                         break;
                             
                         case 0x0F: //Forma de pago
-                            flowDisplay3 = 38;                            
-                            SetPicture(1, DISPLAY_SELECCION_VENTA);
+                            if(EEPROM_1_ReadByte(222) == 1)
+                            {
+                                flowDisplay3 = 38;                            
+                                SetPicture(1, DISPLAY_SELECCION_VENTA);
+                            }
                         break;
                             
                         case 0x45:  //Pantalla otras opciones 
@@ -9735,8 +9744,11 @@ void PollingDisplay4(void){
                         break;
                             
                         case 0x0F: //Forma de pago
-                            flowDisplay4 = 38;                            
-                            SetPicture(2, DISPLAY_SELECCION_VENTA);
+                            if(EEPROM_1_ReadByte(223) == 1)
+                            {
+                                flowDisplay4 = 38;                            
+                                SetPicture(2, DISPLAY_SELECCION_VENTA);
+                            }
                         break;
                         case 0x45:  //Pantalla otras opciones 
                             flowDisplay4 = 12;                            
