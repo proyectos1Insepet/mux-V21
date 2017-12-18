@@ -419,6 +419,7 @@ enum _AVAILABLE_DISPLAYS_
     DISPLAY_DUMMY1                          = 0x9A,
     DISPLAY_DUMMY2                          = 0x9B,
     DISPLAY_DUMMY3                          = 0x9C,
+    DISPLAY_TIPO_ID                         = 0x9D,
     
     DISPLAY_SIDE_DUMMY_DISPLAY              = 0xFA,
     DISPLAY_NULL                            = 0xFF,

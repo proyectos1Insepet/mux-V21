@@ -65,6 +65,11 @@ uint8  upcount[2] = {0,0};
 uint8  upcount2[2] = {0,0};
 uint8  upcount3 [2] = {0,0};
 uint8  upcount4 [2] = {0,0};
+char id []  = {"IBUTTON"};
+char id2[]  = {"TAG"};
+char id3[]  = {"TECLADO"};
+char id4[]  = {"MI EMPRESA"};
+
 
 
 int writevalue,writevalueB, res,resB;
@@ -413,13 +418,13 @@ void PollingDisplay1(void){
                                 bufferDisplay1.CreditpresetValue[1][x] = 0x00;
                                 
                             }
-                            if(EEPROM_1_ReadByte(220) == 1)
+                            if(EEPROM_1_ReadByte(220) == 1) //Turno abierto
                             {                                
                                 bufferDisplay1.saleType = 2;
                                 AuthType = 1;
                                 if(EEPROM_1_ReadByte(215)!= 11){
                                     flowDisplay1 = 10;
-                                    SetPicture(1, DISPLAY_ID_DIGITAL);
+                                    SetPicture(1, DISPLAY_TIPO_ID);
                                 }else{
                                     flowDisplay1 = 37;
                                     SetPicture(1, DISPLAY_FIDELIZACION);                                    
@@ -488,7 +493,7 @@ void PollingDisplay1(void){
                         case 0x0B:  //No 
                             if(AuthType == 1){
                                 flowDisplay1 =10;                                
-                                SetPicture(1, DISPLAY_ID_TERPEL);
+                                SetPicture(1, DISPLAY_TIPO_ID);
                             }else{
                                 flowDisplay1 =3;                               
                                 SetPicture(1, DISPLAY_FORMA_PROGRAMACION); 
@@ -988,9 +993,10 @@ void PollingDisplay1(void){
                         break;
                         
                         case 3://CC/NIT
-                            for(x = 0; x <= 10; x++)
+                            for(x = 0; x < 11; x++)
                             {
                                 bufferDisplay1.identySale[x] = 0;
+                                bufferDisplay1.idSerial[x] = 0;
                             }
                             counter = 0;
                             Display1_ClearRxBuffer();
@@ -1061,9 +1067,14 @@ void PollingDisplay1(void){
                             for(x = 0; x <= bufferDisplay1.valueKeys[0]; x++)
                             {
                                 bufferDisplay1.identySale[x] = bufferDisplay1.valueKeys[x];
+                                bufferDisplay1.idSerial[x] = bufferDisplay1.valueKeys[x];
                             }
+                            SetPicture(1,DISPLAY_ID_RECONOCIDO);                                                                 
+                            vTaskDelay( 500 / portTICK_PERIOD_MS );                       
+                            iButtonFlag = 1;
+                            SetPicture(1, DISPLAY_FORMA_PROGRAMACION);
+                            flowDisplay1 = 3;
                             counter = 0;
-                            Display1_ClearRxBuffer();
                         break;
                         case 4:     //ID                            
                             for(x = 0; x <= 10; x++)
@@ -1088,22 +1099,53 @@ void PollingDisplay1(void){
     
     ////////////////// CASOS PARA CRÉDITO  /////////////////////
         case 10:
+            if(EEPROM_1_ReadByte(390)== 1){
+                for(x = 0; x < 7; x++)
+                {
+                    WriteMessage(1,id[x],11,x+1,2,0x0000,'Y'); //ibutton
+                }
+            }
+            if(EEPROM_1_ReadByte(391)== 1){
+                for(x = 0; x < 3; x++)
+                {
+                    WriteMessage(1,id2[x],17,x+1,2,0x0000,'Y'); //tag
+                }
+            }
+            if(EEPROM_1_ReadByte(392)== 1){
+                for(x = 0; x < 7; x++)
+                {
+                    WriteMessage(1,id3[x],11,x+10,2,0x0000,'Y'); //Teclado
+                }
+            }
+            if(EEPROM_1_ReadByte(393)== 1){
+                for(x = 0; x < 7; x++)
+                {
+                    WriteMessage(1,id4[x],17,x+10,2,0x0000,'Y');// Mi empresa
+                }
+            }
+            if(EEPROM_1_ReadByte(396)== 1){
+                for(x = 0; x < 3; x++)
+                {
+                    WriteMessage(1,id2[x],23,x+1,2,0x0000,'Y'); //tag
+                }
+            }
             if(Display1_GetRxBufferSize() == 8)
             {
                 if((Display1_rxBuffer[0] == 0xAA) && (Display1_rxBuffer[6] == 0xC3) && (Display1_rxBuffer[7] == 0x3C))
                 {
                     switch(Display1_rxBuffer[3])
                     {
-                        case 0xB6:  //ibutton Request   
-                            flowDisplay1 = 11;
-                            numberKeys1 = 0;                            
-                            //bufferDisplay1.flagPrint =  1;
-                            bufferDisplay1.idType = 1;
-                            counter = 0;
-                            SetPicture(1, DISPLAY_ESPERANDO_ID);                            
+                        case 0xB6:  //ibutton Request
+                            if(EEPROM_1_ReadByte(390)== 1){
+                                flowDisplay1 = 11;
+                                numberKeys1 = 0;                                                       
+                                bufferDisplay1.idType = 1;
+                                counter = 0;
+                                SetPicture(1, DISPLAY_ESPERANDO_ID);
+                            }
                         break; 
-                        case 0xB7:  //ID Number
-                            if(EEPROM_1_ReadByte(215)!= 11){
+                        case 0xB7:  //Tag
+                            if(EEPROM_1_ReadByte(391)== 1){
                             	flowDisplay1 = 24;
                             	numberKeys1 = 0;   
                                 bufferDisplay1.idType = 1;                            	
@@ -1112,16 +1154,46 @@ void PollingDisplay1(void){
                             	Tag_PutChar('O');
                             	Tag_PutChar('K');
                             	Tag_PutChar(0x01);
+                                counter = 0;
                             	vTaskDelay( 100 / portTICK_PERIOD_MS );
                             	SetPicture(1, DISPLAY_ESPERANDO_ID);                           
-                            }else{
-                            	flowDisplay1 = 25;
-                                numberKeys1 = 0;
+                            }                              
+                        break;
+                        case 0xB8: //Teclado
+                            if(EEPROM_1_ReadByte(392)== 1){
+                                for (x = 0; x < 16; x++){
+                                    bufferDisplay1.identySale[x] = 0x00;
+                                    bufferDisplay1.idSerial[x]   = 0x00;
+                                    bufferDisplay1.valueKeys[x]  = 0x00;
+                                }
+                                flowDisplay1 = 9;
+                            	numberKeys1  = 0; 
+                                counter      = 0;                                
+                            	bufferDisplay1.flagKeyboard = 3;
+                                bufferDisplay1.idType = 1;
+                                vTaskDelay( 100 / portTICK_PERIOD_MS );
+                                SetPicture(1, DISPLAY_PASAPORTE);
+                            }
+                        break;
+                        case 0xB9://Mi empresa
+                            if(EEPROM_1_ReadByte(393)== 1){
+                                flowDisplay1 = 25;
+                                numberKeys1  = 0;
+                                counter      = 0;
                                 bufferDisplay1.idType = 3;
                             	vTaskDelay( 100 / portTICK_PERIOD_MS );
                             	SetPicture(1, DISPLAY_SELECCIONE_OP_TERPEL);
-                            }  
-                            counter = 0;
+                            }
+                        break;
+                        case 0xBA://Tag Multilectora
+                            if(EEPROM_1_ReadByte(396)== 1){
+                                flowDisplay1 = 26;
+                                numberKeys1  = 0;
+                                counter      = 0;
+                                bufferDisplay1.idType = 1;
+                            	vTaskDelay( 100 / portTICK_PERIOD_MS );
+                            	SetPicture(1, DISPLAY_ESPERANDO_ID); 
+                            }
                         break;
                         case 0x94:  //Pantalla Inicial
                             bufferDisplay1.flagPrint =  0;
@@ -1244,7 +1316,7 @@ void PollingDisplay1(void){
                 Display1_ClearRxBuffer();
             }                                                          
         break;
-        case 24:
+        case 24: // Lectura de Tag
             counter ++;
             for(x=0;x<=150;x++){
                 temporal[x]=0x00;
@@ -4211,6 +4283,36 @@ void PollingDisplay2(void){
         break;    
     ////////////////// CASOS PARA CRÉDITO  /////////////////////
         case 10:
+            if(EEPROM_1_ReadByte(390)== 1){
+                for(x = 0; x < 7; x++)
+                {
+                    WriteMessage(2,id[x],11,x+1,2,0x0000,'Y'); //ibutton
+                }
+            }
+            if(EEPROM_1_ReadByte(391)== 1){
+                for(x = 0; x < 3; x++)
+                {
+                    WriteMessage(2,id2[x],17,x+1,2,0x0000,'Y'); //tag
+                }
+            }
+            if(EEPROM_1_ReadByte(392)== 1){
+                for(x = 0; x < 7; x++)
+                {
+                    WriteMessage(2,id3[x],11,x+10,2,0x0000,'Y'); //Teclado
+                }
+            }
+            if(EEPROM_1_ReadByte(393)== 1){
+                for(x = 0; x < 7; x++)
+                {
+                    WriteMessage(2,id4[x],17,x+10,2,0x0000,'Y');// Mi empresa
+                }
+            }
+            if(EEPROM_1_ReadByte(396)== 1){
+                for(x = 0; x < 3; x++)
+                {
+                    WriteMessage(2,id2[x],23,x+1,2,0x0000,'Y'); //tag
+                }
+            }
             if(Display2_GetRxBufferSize() == 8)
             {
                 if((Display2_rxBuffer[0] == 0xAA) && (Display2_rxBuffer[6] == 0xC3) && (Display2_rxBuffer[7] == 0x3C))
@@ -4246,6 +4348,42 @@ void PollingDisplay2(void){
                             	SetPicture(2, DISPLAY_SELECCIONE_OP_TERPEL);
                             }   
                             counter2 = 0;
+                        break;
+                        case 0xB8: //Teclado
+                            if(EEPROM_1_ReadByte(392)== 1){
+                                for (x = 0; x < 16; x++){
+                                    bufferDisplay2.identySale[x] = 0x00;
+                                    bufferDisplay2.idSerial[x]   = 0x00;
+                                    bufferDisplay2.valueKeys[x]  = 0x00;
+                                }
+                                flowDisplay2 = 9;
+                            	numberKeys2  = 0; 
+                                counter2     = 0;                                
+                            	bufferDisplay2.flagKeyboard = 3;
+                                bufferDisplay2.idType = 1;
+                                vTaskDelay( 100 / portTICK_PERIOD_MS );
+                                SetPicture(2, DISPLAY_PASAPORTE);
+                            }
+                        break;
+                        case 0xB9://Mi empresa
+                            if(EEPROM_1_ReadByte(393)== 1){
+                                flowDisplay2 = 25;
+                                numberKeys2  = 0;
+                                counter2     = 0;
+                                bufferDisplay2.idType = 3;
+                            	vTaskDelay( 100 / portTICK_PERIOD_MS );
+                            	SetPicture(2, DISPLAY_SELECCIONE_OP_TERPEL);
+                            }
+                        break;
+                        case 0xBA://Tag Multilectora
+                            if(EEPROM_1_ReadByte(396)== 1){
+                                flowDisplay2 = 26;
+                                numberKeys2  = 0;
+                                counter2     = 0;
+                                bufferDisplay2.idType = 1;
+                            	vTaskDelay( 100 / portTICK_PERIOD_MS );
+                            	SetPicture(2, DISPLAY_ESPERANDO_ID); 
+                            }
                         break;
                         case 0x94:  //Pantalla Inicial 
                             bufferDisplay2.flagPrint =  0;
@@ -7294,6 +7432,36 @@ void PollingDisplay3(void){
     
     ////////////////// CASOS PARA CRÉDITO  /////////////////////
         case 10:
+            if(EEPROM_1_ReadByte(390)== 1){
+                for(x = 0; x < 7; x++)
+                {
+                    WriteMessage(1,id[x],11,x+1,2,0x0000,'Y'); //ibutton
+                }
+            }
+            if(EEPROM_1_ReadByte(391)== 1){
+                for(x = 0; x < 3; x++)
+                {
+                    WriteMessage(1,id2[x],17,x+1,2,0x0000,'Y'); //tag
+                }
+            }
+            if(EEPROM_1_ReadByte(392)== 1){
+                for(x = 0; x < 7; x++)
+                {
+                    WriteMessage(1,id3[x],11,x+10,2,0x0000,'Y'); //Teclado
+                }
+            }
+            if(EEPROM_1_ReadByte(393)== 1){
+                for(x = 0; x < 7; x++)
+                {
+                    WriteMessage(1,id4[x],17,x+10,2,0x0000,'Y');// Mi empresa
+                }
+            }
+            if(EEPROM_1_ReadByte(396)== 1){
+                for(x = 0; x < 3; x++)
+                {
+                    WriteMessage(1,id2[x],23,x+1,2,0x0000,'Y'); //tag
+                }
+            }
             if(Display1_GetRxBufferSize() == 8)
             {
                 if((Display1_rxBuffer[0] == 0xAA) && (Display1_rxBuffer[6] == 0xC3) && (Display1_rxBuffer[7] == 0x3C))
@@ -7327,6 +7495,42 @@ void PollingDisplay3(void){
                             	SetPicture(1, DISPLAY_SELECCIONE_OP_TERPEL);
                             } 
                             counter3 = 0;
+                        break;
+                        case 0xB8: //Teclado
+                            if(EEPROM_1_ReadByte(392)== 1){
+                                for (x = 0; x < 16; x++){
+                                    bufferDisplay3.identySale[x] = 0x00;
+                                    bufferDisplay3.idSerial[x]   = 0x00;
+                                    bufferDisplay3.valueKeys[x]  = 0x00;
+                                }
+                                flowDisplay3 = 9;
+                            	numberKeys3  = 0; 
+                                counter3     = 0;                                
+                            	bufferDisplay3.flagKeyboard = 3;
+                                bufferDisplay3.idType = 1;
+                                vTaskDelay( 100 / portTICK_PERIOD_MS );
+                                SetPicture(1, DISPLAY_PASAPORTE);
+                            }
+                        break;
+                        case 0xB9://Mi empresa
+                            if(EEPROM_1_ReadByte(393)== 1){
+                                flowDisplay3 = 25;
+                                numberKeys3  = 0;
+                                counter3     = 0;
+                                bufferDisplay3.idType = 3;
+                            	vTaskDelay( 100 / portTICK_PERIOD_MS );
+                            	SetPicture(1, DISPLAY_SELECCIONE_OP_TERPEL);
+                            }
+                        break;
+                        case 0xBA://Tag Multilectora
+                            if(EEPROM_1_ReadByte(396)== 1){
+                                flowDisplay3 = 26;
+                                numberKeys3  = 0;
+                                counter3     = 0;
+                                bufferDisplay3.idType = 1;
+                            	vTaskDelay( 100 / portTICK_PERIOD_MS );
+                            	SetPicture(1, DISPLAY_ESPERANDO_ID); 
+                            }
                         break;
                         case 0x94:  //Pantalla Inicial
                             bufferDisplay3.flagPrint =  0;
@@ -10376,6 +10580,36 @@ void PollingDisplay4(void){
         break;    
     ////////////////// CASOS PARA CRÉDITO  /////////////////////
         case 10:
+            if(EEPROM_1_ReadByte(390)== 1){
+                for(x = 0; x < 7; x++)
+                {
+                    WriteMessage(2,id[x],11,x+1,2,0x0000,'Y'); //ibutton
+                }
+            }
+            if(EEPROM_1_ReadByte(391)== 1){
+                for(x = 0; x < 3; x++)
+                {
+                    WriteMessage(2,id2[x],17,x+1,2,0x0000,'Y'); //tag
+                }
+            }
+            if(EEPROM_1_ReadByte(392)== 1){
+                for(x = 0; x < 7; x++)
+                {
+                    WriteMessage(2,id3[x],11,x+10,2,0x0000,'Y'); //Teclado
+                }
+            }
+            if(EEPROM_1_ReadByte(393)== 1){
+                for(x = 0; x < 7; x++)
+                {
+                    WriteMessage(2,id4[x],17,x+10,2,0x0000,'Y');// Mi empresa
+                }
+            }
+            if(EEPROM_1_ReadByte(396)== 1){
+                for(x = 0; x < 3; x++)
+                {
+                    WriteMessage(2,id2[x],23,x+1,2,0x0000,'Y'); //tag
+                }
+            }
             if(Display2_GetRxBufferSize() == 8)
             {
                 if((Display2_rxBuffer[0] == 0xAA) && (Display2_rxBuffer[6] == 0xC3) && (Display2_rxBuffer[7] == 0x3C))
@@ -10409,6 +10643,42 @@ void PollingDisplay4(void){
                             	SetPicture(2, DISPLAY_SELECCIONE_OP_TERPEL);
                             } 
                             counter4 = 0;
+                        break;
+                        case 0xB8: //Teclado
+                            if(EEPROM_1_ReadByte(392)== 1){
+                                for (x = 0; x < 16; x++){
+                                    bufferDisplay4.identySale[x] = 0x00;
+                                    bufferDisplay4.idSerial[x]   = 0x00;
+                                    bufferDisplay4.valueKeys[x]  = 0x00;
+                                }
+                                flowDisplay4 = 9;
+                            	numberKeys4  = 0; 
+                                counter4     = 0;                                
+                            	bufferDisplay4.flagKeyboard = 3;
+                                bufferDisplay4.idType = 1;
+                                vTaskDelay( 100 / portTICK_PERIOD_MS );
+                                SetPicture(2, DISPLAY_PASAPORTE);
+                            }
+                        break;
+                        case 0xB9://Mi empresa
+                            if(EEPROM_1_ReadByte(393)== 1){
+                                flowDisplay4 = 25;
+                                numberKeys4  = 0;
+                                counter4     = 0;
+                                bufferDisplay4.idType = 3;
+                            	vTaskDelay( 100 / portTICK_PERIOD_MS );
+                            	SetPicture(2, DISPLAY_SELECCIONE_OP_TERPEL);
+                            }
+                        break;
+                        case 0xBA://Tag Multilectora
+                            if(EEPROM_1_ReadByte(396)== 1){
+                                flowDisplay4 = 26;
+                                numberKeys4  = 0;
+                                counter4     = 0;
+                                bufferDisplay4.idType = 1;
+                            	vTaskDelay( 100 / portTICK_PERIOD_MS );
+                            	SetPicture(2, DISPLAY_ESPERANDO_ID); 
+                            }
                         break;
                         case 0x94:  //Pantalla Inicial 
                             bufferDisplay4.flagPrint =  0;

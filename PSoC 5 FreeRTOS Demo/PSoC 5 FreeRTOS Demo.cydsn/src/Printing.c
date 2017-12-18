@@ -224,11 +224,11 @@ void printLogoP(uint8 val, uint8 logo){
 			}
 		break;			
 
-//		case 2:
-//			for(i=0;i<=943;i++){
-//        		write_psoc1(val,cencosud1[i]);			
-//			}
-//		break;	
+		case 2:
+			for(i=0;i<=943;i++){
+        		write_psoc1(val,masgas[i]);			
+			}
+		break;	
 			
 		case 3:
 			for(i=0;i<=943;i++){
@@ -274,7 +274,7 @@ void printLogoP(uint8 val, uint8 logo){
 			
 		case 10:
 			for(i=0;i<=943;i++){
-        		write_psoc1(val,plus1[i]);			
+        		write_psoc1(val,masgas[i]);//Plus			
 			}
 		break;	
 			
