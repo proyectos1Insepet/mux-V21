@@ -249,6 +249,38 @@ uint8_t buffer[18]={0xAA,0x98,0,0,0x01,0x39,0x23,0xC5,0x02,0x00,0x00,0xFF,0xFF,0
 		}	
 	}	
 }
-
+/*
+*********************************************************************************************************
+*          void FontSpace(uint8 lcd, uint8_t data,uint8 posx, uint8 posy)
+*
+* Description : 
+*               
+*
+* Argument(s) : none
+*
+* Return(s)   : none
+*
+* Caller(s)   :  
+*
+* Note(s)     : none.
+*********************************************************************************************************
+*/
+void FontSpace(uint8 lcd, uint8_t data,uint8 posx, uint8 posy)
+{
+    uint8_t buffer[18]={0xAA,0x98,0x00,0x00, 0x00,0x00,0x24,0x80,0x03,0x00,0x00,0xFF,0xFF,0x00,0xCC,0x33,0xC3,0x3C},x;	
+    buffer[2] =(0x0D*(posx*(2)))>>8;
+	buffer[3] =(0x0D*(posx*(2)))&0xFF;
+    buffer[4] =(0x0E*posy)>>8;
+	buffer[5] =(0x0E*posy)&0xFF;
+    buffer[13]= data; 
+	for(x=0;x<=17;x++){
+		if(lcd==1){
+			Display1_PutChar(buffer[x]);
+		}
+		else{
+			Display2_PutChar(buffer[x]);
+		}	
+	}	
+}
 
 

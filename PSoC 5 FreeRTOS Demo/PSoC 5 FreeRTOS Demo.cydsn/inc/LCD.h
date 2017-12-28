@@ -40,6 +40,7 @@ void SetColor(uint8 lcd);
 void show_info(uint8 lcd, uint8 *version);
 void ShowMessage(uint8 lcd,uint8 *msg, uint8 posx);
 void show_market(uint8 lcd);
+void FontSpace(uint8 lcd, uint8 data, uint8 posx, uint8 posy);
 char8 UnmapCode(uint8 code);
 typedef struct
 {
