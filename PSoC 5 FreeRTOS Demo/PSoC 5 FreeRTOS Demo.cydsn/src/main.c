@@ -41,7 +41,7 @@
 
 xSemaphoreHandle g_pUARTSemaphore;
       
-char Version[] = "MUX Version 26.6";
+char Version[] = "MUX Version 26.7";
 
 /*
  * Inicializa los perifiericos del sistema
@@ -179,8 +179,7 @@ void loadConfiguration(){
 
 	for(x=1;x<=30;x++){
 		Pie3[x]=EEPROM_1_ReadByte(130+x);
-	}
-
+	}    
     //MoneyDec   = EEPROM_1_ReadByte(2);  //Punto decimal dinero
     //VolDec     = EEPROM_1_ReadByte(3);  //Punto decimal volumen
     //PPUDec     = EEPROM_1_ReadByte(4);  //Punto decimal PPU
