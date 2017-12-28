@@ -179,7 +179,8 @@ void loadConfiguration(){
 
 	for(x=1;x<=30;x++){
 		Pie3[x]=EEPROM_1_ReadByte(130+x);
-	}    
+	}
+
     //MoneyDec   = EEPROM_1_ReadByte(2);  //Punto decimal dinero
     //VolDec     = EEPROM_1_ReadByte(3);  //Punto decimal volumen
     //PPUDec     = EEPROM_1_ReadByte(4);  //Punto decimal PPU
@@ -307,8 +308,6 @@ void InitPump(){
     }
 }
 
-
-
 /*----------------------------------------------------------------------------
    Main: Initialize and start Kernel
 *---------------------------------------------------------------------------*/
@@ -350,21 +349,15 @@ int main()
     }
     console(side.a.dir);
     OSonline = 0;
+    CyGlobalIntDisable;
     
     /* OS Init                                                                          */
     osInit();                               /* Initialize all thread related tasks      */ 
     prvHardwareSetup();                     /* FreeRTOS setup                           */   
-    vTaskSuspend( Pump_Task );              /* Suspend Pump task                        */
-    vTaskSuspend( Display_Task );           /* Suspend Display task                     */
-    vTaskSuspend( RF_Task );                /* Suspend RF task                          */
 	vTaskStartScheduler();                  /* Start the scheduler                      */
     CyDelay(100);
-    vTaskResume( Pump_Task );               /* Resume Pump task                         */
-    CyDelay(10);
-    vTaskResume( Display_Task );            /* Resume Display task                      */
-    CyDelay(10);
-    vTaskResume( RF_Task );                /* Resume Display task                       */
-    CyDelay(10);
+    
+    CyGlobalIntEnable;
 	return 1;
 }
 

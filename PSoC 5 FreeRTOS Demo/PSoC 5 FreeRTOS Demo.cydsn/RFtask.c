@@ -41,9 +41,9 @@ void RF_Task(void *arg)
     uint8 x;
     static uint16 cnt = 0;  
     uint8 FlagRF = 0;
-    //uint8 FlagRecv = 0;
     uint8 buffer_rfTMP;
     uint8 GeneralConfig;
+    //uint8 CRC;
 
     // Inicializa variables
     if(NumPositions <= 2)
@@ -81,229 +81,227 @@ void RF_Task(void *arg)
     }
     LongEsperada = 0;
     while(1) 
-    {       
+    {   
+
         while(RF_Connection_GetRxBufferSize() > 0)  
         {
             
             buffer_rfTMP  = RF_Connection_ReadRxData();
             GeneralConfig = 0;
-            FlagRF = 1;
-            
-//            if (buffer_rfTMP == 0xBC && HeaderRF == 1)
-//            { 
-//                i = 0;
-//                HeaderRF = 0;
-//                //LongEsperada = 0;
-//            }
+            FlagRF = 1;          
+ 
             if (buffer_rfTMP == 0xBC)
-            { 
-                i = 0;                
-                LongEsperada = 0;
-            }
-                                 
+            {            
+                CyDelay(3);
+                if(RF_Connection_GetRxBufferSize() > 0)
+                {
+                    i = 0; 
+                    LongEsperada = 0;
+                }
+            }                       
             // Status
-            if( buffer_rf[6] == 0xA1)
-            {
-                LongEsperada = 8;              
-            }
-            else if ( buffer_rf[6] == 0xA3)
-            {
-                LongEsperada = 25;
-            }
-            // Fin venta ACK
-            else if ( buffer_rf[6] == 0xA4)
-            {
-                LongEsperada = 9;
-            }
-            
-            // Totals request
-            else if ( buffer_rf[6] == 0xA5)
-            {
-                LongEsperada = 8;
-            }
-            
-            // PPU Setting
-            else if ( buffer_rf[6] == 0xA6)
-            {
-                LongEsperada = 15;
-            }
-            
-            // Impresion general   
-            else if ( buffer_rf[6] == 0xA7)
-            {
-                if(buffer_rf[8] != 0x00)
+                if( buffer_rf[6] == 0xA1)
                 {
-                    if(buffer_rf[8] + 0x09 < 234)
+                    LongEsperada = 8;              
+                }
+                else if ( buffer_rf[6] == 0xA3)
+                {
+                    LongEsperada = 25;
+                }
+                // Fin venta ACK
+                else if ( buffer_rf[6] == 0xA4)
+                {
+                    LongEsperada = 9;
+                }     
+                // Totals request
+                else if ( buffer_rf[6] == 0xA5)
+                {
+                    LongEsperada = 8;
+                }              
+                // PPU Setting
+                else if ( buffer_rf[6] == 0xA6)
+                {
+                    LongEsperada = 15;
+                }               
+                // Impresion general   
+                else if ( buffer_rf[6] == 0xA7)
+                {
+                    if(buffer_rf[8] != 0x00)
                     {
-                        LongEsperada = buffer_rf[8] + 0x09;
-                        vTaskDelay( 1 / portTICK_PERIOD_MS );
+                        if(buffer_rf[8] + 0x0A < 235)
+                        {
+                            LongEsperada = buffer_rf[8] + 0x0A;
+                            vTaskDelay( 1 / portTICK_PERIOD_MS );
+                        }
+                        else
+                        {
+                            LongEsperada = 235;
+                        }
                     }
-                    else
-                    {
-                        LongEsperada = 234;
+                } 
+                //Id transaccion
+                else if ( buffer_rf[6] == 0xA9)
+                {
+                    LongEsperada = 19;
+                }
+                else if ( buffer_rf[6] == 0xB3)
+                {
+                    if(buffer_rf[7]== 0x01)
+                    {                    
+    					if(buffer_rf[8] != 0x00)
+    					{
+    						LongEsperada = buffer_rf[8] + 10;
+    					}
+                    }else{
+    					if(buffer_rf[8] != 0x00)
+    					{
+    						LongEsperada = buffer_rf[8] + 10;
+    					}
                     }
                 }
-            } 
-            
-            else if ( buffer_rf[6] == 0xA9)
-            {
-                LongEsperada = 19;
-            }
-            
-            else if ( buffer_rf[6] == 0xB3)
-            {
-                if(buffer_rf[7]== 0x01)
-                {                    
-					if(buffer_rf[8] != 0x00)
-					{
-						LongEsperada = buffer_rf[8] + 9;
-					}
-                }else{
-					if(buffer_rf[8] != 0x00)
-					{
-						LongEsperada = buffer_rf[8] + 9;
-					}
+                else if ( buffer_rf[6] == 0xB4)
+                {
+                    LongEsperada   = 42;                
                 }
-            }
-            else if ( buffer_rf[6] == 0xB4)
-            {
-                LongEsperada   = 42;                
-            }
-            else if ( buffer_rf[6] == 0xB6)
-            {
-                LongEsperada   = 102;                
-            }
-            else if ( buffer_rf[6] == 0xB7)
-            {
-                LongEsperada = 9;
-            }
-            else if ( buffer_rf[6] == 0xB8)
-            {
-                LongEsperada = 35;
-            }
-            else if ( buffer_rf[6] == 0xB9)
-            {
-                LongEsperada = 107;
-            }
-            else if ( buffer_rf[6] == 0xBB)
-            {
-                LongEsperada = 8;
-            }
-            else if ( buffer_rf[6] == 0xBF)
-            {
-                LongEsperada = 8;
-            }
-            else if ( buffer_rf[6] == 0xC3)
-            {
-                LongEsperada = 14;
-            }
-            // big config
-            else if ( buffer_rf[6] == 0xE1)
-            {
-                LongEsperada   = 337;
-                GeneralConfig  = 1;
-            }
-            
-            else if ( buffer_rf[6] == 0xE2)
-            {
-                LongEsperada = 14;
-            }
-   
-            // Turno
-            else if ( buffer_rf[6] == 0xE4)
-            {
-                LongEsperada = 9;
-            }
-            else if ( buffer_rf[6] == 0xA8)
-            {
-                LongEsperada = 117;
-            }
-             
-            buffer_rf[i] = buffer_rfTMP;         
-            
-            if (i == LongEsperada - 1)
-            {                
-                RF_Connection_ClearRxBuffer();
+                else if ( buffer_rf[6] == 0xB6)
+                {
+                    LongEsperada   = 110;                
+                }
+                else if ( buffer_rf[6] == 0xB7)
+                {
+                    LongEsperada = 9;
+                }
+                else if ( buffer_rf[6] == 0xB8)
+                {
+                    LongEsperada = 36;
+                }
+                else if ( buffer_rf[6] == 0xB9)
+                {
+                    LongEsperada = 109;
+                }
+                else if ( buffer_rf[6] == 0xBB)
+                {
+                    LongEsperada = 8;
+                }
+                else if ( buffer_rf[6] == 0xBF)
+                {
+                    LongEsperada = 8;
+                }
+                // big config
+                else if ( buffer_rf[6] == 0xE1)
+                {
+                    LongEsperada   = 337;
+                    GeneralConfig  = 1;
+                }                
+                else if ( buffer_rf[6] == 0xE2)
+                {
+                    LongEsperada = 14;
+                }       
+                // Turno
+                else if ( buffer_rf[6] == 0xE4)
+                {
+                    LongEsperada = 9;
+                }
+                else if ( buffer_rf[6] == 0xA8)
+                {
+                    LongEsperada = 118;
+                }
+                                      
+                buffer_rf[i] = buffer_rfTMP;         
                 
-                if(NumPositions <= 2)
-                {
-                    if(buffer_rf[5] == side.a.RF || buffer_rf[5] == side.b.RF || GeneralConfig == 1)
-                    {
-                       pollingRF_Rx(buffer_rf);
-                       RFOnline = 1; 
-					   for(x = 0; x < 100; x++)
-					   {
-						   buffer_rf[x] = 0x00;
-					   }
-                    }
-                    else
-                    {
-                       RFOnline = 0;                       
-                    }  
-                }
-                else
-                {
-                    if(buffer_rf[5] == side.a.RF || buffer_rf[5] == side.b.RF || buffer_rf[5] == side.c.RF|| buffer_rf[5] == side.d.RF || GeneralConfig == 1)
-                    {
-                        
-                       pollingRF_Rx(buffer_rf);
-                       RFOnline = 1;                        
-                       for(x = 0; x < 100; x++)
-					   {
-						   buffer_rf[x] = 0x00;
-					   }
-                    }
-                    else
-                    {
-                       RFOnline = 0;                       
-                    }
-                }
-                buffer_rf[6] = 0xFF;
-                RF_Connection_ClearRxBuffer();            
-                break;
-            }  
-            i++;
-            
-            
-        }               
-         
-        if(RFOnline == 1)
-        {
-            pollingRFA_Tx();           
-            pollingRFB_Tx();
-            if(NumPositions > 2)
-            {
-                pollingRFC_Tx();
-                pollingRFD_Tx();
-            }
-            RFOnline = 0;
-        }
-        
-        /* detecta perdida de comunicacion RF */
-        if(FlagRF == 1)
-        {
-            FlagRF = 0; 
-            RfActive = 1;
-            cnt = 0;           
-        }
-        else
-        {
-            if(cnt < 1000)
-            {
-                cnt = cnt + 1;
                
+                if (i == LongEsperada - 1)
+                {                
+                    RF_Connection_ClearRxBuffer();
+                    
+                    if(NumPositions <= 2)
+                    {
+                        if(buffer_rf[5] == side.a.RF || buffer_rf[5] == side.b.RF || GeneralConfig == 1)
+                        {
+                            //Verifica checksum
+    //                        CRC = verificar_check(buffer_rf, LongEsperada);
+    //                        
+    //                        if(CRC == buffer_rf[LongEsperada - 1])
+    //                        { 
+                                pollingRF_Rx(buffer_rf);
+                                RFOnline = 1; 
+            					for(x = 0; x < 100; x++)
+            					{
+            						buffer_rf[x] = 0x00;
+            					}
+    //                        }
+                        }
+                        else
+                        {
+                           RFOnline = 0;                       
+                        }  
+                    }
+                    else
+                    {
+                        if(buffer_rf[5] == side.a.RF || buffer_rf[5] == side.b.RF || buffer_rf[5] == side.c.RF|| buffer_rf[5] == side.d.RF || GeneralConfig == 1)
+                        {
+                           //Verifica checksum
+    //                        CRC = verificar_check(buffer_rf, LongEsperada);
+    //                        if(CRC == buffer_rf[LongEsperada - 1])
+    //                        { 
+                               pollingRF_Rx(buffer_rf);
+                               RFOnline = 1;                        
+                               for(x = 0; x < 100; x++)
+        					   {
+        						   buffer_rf[x] = 0x00;
+        					   }
+    //                        }
+                        }
+                        else
+                        {
+                           RFOnline = 0;                       
+                        }
+                    }
+                    buffer_rf[6] = 0xFF;
+                    RF_Connection_ClearRxBuffer();            
+                    break;
+                }  
+                i++;
+                            
+                         
+             
+            if(RFOnline == 1)
+            {
+                pollingRFA_Tx();           
+                pollingRFB_Tx();
+                if(NumPositions > 2)
+                {
+                    pollingRFC_Tx();
+                    pollingRFD_Tx();
+                }
+                RFOnline = 0;
+            }
+            
+            /* detecta perdida de comunicacion RF */
+            if(FlagRF == 1)
+            {
+                FlagRF = 0; 
+                RfActive = 1;
+                cnt = 0;           
             }
             else
             {
-                RfActive = 0;
-                bufferDisplay1.PrintEnd = 0;
-                bufferDisplay2.PrintEnd = 0;
-                bufferDisplay3.PrintEnd = 0;
-                bufferDisplay4.PrintEnd = 0;
+                if(cnt < 1000)
+                {
+                    cnt = cnt + 1;
+                   
+                }
+                else
+                {
+                    RfActive = 0;
+                    bufferDisplay1.PrintEnd = 0;
+                    bufferDisplay2.PrintEnd = 0;
+                    bufferDisplay3.PrintEnd = 0;
+                    bufferDisplay4.PrintEnd = 0;
+                }
+              
             }
-          
         }
-        
         
     
         vTaskDelayUntil(&xLastWakeTime, xFrequency);       

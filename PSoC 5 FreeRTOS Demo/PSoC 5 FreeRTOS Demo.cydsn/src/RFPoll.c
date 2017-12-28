@@ -282,6 +282,11 @@ void RFTotalA(void)
                 {
                     RF_Connection_PutChar(bufferDisplay1.buffer_TX[x]);
                 } 
+                
+                if(bufferDisplay1.buffer_TX[x] == 0xE8)
+                {
+                    bufferDisplay1.VarActual = 1;                   
+                }
         }
         else
         {
@@ -512,6 +517,10 @@ void RFTotalB(void)
             {
                 RF_Connection_PutChar(bufferDisplay2.buffer_TX[x]);
             }
+            if(bufferDisplay2.buffer_TX[x] == 0xE8)
+            {
+                bufferDisplay2.VarActual = 1;                   
+            }
         }
         else
         {
@@ -733,10 +742,15 @@ void RFTotalC(void)
 				bufferDisplay3.VarActual = 0;
             }
             
-                for (x = 0; x < 55; x++)
-                {
-                    RF_Connection_PutChar(bufferDisplay3.buffer_TX[x]);
-                } 
+            for (x = 0; x < 55; x++)
+            {
+                RF_Connection_PutChar(bufferDisplay3.buffer_TX[x]);
+            }
+            
+            if(bufferDisplay3.buffer_TX[x] == 0xE8)
+            {
+                bufferDisplay3.VarActual = 1;                   
+            }
         }
         else
         {
@@ -956,10 +970,15 @@ void RFTotalD(void)
                 bufferDisplay4.buffer_TX[y] = verificar_check(bufferDisplay4.buffer_TX,y + 1);y++;
 				bufferDisplay4.VarActual = 0;
             }
-                for (x = 0; x < y; x++)
-                {
-                    RF_Connection_PutChar(bufferDisplay4.buffer_TX[x]);
-                }
+            for (x = 0; x < y; x++)
+            {
+                RF_Connection_PutChar(bufferDisplay4.buffer_TX[x]);
+            }
+            
+            if(bufferDisplay4.buffer_TX[x] == 0xE8)
+            {
+                bufferDisplay4.VarActual = 1;                   
+            }
         }
         else
         {
@@ -985,7 +1004,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
     buffer_tx[y] = IDCast[1]; y++;
         
         // Query Command Action
-        if(((PRF_rxBuffer[0] == 0xBC) && (PRF_rxBuffer[1] == 0xBB) && (PRF_rxBuffer[2] == 0xB8) && (PRF_rxBuffer[3] == IDCast[0]) && (PRF_rxBuffer[4] == IDCast[1])) )
+        if(((PRF_rxBuffer[0] == 0xBC) && (PRF_rxBuffer[1] == 0xBB) && (PRF_rxBuffer[2] == 0xB8) && (PRF_rxBuffer[3] == IDCast[0]) && (PRF_rxBuffer[4] == IDCast[1])) )     
         {                  
             switch(PRF_rxBuffer[6])
             {
@@ -1042,7 +1061,9 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                                 {
                                     bufferDisplay1.PrintFlagEOT = 0;
                                     bufferDisplay1.flagPrint = 0;
+                                    bufferDisplay1.PrintEnd = 0;
                                 }
+                                
                                 contA = 0;
                                 IdFlagA = false;
                             }                         
@@ -1218,6 +1239,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                                 {
                                     bufferDisplay2.PrintFlagEOT = 0;
                                     bufferDisplay2.flagPrint = 0;
+                                    bufferDisplay2.PrintEnd = 0;
                                 }
                                 contB = 0;
                                 IdFlagB = false;
@@ -1395,6 +1417,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                                 {
                                     bufferDisplay3.PrintFlagEOT = 0;
                                     bufferDisplay3.flagPrint = 0;
+                                    bufferDisplay3.PrintEnd = 0;
                                 }
                                 contC = 0;
                                 IdFlagC = false;
@@ -1571,6 +1594,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                                 {
                                     bufferDisplay4.PrintFlagEOT = 0;
                                     bufferDisplay4.flagPrint = 0;
+                                    bufferDisplay4.PrintEnd = 0;
                                 }
                                 contD = 0;
                                 IdFlagD = false;
@@ -1786,6 +1810,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             PresetFlag = 1;
                             AuthType = 1;
                             side.a.BusyChange = 1;
+                            CreditAuth = 0;
+                            side.a.rfState = RF_DELIVERING;
                         }
                         else
                         {                           
@@ -1895,7 +1921,9 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             bufferAreadyB = 0;
                             PresetFlag2 = 1; 
                             AuthType2 = 1;
-                            side.b.BusyChange = 1;                           
+                            side.b.BusyChange = 1; 
+                            CreditAuth2 = 0;
+                            side.b.rfState = RF_DELIVERING;
                         }
                         else
                         {
@@ -2005,6 +2033,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             PresetFlag3 = 1;
                             AuthType3 = 1;
                             side.c.BusyChange = 1;
+                            CreditAuth3     = 0;
+                            side.c.rfState = RF_DELIVERING;
                         }
                         else
                         {                           
@@ -2115,6 +2145,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             PresetFlag4 = 1; 
                             AuthType4 = 1;
                             side.d.BusyChange = 1;
+                            CreditAuth4 = 0;
+                            side.d.rfState = RF_DELIVERING;
                                                        
                         }
                         else
@@ -2429,6 +2461,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         } 
 						flowDisplay1 = 0;
 						bufferDisplay1.PrintEnd = 0;
+                        break;
                         
                     }                      
                     if(PRF_rxBuffer[5] == side.b.RF)
@@ -2470,7 +2503,8 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             RF_Connection_PutChar(buffer_tx[x]);
                         }
 						flowDisplay2 = 0;
-						bufferDisplay2.PrintEnd = 0;                                                
+						bufferDisplay2.PrintEnd = 0;
+                        break;
                     }                    
                     if(PRF_rxBuffer[5] == side.c.RF)
                     {
@@ -2512,7 +2546,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         }
 						flowDisplay3 = 0;
 						bufferDisplay3.PrintEnd = 0;
-                        
+                        break; 
                     }                    
                     if(PRF_rxBuffer[5] == side.d.RF)
                     {
@@ -2553,7 +2587,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         }
 						flowDisplay4 = 0;
 						bufferDisplay4.PrintEnd = 0;
-                       
+                        break;
                     }
                 break;
                 
@@ -4318,8 +4352,14 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {                        
                             SetPicture(1,DISPLAY_PASSWORD_INVALIDO);
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
-                            flowDisplay1 = 0;
+                            
                             ShiftState = 0;
+                            if(NumPositions == 2){
+                                SetPicture(1, DISPLAY_INICIO0);
+                            }else{
+                                SetPicture(1, DISPLAY_SELECCIONE_POSICION);
+                            }
+                            flowDisplay1 = 0;
                         }
                         else
                         {
@@ -4327,12 +4367,13 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
                             ShiftState = 0;                            
                             EEPROM_1_WriteByte(PRF_rxBuffer[7],220);
-                            flowDisplay1 = 0;
+                            
                             if(NumPositions == 2){
                                 SetPicture(1, DISPLAY_INICIO0);
                             }else{
                                 SetPicture(1, DISPLAY_SELECCIONE_POSICION);
                             }
+                            flowDisplay1 = 0;
                         }
                         buffer_A[5]  = side.a.RF;
                         buffer_A[6]  = 0xE4;
@@ -4344,6 +4385,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         { 
                             RF_Connection_PutChar(buffer_A[x]);
                         }
+                        break;
                     }   
                     
                     if(PRF_rxBuffer[5] == side.b.RF) 
@@ -4352,9 +4394,14 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {                        
                             SetPicture(2,DISPLAY_PASSWORD_INVALIDO);
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
-                            flowDisplay2 = 0;
+                            
                             ShiftState = 0;
-
+                            if(NumPositions == 2){
+                                SetPicture(2, DISPLAY_INICIO0);
+                            }else{
+                                SetPicture(2, DISPLAY_SELECCIONE_POSICION);
+                            }
+                            flowDisplay2 = 0;
                         }
                         else
                         {
@@ -4362,12 +4409,13 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
                             ShiftState = 0;                            
                             EEPROM_1_WriteByte(PRF_rxBuffer[7],221);
-                            flowDisplay2 = 0;
+                            
                             if(NumPositions == 2){
                                 SetPicture(2, DISPLAY_INICIO0);
                             }else{
                                 SetPicture(2, DISPLAY_SELECCIONE_POSICION);
-                            }                    
+                            }
+                            flowDisplay2 = 0;
                         }
                         buffer_A[5]  = side.b.RF;
                         buffer_A[6]  = 0xE4;
@@ -4379,6 +4427,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         { 
                             RF_Connection_PutChar(buffer_A[x]);
                         }
+                        break;
                     } 
                     
                     if(PRF_rxBuffer[5] == side.c.RF)
@@ -4387,9 +4436,14 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {                        
                             SetPicture(1,DISPLAY_PASSWORD_INVALIDO);
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
-                            flowDisplay3 = 0;
+                            
                             ShiftState = 0;
-
+                            if(NumPositions == 2){
+                                SetPicture(1, DISPLAY_INICIO0);
+                            }else{
+                                SetPicture(1, DISPLAY_SELECCIONE_POSICION);
+                            }
+                            flowDisplay3 = 0;
                         }
                         else
                         {
@@ -4397,12 +4451,13 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
                             ShiftState = 0;
                             EEPROM_1_WriteByte(PRF_rxBuffer[7],222);
-                            flowDisplay3 = 0;
+                            
                             if(NumPositions == 2){
                                 SetPicture(1, DISPLAY_INICIO0);
                             }else{
                                 SetPicture(1, DISPLAY_SELECCIONE_POSICION);
                             }
+                            flowDisplay3 = 0;
                         }
                         buffer_A[5]  = side.c.RF;
                         buffer_A[6]  = 0xE4;
@@ -4414,6 +4469,7 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         { 
                             RF_Connection_PutChar(buffer_A[x]);
                         }
+                        break;
                     }
                     
                     if(PRF_rxBuffer[5] == side.d.RF)
@@ -4422,8 +4478,14 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         {                        
                             SetPicture(2,DISPLAY_PASSWORD_INVALIDO);
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
-                            flowDisplay4 = 0;
+                            
                             ShiftState = 0;
+                            if(NumPositions == 2){
+                                SetPicture(2, DISPLAY_INICIO0);
+                            }else{
+                                SetPicture(2, DISPLAY_SELECCIONE_POSICION);
+                            }
+                            flowDisplay4 = 0;
                         }
                         else
                         {
@@ -4431,12 +4493,13 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                             vTaskDelay( 900 / portTICK_PERIOD_MS );
                             ShiftState = 0;                            
                             EEPROM_1_WriteByte(PRF_rxBuffer[7],223);
-                            flowDisplay4 = 0;
+                            
                             if(NumPositions == 2){
                                 SetPicture(2, DISPLAY_INICIO0);
                             }else{
                                 SetPicture(2, DISPLAY_SELECCIONE_POSICION);
                             }
+                            flowDisplay4 = 0;
                         }
                         buffer_A[5]  = side.d.RF;
                         buffer_A[6]  = 0xE4;
@@ -4448,18 +4511,10 @@ void pollingRF_Rx(uint8 PRF_rxBuffer[])
                         { 
                             RF_Connection_PutChar(buffer_A[x]);
                         }
+                        break;
                     }
                                        
-                break;  
-                    
-                case 0xC3:
-                    EEPROM_1_WriteByte(PRF_rxBuffer[7], 390);  //ibutton
-                    EEPROM_1_WriteByte(PRF_rxBuffer[8], 391);  //tag
-                    EEPROM_1_WriteByte(PRF_rxBuffer[9], 392);  //Keyboard
-                    EEPROM_1_WriteByte(PRF_rxBuffer[10], 393); //Banda magnetica
-                    EEPROM_1_WriteByte(PRF_rxBuffer[11], 394); //Codigo barras
-                    EEPROM_1_WriteByte(PRF_rxBuffer[12], 395); //codigo QR            
-                break;    
+               break;                
            }                       
         } 
 
@@ -6376,8 +6431,7 @@ void pollingRFC_Tx(){
         // CRC
         buffer_C[36] = verificar_check(buffer_C,37);    
         side.c.RFstateReport = 0;
-        bufferAreadyC = 2;
-        //side.c.FlagTotal = 0;        
+        bufferAreadyC = 2;        
         CreditAuth3 = 0;
         AckFlag = 0;
     }
